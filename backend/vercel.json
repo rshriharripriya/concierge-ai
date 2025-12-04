@@ -1,7 +1,12 @@
 {
+    "installCommand": "pip3 install -r requirements.txt",
     "rewrites": [
         {
             "source": "/api/py/:path*",
+            "destination": "/api/index.py"
+        },
+        {
+            "source": "/(.*)",
             "destination": "/api/index.py"
         }
     ],
