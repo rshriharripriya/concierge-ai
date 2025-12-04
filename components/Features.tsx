@@ -23,6 +23,7 @@ export function Features() {
         },
     ];
 
+    
     return (
         <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8 mb-32">
             {features.map((feature, index) => (
