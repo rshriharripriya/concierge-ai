@@ -70,17 +70,17 @@ const Footer = () => {
                         <div className="text-xl font-semibold mb-2">Quick Links</div>
                         <div className="space-y-2">
                             <p className="cursor-pointer">
-                                <Link href="https://rshriharripriya.vercel.app/#about">
+                                <Link href="https://rshriharripriya.vercel.app/#about" target="_blank" rel="noopener noreferrer">
                                     <span className="text-lg hover:text-purple-400 transition-colors">About Me</span>
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
-                                <Link href="https://rshriharripriya.vercel.app/#projects">
+                                <Link href="https://rshriharripriya.vercel.app/#projects" target="_blank" rel="noopener noreferrer">
                                     <span className="text-lg hover:text-purple-400 transition-colors">My Projects</span>
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
-                                <Link href="https://rshriharripriya.vercel.app/#awards">
+                                <Link href="https://rshriharripriya.vercel.app/#awards" target="_blank" rel="noopener noreferrer">
                                     <span className="text-lg hover:text-purple-400 transition-colors">My Awards</span>
                                 </Link>
                             </p>
@@ -91,7 +91,7 @@ const Footer = () => {
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
-                                <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank" className="hover:text-purple-400 transition-colors">
+                                <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors">
                                     <span className="text-base">My Playlists</span>
                                 </Link>
                             </p>
@@ -153,17 +153,17 @@ const Footer = () => {
 
                     <div className="min-w-[200px] h-auto flex flex-col items-center justify-start pt-4 space-y-7">
                         <p className="flex flex-row items-center cursor-pointer">
-                            <Link href="https://rshriharripriya.vercel.app/#about">
+                            <Link href="https://rshriharripriya.vercel.app/#about" target="_blank" rel="noopener noreferrer">
                                 <span className="text-[15px] hover:text-purple-400 transition-colors">About Me</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
-                            <Link href="https://rshriharripriya.vercel.app/#projects">
+                            <Link href="https://rshriharripriya.vercel.app/#projects" target="_blank" rel="noopener noreferrer">
                                 <span className="text-[15px] hover:text-purple-400 transition-colors">My projects</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
-                            <Link href="https://rshriharripriya.vercel.app/#awards">
+                            <Link href="https://rshriharripriya.vercel.app/#awards" target="_blank" rel="noopener noreferrer">
                                 <span className="text-[15px] hover:text-purple-400 transition-colors">My awards</span>
                             </Link>
                         </p>
@@ -175,12 +175,12 @@ const Footer = () => {
                             </Link  >
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
-                            <Link href="https://rshriharripriya.vercel.app" target="_blank" className="hover:text-purple-400 transition-colors">
+                            <Link href="https://rshriharripriya.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors">
                                 <span className="text-[15px]">My blogs</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
-                            <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank"
+                            <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank" rel="noopener noreferrer"
                                 className="flex flex-row items-center hover:text-purple-400 transition-colors">
                                 <span className="text-[15px]">Check out my playlists</span>
                             </Link>
