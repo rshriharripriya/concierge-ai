@@ -621,11 +621,17 @@ Example:
 - Income: $200 (taxable)
 - Report on Form 1040-NR, line 8
 
+=== DOCUMENT 7: NFT Taxation ===
+TITLE: NFT (Non-Fungible Token) Taxation Guide
+SOURCE: IRS Notice 2014-21
+CATEGORY: tax
+
 NFTs (Non-Fungible Tokens):
 NFTs are treated as property (same as cryptocurrency):
 - Gains on sales subject to capital gains rules
 - 183-day rule applies
 - Creating and selling NFTs may be business income
+
 
 Cryptocurrency on Foreign Exchanges:
 If you use a foreign cryptocurrency exchange (Binance, Kraken International, etc.):

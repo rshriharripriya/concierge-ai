@@ -98,16 +98,38 @@ if __name__ == "__main__":
             print(f"📖 Reading {file_path}...")
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-                
-            # Create document object
-            # Use filename as title, replacing underscores with spaces
-            filename = os.path.basename(file_path)
-            title = filename.replace('knowledge_', '').replace('.txt', '').replace('_', ' ').title()
             
-            documents.append({
-                "title": title,
-                "content": content
-            })
+            # Split by document delimiter
+            sections = content.split('=== DOCUMENT')
+            
+            for section in sections:
+                if not section.strip():
+                    continue
+                
+                # Parse title and content
+                lines = section.strip().split('\n')
+                
+                # Try to find TITLE line
+                title = "Unknown Title"
+                title_line = next((line for line in lines if line.startswith('TITLE:')), None)
+                if title_line:
+                    title = title_line.replace('TITLE:', '').strip()
+                else:
+                    # Fallback to first line if it looks like a header
+                    first_line = lines[0].strip()
+                    if first_line and not first_line.startswith('==='):
+                         title = first_line.split('===')[0].strip()
+
+                # Clean up content (remove metadata lines if desired, or keep them)
+                # For now, we keep them as they provide context
+                
+                # Add to documents list
+                if title != "Unknown Title":
+                    documents.append({
+                        "title": title,
+                        "content": section.strip()
+                    })
+                    print(f"   Found section: {title}")
             
         except Exception as e:
             print(f"❌ Error reading {file_path}: {e}")

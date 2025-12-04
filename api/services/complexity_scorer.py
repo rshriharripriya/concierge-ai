@@ -15,7 +15,7 @@ class ComplexityScorer:
         ]
         
         self.complex_keywords = [
-            'international', 'foreign', 'crypto', 'cryptocurrency', 'capital gains',
+            'international', 'foreign', 'capital gains', 'staking', 'mining', 'defi', 'airdrop',
             'partnership', 'trust', 'estate', 'alternative minimum tax', 'amt',
             'section 1031', 'like-kind exchange', 'qualified business income', 'qbi',
             'passive activity loss', 'net operating loss', 'multi-state'
@@ -23,7 +23,8 @@ class ComplexityScorer:
         
         self.moderate_keywords = [
             'self-employed', 'schedule c', 'depreciation', 'business expenses',
-            'home office', 'rental income', 'investment', 'stock', 'dividend'
+            'home office', 'rental income', 'investment', 'stock', 'dividend',
+            'crypto', 'cryptocurrency', 'bitcoin', 'ethereum'
         ]
         
         self.simple_keywords = [
@@ -58,7 +59,7 @@ class ComplexityScorer:
         # Base score on intent
         intent_scores = {
             'simple_tax': 2,
-            'complex_tax': 4,
+            'complex_tax': 3,
             'bookkeeping': 3,
             'urgent': 5,
             'general': 2

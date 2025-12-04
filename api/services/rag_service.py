@@ -48,9 +48,12 @@ class RAGService:
             
             Guidelines:
             - Use conversation history to understand context and follow-up questions
-            - Be concise but thorough
+            - Be EXTREMELY concise and easy to understand
+            - Use bullet points for lists or steps
+            - Avoid long paragraphs and complex jargon
             - If you're not confident, say so
-            - Always cite sources using [Source: <source_name>] format
+            - Cite sources using [1], [2] format corresponding to the source numbers
+            - List the full source titles at the end of your response
             - For complex scenarios, recommend connecting with an expert"""),
             ("user", """Conversation History:
 {conversation_history}
@@ -61,6 +64,16 @@ Context documents:
 Current Question: {query}
 
 Provide a helpful answer that considers the conversation history and cites sources.""")
+        ])
+        
+        self.contextualize_q_prompt = ChatPromptTemplate.from_messages([
+            ("system", """Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be understood without the chat history. Do NOT answer the question, just reformulate it if needed and otherwise return it as is."""),
+            ("user", """Chat History:
+{conversation_history}
+
+User Question: {query}
+
+Standalone Question:""")
         ])
     
     async def get_conversation_history(self, conversation_id: str, limit: int = 5) -> str:
@@ -113,14 +126,34 @@ Provide a helpful answer that considers the conversation history and cites sourc
             print(f"⚠️ Document retrieval error: {e}")
             return []
     
+    async def contextualize_query(self, query: str, conversation_history: str) -> str:
+        """Rewrite query to be standalone based on history"""
+        if conversation_history == "No prior conversation":
+            return query
+            
+        try:
+            chain = self.contextualize_q_prompt | self.llm
+            response = chain.invoke({
+                "conversation_history": conversation_history,
+                "query": query
+            })
+            return response.content
+        except Exception as e:
+            print(f"⚠️ Query contextualization failed: {e}")
+            return query
+
     async def generate_answer(self, query: str, conversation_id: str = None) -> Dict:
         """Generate RAG-based answer with conversation memory"""
         
         # Get conversation history
         conversation_history = await self.get_conversation_history(conversation_id)
         
-        # Retrieve relevant documents
-        documents = await self.retrieve_documents(query)
+        # Contextualize query if history exists
+        standalone_query = await self.contextualize_query(query, conversation_history)
+        print(f"🔄 Original query: '{query}' -> Standalone: '{standalone_query}'")
+        
+        # Retrieve relevant documents using STANDALONE query
+        documents = await self.retrieve_documents(standalone_query)
         
         if not documents or len(documents) == 0:
             return {
@@ -131,8 +164,8 @@ Provide a helpful answer that considers the conversation history and cites sourc
         
         # Format context from retrieved documents
         context = "\n\n".join([
-            f"[Source: {doc['title']}]\n{doc['content']}\n(Relevance: {doc.get('similarity', 0):.2f})"
-            for doc in documents
+            f"[Source {i+1}: {doc['title']}]\n{doc['content']}\n(Relevance: {doc.get('similarity', 0):.2f})"
+            for i, doc in enumerate(documents)
         ])
         
         try:
@@ -144,9 +177,11 @@ Provide a helpful answer that considers the conversation history and cites sourc
                 "query": query
             })
             
-            # Calculate confidence based on document similarity scores
-            avg_similarity = sum(doc.get('similarity', 0) for doc in documents) / len(documents)
-            confidence = min(0.95, avg_similarity * 1.2)
+            # Calculate confidence based on MAX document similarity
+            # Average penalizes having extra context. Max represents the best match found.
+            max_similarity = max(doc.get('similarity', 0) for doc in documents)
+            # Boost factor for MiniLM (which tends to have lower raw cosine scores)
+            confidence = min(0.95, max_similarity * 1.5)
             
             # Check if answer suggests expert consultation
             answer_lower = response.content.lower()

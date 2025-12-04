@@ -90,7 +90,7 @@ async def process_query(request: QueryRequest):
         print(f"🤖 AI Confidence: {ai_confidence}")
         
         # Stage 4: Routing decision
-        confidence_threshold = 0.65
+        confidence_threshold = 0.60
         should_escalate = (
             requires_expert or 
             ai_confidence < confidence_threshold or
