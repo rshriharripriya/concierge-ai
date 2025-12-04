@@ -7,10 +7,10 @@ import sys
 
 # Import services
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from services.semantic_router import semantic_router
-from services.complexity_scorer import complexity_scorer
-from services.rag_service import rag_service
-from services.expert_matcher import expert_matcher
+from services import semantic_router as semantic_router_lib
+from services import complexity_scorer as complexity_scorer_lib
+from services import rag_service as rag_service_lib
+from services import expert_matcher as expert_matcher_lib
 
 from supabase import create_client
 
@@ -55,6 +55,12 @@ async def process_query(request: QueryRequest):
         # Normalize query for better handling of abbreviations
         normalized_query = request.query.replace(" std ", " standard ").replace("std ", "standard ")
         
+        # Get service instances
+        semantic_router = semantic_router_lib.service_instance
+        complexity_scorer = complexity_scorer_lib.service_instance
+        rag_service = rag_service_lib.service_instance
+        expert_matcher = expert_matcher_lib.service_instance
+
         # Check if services are initialized
         if not semantic_router or not complexity_scorer or not rag_service or not expert_matcher:
             raise HTTPException(status_code=500, detail="Backend services failed to initialize. Please check server logs and environment variables (HF_TOKEN, SUPABASE_URL, etc).")

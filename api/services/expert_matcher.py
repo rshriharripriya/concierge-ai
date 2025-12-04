@@ -129,9 +129,16 @@ class ExpertMatcher:
             print(f"⚠️ Expert matching error: {e}")
             return None
 
-# Singleton instance
-try:
-    expert_matcher = ExpertMatcher()
-except Exception as e:
-    print(f"⚠️ ExpertMatcher initialization failed: {e}")
-    expert_matcher = None
+# Global instance
+service_instance = None
+
+def initialize():
+    """Initialize the ExpertMatcher service"""
+    global service_instance
+    try:
+        service_instance = ExpertMatcher()
+        print("✅ ExpertMatcher service ready")
+    except Exception as e:
+        print(f"⚠️ ExpertMatcher initialization failed: {e}")
+        service_instance = None
+

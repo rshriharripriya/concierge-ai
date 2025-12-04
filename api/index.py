@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 import sys
 import os
+from contextlib import asynccontextmanager
+
 # Env vars loaded below
 
 from dotenv import load_dotenv
@@ -14,11 +16,25 @@ load_dotenv(dotenv_path=".env.local")
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from routers import chat, experts
+from services import rag_service, expert_matcher, semantic_router, complexity_scorer
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup: Initialize services
+    print("🚀 Starting up... Initializing AI services")
+    rag_service.initialize()
+    expert_matcher.initialize()
+    semantic_router.initialize()
+    complexity_scorer.initialize()
+    yield
+    # Shutdown: Clean up if needed
+    print("🛑 Shutting down...")
 
 app = FastAPI(
     title="Concierge AI API",
     description="Intelligent customer-to-expert routing system inspired by Intuit VEP",
-    version="1.0.0"
+    version="1.0.0",
+    lifespan=lifespan
 )
 
 # CORS middleware

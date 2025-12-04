@@ -119,9 +119,16 @@ class ComplexityScorer:
         
         return "Straightforward question suitable for AI response"
 
-# Singleton instance
-try:
-    complexity_scorer = ComplexityScorer()
-except Exception as e:
-    print(f"⚠️ ComplexityScorer initialization failed: {e}")
-    complexity_scorer = None
+# Global instance
+service_instance = None
+
+def initialize():
+    """Initialize the ComplexityScorer service"""
+    global service_instance
+    try:
+        service_instance = ComplexityScorer()
+        print("✅ ComplexityScorer service ready")
+    except Exception as e:
+        print(f"⚠️ ComplexityScorer initialization failed: {e}")
+        service_instance = None
+

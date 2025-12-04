@@ -4,19 +4,23 @@ from typing import List, Dict, Any
 from functools import lru_cache
 import os
 
-class APIEncoder:
+from semantic_router.encoders import DenseEncoder
+from pydantic import PrivateAttr
+
+class APIEncoder(DenseEncoder):
     """Custom encoder using HuggingFace Inference API via LangChain"""
+    _embeddings: Any = PrivateAttr()
+
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
-        self.embeddings = HuggingFaceEndpointEmbeddings(
+        super().__init__(name=model_name, score_threshold=0.3)
+        self._embeddings = HuggingFaceEndpointEmbeddings(
             huggingfacehub_api_token=os.getenv("HF_TOKEN"),
             model=model_name
         )
-        self.score_threshold = 0.3 # Default threshold
-        self.name = model_name
         self.type = "api"
 
     def __call__(self, docs: List[str]) -> List[List[float]]:
-        return self.embeddings.embed_documents(docs)
+        return self._embeddings.embed_documents(docs)
 
 @lru_cache(maxsize=1)
 def get_semantic_router():
@@ -108,17 +112,19 @@ class SemanticRouterService:
             "confidence": route.similarity_score if route else 0.5
         }
 
-# Singleton instance
-try:
-    semantic_router = SemanticRouterService()
-except Exception as e:
-    print(f"⚠️ SemanticRouterService initialization failed: {e}")
-    semantic_router = None
+# Global instance
+service_instance = None
 
-# Pre-warm the router
-try:
-    print("🔥 Pre-warming semantic router...")
-    _ = semantic_router.classify_intent("test query")
-    print("✅ Semantic router initialized")
-except Exception as e:
-    print(f"⚠️ Router initialization warning: {e}")
+def initialize():
+    """Initialize the SemanticRouter service"""
+    global service_instance
+    try:
+        service_instance = SemanticRouterService()
+        # Pre-warm
+        print("🔥 Pre-warming semantic router...")
+        _ = service_instance.classify_intent("test query")
+        print("✅ Semantic router initialized")
+    except Exception as e:
+        print(f"⚠️ SemanticRouterService initialization failed: {e}")
+        service_instance = None
+

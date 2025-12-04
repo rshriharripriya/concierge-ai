@@ -173,17 +173,19 @@ Provide a helpful answer that considers the conversation history and cites sourc
                 "confidence": 0.2
             }
 
-# Singleton instance
-try:
-    rag_service = RAGService()
-except Exception as e:
-    print(f"⚠️ RAGService initialization failed: {e}")
-    rag_service = None
+# Global instance
+service_instance = None
 
-# Pre-warm the service
-try:
-    print("🔥 Pre-warming RAG service...")
-    _ = get_embeddings().embed_query("warmup query")
-    print("✅ RAG service ready")
-except Exception as e:
-    print(f"⚠️ RAG pre-warm warning: {e}")
+def initialize():
+    """Initialize the RAG service"""
+    global service_instance
+    try:
+        service_instance = RAGService()
+        # Pre-warm
+        print("🔥 Pre-warming RAG service...")
+        _ = get_embeddings().embed_query("warmup query")
+        print("✅ RAG service ready")
+    except Exception as e:
+        print(f"⚠️ RAGService initialization failed: {e}")
+        service_instance = None
+

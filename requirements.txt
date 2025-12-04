@@ -3,6 +3,7 @@ fastapi>=0.109.0
 mangum>=0.17.0
 python-dotenv>=1.0.0
 pydantic>=2.5.3
+uvicorn>=0.27.0
 
 # AI & RAG
 langchain>=0.1.0
@@ -14,6 +15,6 @@ groq>=0.4.1
 # Database
 supabase>=2.3.0
 
-# Heavy ML (Removed for Vercel - using API)
+# ML 
 huggingface-hub>=0.20.0
 langchain-huggingface>=0.0.1
