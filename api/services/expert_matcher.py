@@ -1,12 +1,16 @@
 from supabase import create_client, Client
-from sentence_transformers import SentenceTransformer
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from typing import List, Dict, Optional
 import os
+import math
 from functools import lru_cache
 
 @lru_cache(maxsize=1)
 def get_embeddings():
-    return SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    return HuggingFaceInferenceAPIEmbeddings(
+        api_key=os.getenv("HF_TOKEN"),
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
 
 @lru_cache(maxsize=1)
 def get_supabase():
@@ -64,9 +68,10 @@ class ExpertMatcher:
                 avg_rating = metrics.get('avg_rating', 3.5)
                 performance_score = avg_rating / 5.0
                 
+                semantic_score = 0.0
                 if expert.get('expertise_embedding'):
-                    # Calculate cosine similarity
-                    query_embedding = self.embeddings.encode(query)
+                    # Calculate cosine similarity using pure Python
+                    query_embedding = self.embeddings.embed_query(query)
                     expert_embedding = expert['expertise_embedding']
                     
                     # Handle string representation of embedding
@@ -78,16 +83,13 @@ class ExpertMatcher:
                             # Handle Postgres array format '{0.1,0.2}' if JSON fails
                             expert_embedding = [float(x) for x in expert_embedding.strip('{}').split(',')]
 
-                    # Manual cosine similarity calculation since embeddings are lists/arrays
-                    import numpy as np
-                    q_vec = np.array(query_embedding)
-                    e_vec = np.array(expert_embedding)
-                    
-                    norm_q = np.linalg.norm(q_vec)
-                    norm_e = np.linalg.norm(e_vec)
+                    # Pure Python Cosine Similarity
+                    dot_product = sum(a * b for a, b in zip(query_embedding, expert_embedding))
+                    norm_q = math.sqrt(sum(a * a for a in query_embedding))
+                    norm_e = math.sqrt(sum(b * b for b in expert_embedding))
                     
                     if norm_q > 0 and norm_e > 0:
-                        semantic_score = float(np.dot(q_vec, e_vec) / (norm_q * norm_e))
+                        semantic_score = dot_product / (norm_q * norm_e)
                 
                 # Calculate weighted final score
                 final_score = (

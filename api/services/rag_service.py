@@ -1,6 +1,6 @@
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from sentence_transformers import SentenceTransformer
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 from supabase import create_client, Client
 from typing import List, Dict
 import os
@@ -19,9 +19,12 @@ def get_llm():
 
 @lru_cache(maxsize=1)
 def get_embeddings():
-    """Cached Sentence Transformer model"""
-    print("🔄 Loading embedding model (all-MiniLM-L6-v2)...")
-    model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+    """Cached HuggingFace Inference API Embeddings"""
+    print("🔄 Loading embedding model (API)...")
+    model = HuggingFaceInferenceAPIEmbeddings(
+        api_key=os.getenv("HF_TOKEN"),
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
     print("✅ Embedding model loaded")
     return model
 
@@ -90,9 +93,9 @@ Provide a helpful answer that considers the conversation history and cites sourc
     async def retrieve_documents(self, query: str, k: int = 5) -> List[Dict]:
         """Retrieve relevant documents using vector similarity search"""
         try:
-            # Generate query embedding using Sentence Transformers
-            # Returns numpy array, convert to list
-            query_embedding = self.embeddings.encode(query).tolist()
+            # Generate query embedding using HuggingFace Inference API
+            # Returns list of floats directly
+            query_embedding = self.embeddings.embed_query(query)
             
             # Search using pgvector function
             result = self.supabase.rpc(
@@ -176,7 +179,7 @@ rag_service = RAGService()
 # Pre-warm the service
 try:
     print("🔥 Pre-warming RAG service...")
-    _ = get_embeddings().encode("warmup query")
+    _ = get_embeddings().embed_query("warmup query")
     print("✅ RAG service ready")
 except Exception as e:
     print(f"⚠️ RAG pre-warm warning: {e}")

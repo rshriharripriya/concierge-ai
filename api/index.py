@@ -3,8 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 import sys
 import os
-# Fix for huggingface/tokenizers parallelism issue on Mac
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+# Env vars loaded below
 
 from dotenv import load_dotenv
 

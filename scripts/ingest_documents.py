@@ -2,7 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from supabase import create_client
-from sentence_transformers import SentenceTransformer
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
 import uuid
 
 # Load environment variables
@@ -18,9 +18,12 @@ if not supabase_url or not supabase_key:
 
 supabase = create_client(supabase_url, supabase_key)
 
-# Initialize Embedding Model
-print("🔄 Loading embedding model...")
-model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+# Initialize Embedding Model (API)
+print("🔄 Loading embedding model (API)...")
+model = HuggingFaceInferenceAPIEmbeddings(
+    api_key=os.getenv("HF_TOKEN"),
+    model_name="sentence-transformers/all-MiniLM-L6-v2"
+)
 print("✅ Model loaded")
 
 def ingest_documents(documents):
@@ -35,7 +38,7 @@ def ingest_documents(documents):
             print(f"Processing: {doc['title']}")
             
             # Generate embedding
-            embedding = model.encode(doc['content']).tolist()
+            embedding = model.embed_query(doc['content'])
             
             # Prepare data payload
             data = {

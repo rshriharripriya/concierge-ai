@@ -86,7 +86,9 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
         const controlY = startY - curvature
         const d = curvature === 0
           ? `M ${startX},${startY} L ${endX},${endY}`
-          : `M ${startX},${startY} Q ${(startX + endX) / 2},${controlY} ${endX},${endY}`
+          : (Math.abs(startX - endX) < 10 || Math.abs(startX - endX) < Math.abs(startY - endY))
+            ? `M ${startX},${startY} Q ${(startX + endX) / 2 - curvature},${(startY + endY) / 2} ${endX},${endY}`
+            : `M ${startX},${startY} Q ${(startX + endX) / 2},${controlY} ${endX},${endY}`
         setPathD(d)
       }
     }

@@ -1,7 +1,22 @@
 from semantic_router import Route, SemanticRouter
-from semantic_router.encoders import HuggingFaceEncoder
-from typing import Dict
+from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from typing import List, Dict, Any
 from functools import lru_cache
+import os
+
+class APIEncoder:
+    """Custom encoder using HuggingFace Inference API via LangChain"""
+    def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
+        self.embeddings = HuggingFaceInferenceAPIEmbeddings(
+            api_key=os.getenv("HF_TOKEN"),
+            model_name=model_name
+        )
+        self.score_threshold = 0.3 # Default threshold
+        self.name = model_name
+        self.type = "api"
+
+    def __call__(self, docs: List[str]) -> List[List[float]]:
+        return self.embeddings.embed_documents(docs)
 
 @lru_cache(maxsize=1)
 def get_semantic_router():
@@ -74,9 +89,9 @@ def get_semantic_router():
         )
     ]
     
-    # Use HuggingFace encoder instead of OpenAI
-    print("🔄 Loading HuggingFace encoder...")
-    encoder = HuggingFaceEncoder(name="sentence-transformers/all-MiniLM-L6-v2")
+    # Use API encoder instead of local
+    print("🔄 Loading API encoder...")
+    encoder = APIEncoder()
     print("✅ Encoder loaded")
     
     return SemanticRouter(encoder=encoder, routes=routes, auto_sync="local")

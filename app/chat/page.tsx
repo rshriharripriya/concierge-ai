@@ -83,7 +83,7 @@ export default function ChatPage() {
             const errorMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 role: "assistant",
-                content: `Sorry, I encountered an error: ${error.message}. Please try again.`,
+                content: "Concierge is temporarily unavailable, please try again.",
             };
             setMessages((prev) => [...prev, errorMessage]);
         } finally {
