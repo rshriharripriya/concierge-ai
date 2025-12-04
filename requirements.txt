@@ -1,0 +1,13 @@
+fastapi>=0.109.0
+mangum>=0.17.0
+langchain>=0.1.0
+langchain-groq>=0.0.1
+langchain-community>=0.0.13
+semantic-router>=0.0.25
+supabase>=2.3.0
+pydantic>=2.5.3
+sentence-transformers>=2.3.0
+groq>=0.4.1
+python-dotenv>=1.0.0
+torch>=2.1.0
+transformers>=4.35.0

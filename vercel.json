@@ -1,0 +1,18 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "next dev",
+  "installCommand": "npm install && pip3 install -r requirements.txt",
+  "rewrites": [
+    {
+      "source": "/api/py/:path*",
+      "destination": "/api/index.py"
+    }
+  ],
+  "functions": {
+    "api/index.py": {
+      "runtime": "python3.9",
+      "memory": 1024,
+      "maxDuration": 60
+    }
+  }
+}
