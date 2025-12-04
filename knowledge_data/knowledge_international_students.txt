@@ -1,0 +1,741 @@
+=== DOCUMENT 1: F-1 Student Tax Guide - Nonresident Alien Status ===
+TITLE: F-1 Student Tax Filing Requirements and Exemptions
+SOURCE: IRS Publication 519, Sprintax
+CATEGORY: tax
+
+F-1 visa holders are typically considered nonresident aliens for tax purposes during their first 5 calendar years in the United States.
+
+Tax Residency Test for F-1 Students:
+F-1 students are EXEMPT from the Substantial Presence Test for the first 5 calendar years in the U.S. This means you are generally a nonresident alien for tax purposes during this period, regardless of how many days you were physically present.
+
+After 5 calendar years, you must use the Substantial Presence Test:
+- Count days in current year × 1
+- Count days in prior year × 1/3
+- Count days in year before that × 1/6
+- If total ≥ 183 days AND you were in U.S. 31+ days this year, you become a resident alien
+
+Tax Forms Required:
+1. Form 8843 (Statement for Exempt Individuals) - REQUIRED even if you had NO income
+   - Due date: April 15 (or June 15 if no U.S. withholding)
+   - Lists days present in U.S. and visa status
+   - Required for F-1, F-2, J-1, J-2 visa holders
+
+2. Form 1040-NR (Nonresident Alien Income Tax Return) - if you had ANY U.S. income
+   - Report wages, scholarships, fellowships, grants
+   - Report interest income from U.S. banks
+   - Report any other U.S. source income
+
+3. State Tax Return - varies by state
+   - Check if your state requires nonresident filing
+   - Nine states have no income tax: AK, FL, NV, NH, SD, TN, TX, WA, WY
+
+Income Tax Rates for F-1 Students (2024 Tax Year):
+Nonresident aliens use different tax tables:
+- $0 to $11,600: 10%
+- $11,601 to $47,150: 12%
+- $47,151 to $100,525: 22%
+- $100,526 to $191,950: 24%
+- $191,951 to $243,725: 32%
+- $243,726 to $609,350: 35%
+- $609,351 or more: 37%
+
+IMPORTANT: Nonresident aliens cannot use standard deduction. You can only claim itemized deductions if you qualify under specific treaty provisions.
+
+FICA Tax Exemption:
+F-1 students are EXEMPT from Social Security (6.2%) and Medicare (1.45%) taxes on:
+- On-campus employment
+- CPT (Curricular Practical Training)
+- OPT (Optional Practical Training)
+- STEM OPT Extension
+
+This exemption applies for your first 5 calendar years in F-1 status. After 5 years, if you become a resident alien, you MUST pay FICA taxes.
+
+If your employer incorrectly withheld FICA taxes:
+1. Request refund from employer first (Form 843 and Form 8316)
+2. If employer refuses, file claim with IRS using Form 843
+3. Attach evidence: I-20, visa, I-94, employment authorization
+4. You can claim refunds for up to 3 years back
+
+Scholarship and Fellowship Taxation:
+- Qualified scholarships (tuition, fees, books): Tax-free
+- Non-qualified scholarships (room, board, travel): Taxable at 14% withholding rate
+- Fellowships for services rendered: Taxable as wages
+- Report on Form 1040-NR, line 1b (scholarship income)
+
+Tax Treaties:
+Many countries have tax treaties with the U.S. that provide additional benefits:
+- China (PRC): Article 20 - $5,000 exemption for students
+- India: Article 21 - Payments from abroad for maintenance/education are exempt
+- Canada: Article XX - Students exempt on certain grants
+- South Korea: Article 21 - Payments from abroad exempt
+- Check IRS Publication 901 for your country's treaty
+
+To claim treaty benefits:
+1. File Form W-8BEN with your employer/payer
+2. Claim treaty exemption on Form 1040-NR, line 22
+3. Attach Form 8833 if claiming treaty position that reduces withholding
+
+---
+
+=== DOCUMENT 2: CPT and OPT Employment Tax Rules ===
+TITLE: Tax Filing for F-1 Students on CPT and OPT
+SOURCE: IRS, USCIS, Sprintax
+CATEGORY: tax
+
+CPT (Curricular Practical Training):
+CPT is work authorization that is part of your academic curriculum. Tax treatment:
+
+Income Reporting:
+- All CPT wages are taxable income
+- Employer provides Form W-2 (or 1099-NEC if contractor)
+- Report on Form 1040-NR, line 1a (wages)
+
+FICA Exemption:
+- Exempt from Social Security and Medicare taxes during first 5 years
+- Employer should NOT withhold FICA if you show proper documentation
+- Provide employer with Form 8233 or letter from international student office
+
+State Taxes:
+- CPT income subject to state income tax in most states
+- Some states have reciprocal agreements (e.g., working in NJ, living in PA)
+- File state nonresident return if required
+
+Quarterly Estimated Taxes:
+- If employer doesn't withhold enough, you may owe estimated taxes
+- Use Form 1040-ES (NR) to make quarterly payments
+- Due dates: April 15, June 15, September 15, January 15
+- Safe harbor: Pay 90% of current year or 100% of prior year tax
+
+OPT (Optional Practical Training):
+Post-completion OPT allows 12 months of work authorization after graduation.
+
+Tax Status During OPT:
+- Still considered F-1 student for first 5 calendar years
+- Remain nonresident alien for tax purposes
+- FICA exemption still applies
+- File Form 1040-NR and Form 8843
+
+STEM OPT Extension:
+24-month extension for STEM degree holders:
+- Tax treatment identical to standard OPT
+- FICA exemption continues if within 5-year window
+- After 5 years total in F status, you may become resident alien
+
+Switching from Nonresident to Resident Alien:
+If you become a resident alien during the tax year (after 5 years):
+- You have "dual-status" - nonresident for part of year, resident for rest
+- File Form 1040 with "Dual-Status Return" written at top
+- Attach Form 1040-NR for nonresident portion
+- Must pay FICA taxes once resident alien status begins
+- Can claim standard deduction for resident portion only
+
+Employment Authorization Document (EAD):
+- CPT: Authorized on I-20, no separate EAD card needed
+- OPT: Must apply for EAD card (Form I-765)
+- Provide EAD to employer for I-9 verification
+- Work only within authorization dates
+
+Multiple Jobs During OPT:
+- Can work for multiple employers simultaneously (if full-time equivalent)
+- Can work part-time (minimum 20 hours/week recommended)
+- All income must be reported on tax return
+- Each employer issues separate W-2
+
+Self-Employment During OPT:
+- F-1 students can be self-employed during OPT
+- Must report on Schedule C-EZ (or Schedule C)
+- Subject to self-employment tax (15.3%) as nonresident
+- No FICA exemption for self-employment income
+- Maintain records of business expenses
+
+Unemployment During OPT:
+- Cannot exceed 90 days unemployed during 12-month OPT
+- STEM OPT: 150 days total (including pre-completion)
+- Unemployment periods do NOT require tax filing if no income
+- Must still file Form 8843 to report days present
+
+---
+
+=== DOCUMENT 3: H-1B Visa Tax Filing Guide ===
+TITLE: H-1B Visa Holder Tax Obligations and Filing Requirements
+SOURCE: IRS Publication 519, H-1B Expert
+CATEGORY: tax
+
+H-1B visa holders have different tax treatment than F-1 students because H-1B is a dual-intent visa allowing immigrant intent.
+
+Tax Residency Status:
+Unlike F-1 students, H-1B workers are NOT exempt from the Substantial Presence Test. Most H-1B holders become resident aliens for tax purposes in their first year in the U.S.
+
+Substantial Presence Test:
+You are a resident alien if:
+- You were in the U.S. for 31+ days during current year, AND
+- Sum of days present = 183 or more using this formula:
+  * All days in current year × 1
+  * Days in prior year × 1/3
+  * Days in year before × 1/6
+
+Example:
+2024: 300 days
+2023: 120 days
+2022: 60 days
+Calculation: (300 × 1) + (120 × 1/3) + (60 × 1/6) = 300 + 40 + 10 = 350 days
+Result: Resident alien for 2024
+
+Filing as Resident Alien (Most H-1B Holders):
+Form 1040 (U.S. Individual Income Tax Return)
+- Report worldwide income (U.S. and foreign)
+- Claim standard deduction ($14,600 single, $29,200 married filing jointly in 2024)
+- Eligible for credits (Child Tax Credit, Earned Income Credit, education credits)
+- Subject to FICA taxes (Social Security 6.2%, Medicare 1.45%)
+- Deadline: April 15
+
+Filing as Nonresident Alien (First Year, Partial Year):
+Form 1040-NR (Nonresident Alien Income Tax Return)
+- Report only U.S. source income
+- Cannot claim standard deduction (unless treaty allows)
+- Limited credits available
+- Use tax tables for unmarried individuals
+- Deadline: April 15 (or June 15 if no employer withholding)
+
+Dual-Status Year (Common First Year):
+If you arrive mid-year, you're a dual-status taxpayer:
+- Nonresident for days before meeting Substantial Presence Test
+- Resident for days after
+- File Form 1040 with statement: "Dual-Status Return"
+- Attach Form 1040-NR for nonresident portion
+- Pro-rate standard deduction based on resident months
+
+Choosing Resident Status (First-Year Choice):
+If you're a nonresident for most of the year but will be a resident next year, you can elect to be treated as a resident for the entire year:
+- Must be married to U.S. citizen or resident alien
+- File joint return (Form 1040)
+- Attach statement making the election
+- Benefit: Can use standard deduction and joint filing rates
+- Drawback: Must report worldwide income for entire year
+
+FICA Taxes for H-1B:
+H-1B workers are NOT exempt from FICA:
+- Social Security tax: 6.2% on wages up to $168,600 (2024)
+- Medicare tax: 1.45% on all wages
+- Additional Medicare tax: 0.9% on wages over $200,000 (single)
+- Employer withholds these automatically
+- You can claim these contributions toward future Social Security benefits
+
+Social Security Totalization Agreements:
+If your home country has a totalization agreement with the U.S., you may be exempt from U.S. Social Security tax if:
+- You're temporarily in the U.S. (typically 5 years or less)
+- You continue paying into your home country's system
+- Obtain Certificate of Coverage from home country
+- Provide to employer to stop Social Security withholding
+- Countries include: Canada, UK, Germany, Japan, South Korea, India (limited), and 25+ others
+
+State Income Tax:
+H-1B workers pay state income tax where they work:
+- File resident state return in state where you live
+- File nonresident return in other states where you worked
+- Some states have reciprocal agreements (no double taxation)
+- Nine states have no income tax
+
+Tax Deductions and Credits for H-1B:
+Resident aliens can claim:
+- Standard deduction or itemized deductions
+- Mortgage interest deduction (if own home)
+- State and local tax (SALT) deduction up to $10,000
+- Child Tax Credit ($2,000 per qualifying child)
+- Child and Dependent Care Credit
+- Education credits (American Opportunity, Lifetime Learning)
+- Retirement contributions (401k, IRA) reduce taxable income
+
+Foreign Tax Credit:
+If you have income from your home country taxed by both countries:
+- File Form 1116 to claim Foreign Tax Credit
+- Reduces U.S. tax by amount paid to foreign country
+- Prevents double taxation
+- Keep foreign tax payment receipts
+
+Bringing Spouse and Children:
+H-4 Dependents (spouse and children):
+- If you're a resident alien, they're automatically resident aliens
+- Must have SSN or ITIN to claim as dependents
+- Apply for ITIN using Form W-7 if no SSN
+- Can claim Child Tax Credit if children have SSN
+- H-4 EAD holders (spouses with work authorization) report income normally
+
+Employer Reimbursements:
+Common for H-1B employers to pay:
+- Visa application fees (H-1B filing fees, premium processing)
+- Attorney fees
+- Relocation expenses
+
+Tax treatment:
+- Employer-paid visa fees: NOT taxable income to you
+- Relocation reimbursements: Generally taxable (reported on W-2)
+- Moving expenses: No longer deductible (suspended 2018-2025)
+
+H-1B Transfer and Job Changes:
+When changing employers on H-1B:
+- You'll receive W-2 from each employer
+- Report all wages on one Form 1040
+- State tax obligations may change if moving to new state
+- Update address with IRS using Form 8822
+
+Year of Departure:
+If you leave the U.S. permanently on H-1B:
+- Still must file tax return for year of departure
+- Report all U.S. income earned until departure date
+- May need to file Form 1040-C (departing alien income tax return) before leaving
+- If you skip this, you may have trouble getting future U.S. visas
+
+Extensions and Amendments:
+- File Form 4868 for automatic 6-month extension (October 15)
+- Extensions give time to file, NOT time to pay (pay by April 15 to avoid penalties)
+- Amend errors using Form 1040-X within 3 years
+
+---
+
+=== DOCUMENT 4: International Student Scholarship and Grant Taxation ===
+TITLE: Tax Treatment of Scholarships, Fellowships, and Grants for International Students
+SOURCE: IRS Publication 970
+CATEGORY: tax
+
+Scholarships and fellowships received by F-1 and J-1 students have complex tax rules.
+
+Qualified Scholarship (Tax-Free):
+Amounts used for:
+- Tuition and fees required for enrollment
+- Course-related fees (lab fees, activity fees)
+- Books, supplies, equipment REQUIRED for courses
+
+These amounts are NOT taxable and not reported as income.
+
+Non-Qualified Scholarship (Taxable):
+Amounts used for:
+- Room and board
+- Travel expenses
+- Optional equipment (laptop, unless specifically required)
+- Stipends for living expenses
+- Payment for teaching, research, or other services
+
+These amounts ARE taxable income.
+
+Taxation of Non-Qualified Scholarships:
+- Taxed at 14% withholding rate for nonresident aliens (treaty may reduce)
+- Report on Form 1040-NR, line 1b (scholarship and fellowship grants)
+- University withholds tax and reports on Form 1042-S
+- You may owe additional tax when filing if withholding insufficient
+
+Example:
+Total scholarship: $30,000
+- Tuition: $20,000 (tax-free)
+- Room & board: $8,000 (taxable)
+- Books: $2,000 (tax-free if required for courses)
+Taxable amount: $8,000
+Tax owed (14% rate): $1,120
+
+Teaching/Research Assistantships:
+- Compensation for services is wages (not scholarship)
+- Taxed at normal income tax rates
+- Reported on Form W-2 (or Form 1042-S if treaty applies)
+- Subject to income tax but EXEMPT from FICA (first 5 years)
+
+Athletic Scholarships:
+- Generally tax-free if used for qualified expenses
+- Any portion exceeding qualified expenses is taxable
+- Room, board, and spending stipends are taxable
+
+Fellowship Grants:
+- Qualified educational fellowships: Tax-free
+- Fellowships requiring services (post-doc research): Taxable as wages
+- Report on Form 1040-NR
+
+Form 1042-S:
+Universities issue Form 1042-S for:
+- Scholarship/fellowship income
+- Prizes and awards
+- Other payments to nonresident aliens
+This is similar to Form 1099 but for foreign persons.
+
+Treaty Benefits for Scholarships:
+Many countries have treaties exempting or reducing tax on scholarships:
+- China (PRC): $5,000 exempt per tax year (students and trainees)
+- India: Payments from abroad for maintenance, education, or training exempt
+- Pakistan: Grants from government, educational, or charitable organizations exempt
+- Thailand: Government scholarships exempt
+- Philippines: Certain scholarships exempt
+
+To claim treaty benefit:
+- File Form W-8BEN with university
+- Report on Form 1040-NR, line 22 (treaty-exempt income)
+- Attach Form 8833 if treaty overrides U.S. tax law
+
+Reporting Requirements Even if Tax-Free:
+You must file Form 8843 even if entire scholarship was tax-free and you had no taxable income.
+
+Graduate Student Considerations:
+- Tuition waivers: Generally tax-free
+- Research grants: Tax-free if no service requirement
+- Teaching requirement tied to tuition waiver: Creates taxable wages
+- Dissertation/thesis grants: Tax-free if for education, taxable if for services
+
+Multiple Scholarships:
+If you receive scholarships from multiple sources:
+- Sum all qualified expenses
+- Allocate tax-free treatment proportionally
+- Excess over qualified expenses is taxable
+- Must be able to prove allocation if audited
+
+State Tax on Scholarships:
+- Some states fully tax scholarships
+- Some states follow federal rules
+- Some states exempt scholarships entirely
+- Check your state's department of revenue rules
+
+---
+
+=== DOCUMENT 5: Nonresident Alien Investment Taxation - Stocks and Bonds ===
+TITLE: How International Students and Visa Holders Pay Taxes on Stock Investments
+SOURCE: IRS Publication 519, IRC Section 871
+CATEGORY: tax
+
+Nonresident aliens (F-1, J-1, H-1B in first year, etc.) have special rules for investment income and capital gains.
+
+U.S. Stocks - Dividends:
+Dividends from U.S. corporations are subject to 30% withholding tax:
+- Withholding is automatic (broker withholds before payment)
+- Reported on Form 1099-DIV (or Form 1042-S for foreign brokers)
+- Report on Form 1040-NR, line 3 (dividend income)
+- Tax treaties may reduce rate (e.g., Canada 15%, UK 15%, India 25%)
+
+Qualified vs. Ordinary Dividends:
+For nonresident aliens, there is NO distinction:
+- All dividends taxed at 30% (or treaty rate)
+- The "qualified dividend" preference (15% rate) only applies to resident aliens and citizens
+
+U.S. Stocks - Capital Gains:
+CAPITAL GAINS ARE NOT TAXED if:
+- You are a nonresident alien
+- You were present in the U.S. less than 183 days during the tax year
+- Gain is not "effectively connected" with U.S. trade or business
+
+This means:
+- Buy U.S. stocks, hold, sell for profit = NO U.S. TAX on the gain
+- No reporting required on Form 1040-NR for exempt capital gains
+- Your home country may tax the gain (check local laws)
+
+Exception - 183-Day Rule:
+If you were in the U.S. for 183+ days during the tax year:
+- Capital gains taxed at 30% flat rate (no deductions allowed)
+- Report on Form 1040-NR, Schedule NEC (Tax on Income Not Effectively Connected)
+- This rarely applies to F-1 students (usually under 183 days)
+
+Foreign Stocks:
+- Dividends from foreign corporations: Generally not subject to U.S. tax
+- Capital gains on foreign stocks: Not subject to U.S. tax
+- Exception: If effectively connected with U.S. business
+- Your home country likely taxes these (check tax treaty)
+
+Interest Income:
+Bank Interest:
+- Interest from U.S. banks: EXEMPT from U.S. tax for nonresident aliens
+- No withholding, no reporting required
+- Report on Form 1040-NR, line 2a (shows as exempt income)
+
+Bond Interest:
+- U.S. Treasury bonds: EXEMPT from U.S. tax
+- Corporate bonds: Subject to 30% withholding (or treaty rate)
+- Municipal bonds: EXEMPT from federal tax (and often state tax)
+
+Investment Platforms for Nonresident Aliens:
+Not all brokers accept nonresident alien customers:
+- Fidelity: Yes (with restrictions)
+- Charles Schwab: Yes (International Account)
+- Interactive Brokers: Yes (excellent for NRAs)
+- TD Ameritrade: Yes
+- Robinhood: NO (requires SSN and U.S. residency)
+- Webull: YES (allows NRAs with passport)
+
+Opening Brokerage Account as NRA:
+Required documents:
+- Passport (government-issued ID)
+- Visa documents (I-20, I-94, DS-2019)
+- U.S. address (can use university or current residence)
+- Foreign address (permanent home address)
+- Form W-8BEN (Certificate of Foreign Status)
+
+Form W-8BEN:
+Certifies you are a foreign person (not subject to backup withholding):
+- Part I: Name, country of citizenship, permanent address
+- Part II: Treaty claims (if applicable)
+- Part III: Certification (sign and date)
+- Valid for 3 years (must renew)
+- Failure to provide = 30% withholding on ALL payments
+
+Tax Reporting:
+Form 1040-NR Reporting:
+- Line 2a: Interest income (usually exempt, shown for information)
+- Line 3: Dividend income (after 30% withholding)
+- Schedule NEC: Capital gains IF 183+ days in U.S.
+
+No Need to Report:
+- Capital gains if under 183 days (exempt)
+- Exempt interest income (informational only)
+
+Brokerage Tax Documents:
+- Form 1099-DIV: Dividends (if U.S. broker)
+- Form 1099-INT: Interest income
+- Form 1099-B: Proceeds from sales (shows gross, not taxable gain)
+- Form 1042-S: If foreign broker or treaty withholding applied
+
+Tax Treaty Benefits:
+To reduce dividend withholding rate:
+- File Form W-8BEN with broker
+- Claim treaty country and article
+- Examples:
+  * Canada: Article XI reduces dividends to 15%
+  * UK: Article 10 reduces to 15%
+  * Germany: Article 10 reduces to 15%
+  * Japan: Article 10 reduces to 10%
+  * India: Article 10 reduces to 25%
+
+State Taxation:
+Most states do not tax investment income of nonresident aliens unless:
+- You have a state tax filing requirement for other reasons (wages)
+- Income is allocated to that state
+Check your state's rules.
+
+Switching from Nonresident to Resident Alien:
+Once you become a resident alien (after 5 years, or meet Substantial Presence Test):
+- Dividends: Now taxed at qualified dividend rates (0%, 15%, 20%)
+- Capital gains: Short-term (ordinary rates), long-term (0%, 15%, 20%)
+- Must report ALL worldwide investment income
+- Can offset gains with losses
+- Much more favorable tax treatment
+
+Retirement Accounts (IRA, 401k):
+Nonresident aliens CAN contribute to:
+- 401(k) if employer offers (and you have wages)
+- Traditional IRA if you have earned income
+
+Contribution limits same as residents:
+- 401(k): $23,000 (2024)
+- IRA: $7,000 (2024)
+
+Tax treatment:
+- Contributions reduce current taxable income
+- Earnings grow tax-deferred
+- Withdrawals taxed when taken (30% withholding for NRAs)
+
+Special considerations:
+- If you leave U.S. permanently, early withdrawal penalties may apply
+- Some tax treaties reduce withholding on retirement distributions
+- Consider Roth IRA if you'll become resident alien (tax-free growth)
+
+Investment Losses:
+Nonresident aliens CANNOT deduct capital losses:
+- No offsetting gains with losses
+- No $3,000 annual capital loss deduction
+- Losses cannot be carried forward
+
+This changes once you become a resident alien.
+
+Cryptocurrency - see separate document for detailed crypto rules.
+
+---
+
+=== DOCUMENT 6: Cryptocurrency Taxation for Nonresident Aliens ===
+TITLE: F-1, H-1B, and Nonresident Alien Cryptocurrency Tax Rules
+SOURCE: IRS Notice 2014-21, Rev Rul 2023-14
+CATEGORY: tax
+
+The IRS treats cryptocurrency as property. For nonresident aliens, crypto taxation follows investment property rules but with important differences.
+
+Cryptocurrency Capital Gains - Nonresident Aliens:
+If you are a nonresident alien AND present in U.S. less than 183 days in the tax year:
+- Cryptocurrency gains are EXEMPT from U.S. federal income tax
+- No need to report gains on Form 1040-NR
+- This applies to Bitcoin, Ethereum, and all other cryptocurrencies
+- Your home country may tax the gains (check local laws)
+
+Exception - 183-Day Presence:
+If you were in the U.S. for 183+ days in the tax year:
+- All crypto gains taxed at flat 30% rate
+- Report on Form 1040-NR, Schedule NEC
+- No deductions for losses allowed
+- No offset of gains with losses
+
+Cryptocurrency Trading:
+Each trade is a taxable event (if 183+ day rule applies):
+- Selling crypto for USD: Taxable
+- Trading Bitcoin for Ethereum: Taxable
+- Using crypto to buy goods/services: Taxable
+- Holding crypto: Not taxable
+
+Cost Basis Calculation:
+- Original purchase price + fees = cost basis
+- Sale price - cost basis = capital gain or loss
+- FIFO (First-In-First-Out) is default method
+- Can elect specific identification if you track it
+
+Example (Under 183 Days - NO TAX):
+- Buy 1 BTC for $30,000 in March
+- Sell for $50,000 in November
+- Present in U.S.: 120 days
+- Capital gain: $20,000
+- U.S. tax owed: $0 (exempt)
+
+Example (Over 183 Days - TAXED):
+- Same transaction
+- Present in U.S.: 200 days
+- Capital gain: $20,000
+- U.S. tax owed: $6,000 (30%)
+
+Cryptocurrency Mining:
+If you mine cryptocurrency:
+- Fair market value at time of receipt is ordinary income
+- Taxed at normal income tax rates (10%-37%)
+- Report on Form 1040-NR, line 8 (Other income)
+- May also owe self-employment tax if business activity (15.3%)
+
+When you later sell mined coins:
+- Cost basis = fair market value when received
+- Calculate capital gain/loss from that basis
+- Subject to 183-day rule
+
+Example:
+- Mine 0.5 BTC when Bitcoin = $40,000
+- Income: $20,000 (taxable immediately)
+- Tax on mining: $20,000 × your tax bracket
+- Later sell for $50,000
+- Cost basis: $20,000
+- Capital gain: $30,000 (exempt if under 183 days)
+
+Cryptocurrency Staking:
+Staking rewards are treated like mining:
+- Income when received (fair market value)
+- Report as ordinary income
+- Taxed in year received, not when sold
+
+Example:
+- Stake Ethereum, receive 0.1 ETH reward
+- ETH price when received: $2,000
+- Income: $200 (taxable)
+- Report on Form 1040-NR, line 8
+
+NFTs (Non-Fungible Tokens):
+NFTs are treated as property (same as cryptocurrency):
+- Gains on sales subject to capital gains rules
+- 183-day rule applies
+- Creating and selling NFTs may be business income
+
+Cryptocurrency on Foreign Exchanges:
+If you use a foreign cryptocurrency exchange (Binance, Kraken International, etc.):
+- Same U.S. tax rules apply
+- Still subject to 183-day rule
+- May receive Form 1042-S instead of 1099-B
+- Report on Form 1040-NR if required
+
+U.S. Cryptocurrency Exchanges:
+Most U.S. exchanges accept nonresident aliens:
+- Coinbase: Yes (with passport and visa)
+- Kraken: Yes
+- Gemini: Yes
+- Binance US: Generally no (requires SSN)
+
+Foreign Bank Account Reporting (FBAR):
+If your cryptocurrency is held on an exchange (not self-custody wallet):
+- Some argue exchange accounts are "foreign accounts"
+- FBAR required if total foreign accounts > $10,000 at any time
+- File FinCEN Form 114 by April 15
+- Penalties for non-filing are severe ($10,000+)
+
+Note: FBAR rules for crypto are still evolving. IRS has not issued final guidance.
+
+FATCA Reporting:
+Foreign Account Tax Compliance Act:
+- Form 8938 required if foreign assets > threshold
+- Single: $200,000 on last day OR $300,000 at any time
+- Married: $400,000 on last day OR $600,000 at any time
+- Cryptocurrency on foreign exchanges MAY be reportable
+- File with Form 1040-NR
+
+Becoming a Resident Alien - Tax Impact:
+Once you become a resident alien for tax purposes:
+- All crypto gains taxed (no 183-day exemption)
+- Short-term gains (≤1 year): Ordinary income rates (10%-37%)
+- Long-term gains (>1 year): Preferential rates (0%, 15%, 20%)
+- Can offset gains with losses
+- Can deduct up to $3,000 in net losses per year
+- Wash sale rules do NOT apply to crypto (can sell and rebuy immediately)
+
+Crypto Tax Software:
+Recommended for tracking transactions:
+- CoinTracker
+- Koinly
+- TaxBit
+- CryptoTrader.Tax
+- ZenLedger
+
+These integrate with exchanges and calculate gains/losses automatically.
+
+Record Keeping:
+Keep records of ALL cryptocurrency transactions:
+- Date of acquisition
+- Cost basis (amount paid + fees)
+- Date of sale/trade
+- Fair market value at sale
+- Purpose of transaction
+- Exchange records
+- Wallet addresses
+
+Retain records for at least 6 years (IRS audit period for substantial underreporting).
+
+DeFi (Decentralized Finance):
+Complex tax issues:
+- Liquidity pool rewards: Likely ordinary income
+- Yield farming: Income when received
+- Swapping tokens on DEX: Taxable event
+- Airdrops: Income at fair market value when received
+- Gas fees: Add to cost basis or treat as separate expense
+
+IRS has not issued detailed DeFi guidance yet. Consult tax professional for complex DeFi activities.
+
+Selling at a Loss:
+If you sell crypto at a loss as a nonresident alien:
+- Cannot deduct the loss
+- Cannot offset gains from other transactions
+- Cannot carry loss forward
+
+This is a major disadvantage compared to resident aliens.
+
+State Taxation:
+Most states do not tax crypto gains for nonresident aliens unless:
+- You have state filing requirement for other income
+- State specifically taxes nonresident investment income (rare)
+
+Leaving the U.S.:
+If you leave U.S. permanently while holding crypto:
+- No exit tax on unrealized crypto gains (unless you're a covered expatriate - very rare)
+- Future gains after departure not subject to U.S. tax
+- Your home country will tax gains (check local rules)
+
+Tax Treaty Benefits:
+Most tax treaties do NOT address cryptocurrency specifically:
+- Treated as capital gains under most treaties
+- Generally sourced to seller's residence (not U.S.)
+- May avoid 183-day rule under treaty
+- Consult treaty articles on "Capital Gains" or "Other Income"
+
+Common Mistakes:
+1. Not tracking cost basis properly
+2. Forgetting trading crypto-to-crypto is taxable
+3. Not reporting mining/staking income
+4. Not filing FBAR/FATCA when required
+5. Assuming crypto is anonymous (exchanges report to IRS)
+6. Not understanding 183-day presence rule
+
+IRS Enforcement:
+The IRS is actively pursuing crypto tax enforcement:
+- Exchanges must report to IRS (Form 1099-B starting 2025)
+- IRS uses blockchain analysis tools
+- Form 1040 asks: "At any time during 2024, did you receive, sell, exchange, or otherwise dispose of any financial interest in virtual currency?"
+- Penalties for failure to report can be substantial

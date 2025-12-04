@@ -1,5 +1,5 @@
 from semantic_router import Route, SemanticRouter
-from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from typing import List, Dict, Any
 from functools import lru_cache
 import os
@@ -7,9 +7,9 @@ import os
 class APIEncoder:
     """Custom encoder using HuggingFace Inference API via LangChain"""
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
-        self.embeddings = HuggingFaceInferenceAPIEmbeddings(
-            api_key=os.getenv("HF_TOKEN"),
-            model_name=model_name
+        self.embeddings = HuggingFaceEndpointEmbeddings(
+            huggingfacehub_api_token=os.getenv("HF_TOKEN"),
+            model=model_name
         )
         self.score_threshold = 0.3 # Default threshold
         self.name = model_name
@@ -109,7 +109,11 @@ class SemanticRouterService:
         }
 
 # Singleton instance
-semantic_router = SemanticRouterService()
+try:
+    semantic_router = SemanticRouterService()
+except Exception as e:
+    print(f"⚠️ SemanticRouterService initialization failed: {e}")
+    semantic_router = None
 
 # Pre-warm the router
 try:

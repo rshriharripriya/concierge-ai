@@ -2,7 +2,7 @@ import os
 import sys
 from dotenv import load_dotenv
 from supabase import create_client
-from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 import uuid
 
 # Load environment variables
@@ -20,11 +20,14 @@ supabase = create_client(supabase_url, supabase_key)
 
 # Initialize Embedding Model (API)
 print("🔄 Loading embedding model (API)...")
-model = HuggingFaceInferenceAPIEmbeddings(
-    api_key=os.getenv("HF_TOKEN"),
-    model_name="sentence-transformers/all-MiniLM-L6-v2"
+model = HuggingFaceEndpointEmbeddings(
+    huggingfacehub_api_token=os.getenv("HF_TOKEN"),
+    model="sentence-transformers/all-MiniLM-L6-v2"
 )
 print("✅ Model loaded")
+
+
+import traceback
 
 def ingest_documents(documents):
     """
@@ -32,6 +35,18 @@ def ingest_documents(documents):
     Each document should be a dict with 'title' and 'content'.
     """
     print(f"🚀 Starting ingestion of {len(documents)} documents...")
+    
+    # Pre-flight check
+    try:
+        print("🔍 Checking 'knowledge_documents' table schema...")
+        response = supabase.table('knowledge_documents').select('*').limit(1).execute()
+        if response.data:
+            print(f"✅ Table columns: {list(response.data[0].keys())}")
+        else:
+            print("✅ Table exists but is empty (cannot infer columns)")
+    except Exception as e:
+        print(f"❌ Error checking table: {e}")
+        print("⚠️ The 'knowledge_documents' table might not exist. Please check your Supabase schema.")
     
     for doc in documents:
         try:
@@ -43,54 +58,61 @@ def ingest_documents(documents):
             # Prepare data payload
             data = {
                 "content": doc['content'],
+                "title": doc['title'],
+                "source": "manual_ingest",
                 "metadata": {"title": doc['title'], "source": "manual_ingest"},
-                "embedding": embedding
+                "content_embedding": embedding
             }
             
             # Insert into Supabase
-            # Note: The table name is 'documents' based on rag_service usage
-            # We might need to adjust if the table schema requires specific columns
-            # Assuming a standard pgvector setup with 'content', 'metadata', 'embedding'
-            
-            # Check if we need to match the exact schema expected by the RAG service
-            # RAG service uses rpc 'match_knowledge_documents'
-            # Let's try to insert into a 'documents' table. 
-            # If it fails, we might need to check the schema.
-            
-            response = supabase.table('documents').insert(data).execute()
+            response = supabase.table('knowledge_documents').insert(data).execute()
             print(f"✅ Inserted: {doc['title']}")
             
         except Exception as e:
             print(f"❌ Failed to insert {doc['title']}: {e}")
+            traceback.print_exc()
 
 if __name__ == "__main__":
-    # Example documents - Add your new knowledge here
-    new_documents = [
-        {
-            "title": "Standard Deduction 2024",
-            "content": """The standard deduction for the 2024 tax year is:
-- Single or Married Filing Separately: $14,600
-- Married Filing Jointly or Qualifying Surviving Spouse: $29,200
-- Head of Household: $21,900
-
-The standard deduction reduces the amount of income you are taxed on. You can choose to take the standard deduction or itemize your deductions, whichever lowers your tax bill the most."""
-        },
-        {
-            "title": "Earned Income Tax Credit (EITC) 2024",
-            "content": """For the 2024 tax year, the Earned Income Tax Credit (EITC) ranges from $632 to $7,830 depending on your filing status and the number of children you have. 
-- No children: Max credit $632
-- 1 child: Max credit $4,213
-- 2 children: Max credit $6,960
-- 3 or more children: Max credit $7,830
-
-To qualify, you must have earned income under specific limits."""
-        },
-        {
-            "title": "Tax Filing Deadline 2024",
-            "content": """The deadline to file your 2023 federal income tax return is Monday, April 15, 2024. 
-If you live in Maine or Massachusetts, you have until April 17, 2024, due to state holidays.
-If you request an extension, your filing deadline is extended to October 15, 2024, but any taxes owed are still due by the April deadline."""
-        }
+    # Files to ingest
+    files_to_ingest = [
+        "knowledge_data/knowledge_international_students.txt",
+        "knowledge_data/knowledge_investments.txt"
     ]
     
-    ingest_documents(new_documents)
+    documents = []
+    
+    for file_path in files_to_ingest:
+        try:
+            # Handle path if running from scripts dir or root
+            if not os.path.exists(file_path):
+                # Try adding ../ if running from scripts dir
+                if os.path.exists(f"../{file_path}"):
+                    file_path = f"../{file_path}"
+                elif os.path.exists(f"concierge-ai/{file_path}"):
+                     file_path = f"concierge-ai/{file_path}"
+            
+            if not os.path.exists(file_path):
+                print(f"⚠️ File not found: {file_path}")
+                continue
+                
+            print(f"📖 Reading {file_path}...")
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+                
+            # Create document object
+            # Use filename as title, replacing underscores with spaces
+            filename = os.path.basename(file_path)
+            title = filename.replace('knowledge_', '').replace('.txt', '').replace('_', ' ').title()
+            
+            documents.append({
+                "title": title,
+                "content": content
+            })
+            
+        except Exception as e:
+            print(f"❌ Error reading {file_path}: {e}")
+
+    if documents:
+        ingest_documents(documents)
+    else:
+        print("No documents found to ingest.")

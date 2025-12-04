@@ -55,6 +55,10 @@ async def process_query(request: QueryRequest):
         # Normalize query for better handling of abbreviations
         normalized_query = request.query.replace(" std ", " standard ").replace("std ", "standard ")
         
+        # Check if services are initialized
+        if not semantic_router or not complexity_scorer or not rag_service or not expert_matcher:
+            raise HTTPException(status_code=500, detail="Backend services failed to initialize. Please check server logs and environment variables (HF_TOKEN, SUPABASE_URL, etc).")
+
         # Stage 1: Classify intent
         intent_result = semantic_router.classify_intent(normalized_query)
         intent = intent_result.get('intent') or "general"

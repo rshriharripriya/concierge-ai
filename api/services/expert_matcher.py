@@ -1,5 +1,5 @@
 from supabase import create_client, Client
-from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from typing import List, Dict, Optional
 import os
 import math
@@ -7,9 +7,9 @@ from functools import lru_cache
 
 @lru_cache(maxsize=1)
 def get_embeddings():
-    return HuggingFaceInferenceAPIEmbeddings(
-        api_key=os.getenv("HF_TOKEN"),
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    return HuggingFaceEndpointEmbeddings(
+        huggingfacehub_api_token=os.getenv("HF_TOKEN"),
+        model="sentence-transformers/all-MiniLM-L6-v2"
     )
 
 @lru_cache(maxsize=1)
@@ -130,4 +130,8 @@ class ExpertMatcher:
             return None
 
 # Singleton instance
-expert_matcher = ExpertMatcher()
+try:
+    expert_matcher = ExpertMatcher()
+except Exception as e:
+    print(f"⚠️ ExpertMatcher initialization failed: {e}")
+    expert_matcher = None

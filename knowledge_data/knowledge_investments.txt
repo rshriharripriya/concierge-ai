@@ -1,0 +1,641 @@
+=== DOCUMENT 1: Stock Market Investing Basics and Taxation ===
+TITLE: Complete Guide to Stock Investing and Tax Treatment
+SOURCE: IRS Publication 550
+CATEGORY: tax
+
+Stocks represent ownership in corporations. When you buy stocks, you become a shareholder.
+
+Types of Stocks:
+1. Common Stock - voting rights, dividends (if company pays them), capital appreciation
+2. Preferred Stock - fixed dividends, priority over common stock, usually no voting rights
+
+How to Buy Stocks:
+- Brokerage account (Fidelity, Charles Schwab, E*TRADE, Robinhood, etc.)
+- Direct stock purchase plans (DSPPs)
+- Dividend reinvestment plans (DRIPs)
+- Retirement accounts (401k, IRA)
+
+Stock Transactions and Tax Events:
+1. BUYING stocks - NOT a taxable event
+2. HOLDING stocks - NOT taxable (unrealized gains)
+3. SELLING stocks - TAXABLE (realized gains or losses)
+4. RECEIVING dividends - TAXABLE
+
+Capital Gains Tax Rates (U.S. Residents):
+Short-Term Capital Gains (held ≤1 year):
+- Taxed as ordinary income (10%, 12%, 22%, 24%, 32%, 35%, 37%)
+- Added to your wages and other income
+- Higher tax burden than long-term
+
+Long-Term Capital Gains (held >1 year):
+- 0% rate if taxable income under $47,025 (single) or $94,050 (married filing jointly) in 2024
+- 15% rate if income between those amounts and $518,900/$583,750
+- 20% rate if income above those thresholds
+
+Example:
+Bought 100 shares of Apple at $150 = $15,000
+Sold 100 shares at $200 = $20,000
+Gain: $5,000
+
+If held 6 months (short-term):
+- Gain taxed at your ordinary income rate (e.g., 22% = $1,100 tax)
+
+If held 14 months (long-term):
+- Gain taxed at preferential rate (e.g., 15% = $750 tax)
+
+Dividend Taxation:
+Ordinary Dividends:
+- Taxed at ordinary income rates (10%-37%)
+- Reported on Form 1099-DIV, Box 1a
+
+Qualified Dividends:
+- Taxed at capital gains rates (0%, 15%, 20%)
+- Must meet holding period (61 days during 121-day period around ex-dividend date)
+- Must be from U.S. corporation or qualified foreign corporation
+- Reported on Form 1099-DIV, Box 1b
+
+Dividend Example:
+Received $1,000 in qualified dividends
+- If income puts you in 15% long-term capital gains bracket
+- Tax owed: $150
+- If ordinary dividends at 24% bracket: $240
+
+Cost Basis Tracking:
+Cost basis = original purchase price + commissions/fees
+
+Methods for calculating basis when selling:
+1. Specific Identification - choose which shares to sell (best for tax management)
+2. First-In-First-Out (FIFO) - sell oldest shares first (default)
+3. Average Cost - average price of all shares (mutual funds only)
+
+Example - Specific Identification:
+Bought 10 shares at $100 (March)
+Bought 10 shares at $150 (June)
+Current price: $200
+
+Selling 10 shares:
+- Sell June shares (higher basis): Gain = $500
+- Sell March shares (lower basis): Gain = $1,000
+Choose June shares to minimize taxes!
+
+Wash Sale Rule:
+If you sell stock at a loss and buy substantially identical stock within 30 days before or after:
+- Loss is DISALLOWED for current year
+- Disallowed loss added to basis of new shares
+- Affects tax timing, not total tax owed
+
+Example:
+Sell 100 shares Apple at $5,000 loss (Dec 1)
+Buy 100 shares Apple (Dec 15)
+- Cannot deduct $5,000 loss in current year
+- Loss added to basis of new shares
+- Deferred until you sell new shares
+
+To avoid: Wait 31+ days before repurchasing, or buy similar but not identical stock (e.g., sell Apple, buy Microsoft)
+
+Stock Splits:
+When company splits stock (e.g., 2-for-1):
+- Number of shares doubles
+- Price per share halves
+- Total value unchanged
+- NOT a taxable event
+- Adjust cost basis accordingly
+
+Example:
+Owned 100 shares at $200/share (cost basis: $20,000)
+2-for-1 split
+Now own 200 shares at $100/share (cost basis still: $20,000)
+New cost basis per share: $100
+
+Stock Dividends:
+Non-taxable stock dividends:
+- Receive additional shares instead of cash
+- NOT taxable when received
+- Adjust cost basis (spread over more shares)
+- Taxable when you sell shares
+
+Taxable stock dividends:
+- Option to receive cash or stock
+- Taxable as dividends even if you choose stock
+
+Reporting Stock Sales:
+Form 8949 - Sales and Dispositions of Capital Assets:
+- Part I: Short-term transactions
+- Part II: Long-term transactions
+- List each sale (date acquired, date sold, proceeds, cost basis, gain/loss)
+
+Schedule D - Capital Gains and Losses:
+- Summarizes Form 8949 totals
+- Calculates net short-term and long-term gains/losses
+- Carries to Form 1040, line 7
+
+Form 1099-B:
+Broker reports:
+- Sale proceeds
+- Cost basis (if broker tracked it)
+- Holding period (short-term or long-term)
+- Wash sale adjustments
+
+Capital Loss Deductions:
+You can offset capital gains with capital losses:
+- Short-term losses offset short-term gains first
+- Long-term losses offset long-term gains first
+- Net loss up to $3,000 can offset ordinary income
+- Remaining losses carry forward indefinitely
+
+Example:
+$10,000 long-term gain (stocks)
+$4,000 long-term loss (stocks)
+Net: $6,000 gain (taxable)
+
+Or:
+$2,000 gain
+$8,000 loss
+Net: $6,000 loss
+- Deduct $3,000 this year (offset ordinary income)
+- Carry forward $3,000 to next year
+
+Investment Expenses:
+Previously deductible (pre-2018):
+- Investment advisory fees
+- Subscription services
+- Safe deposit box fees
+
+Currently NOT deductible (2018-2025):
+- Tax reform suspended these deductions
+- May return in 2026
+
+Still deductible:
+- Interest paid on margin loans (up to net investment income)
+
+Retirement Accounts:
+401(k), IRA, Roth IRA stock investments:
+- NO capital gains tax while in account
+- Gains grow tax-free (Roth) or tax-deferred (Traditional)
+- Traditional: Withdrawals taxed as ordinary income
+- Roth: Qualified withdrawals completely tax-free
+- No Form 8949 needed for trades within retirement accounts
+
+Tax-Loss Harvesting:
+Strategy to minimize taxes:
+1. Sell stocks with losses before year-end
+2. Offset gains from winning stocks
+3. Deduct up to $3,000 against ordinary income
+4. Carry forward remaining losses
+5. Avoid wash sale rule (wait 31 days to repurchase)
+
+Net Investment Income Tax (NIIT):
+Additional 3.8% tax on investment income if:
+- Modified AGI exceeds $200,000 (single) or $250,000 (married filing jointly)
+- Applies to interest, dividends, capital gains
+- In addition to regular capital gains tax
+
+Example:
+$300,000 income (single)
+$50,000 long-term capital gains
+- Regular capital gains tax (15%): $7,500
+- NIIT (3.8% on $50,000): $1,900
+- Total tax: $9,400
+
+State Taxes:
+Most states tax capital gains as ordinary income:
+- California: Up to 13.3%
+- New York: Up to 10.9%
+- Texas, Florida, Nevada, Washington: 0% (no state income tax)
+
+Check your state's rules for capital gains treatment.
+
+---
+
+=== DOCUMENT 2: Bonds, Treasury Securities, and Fixed Income Investing ===
+TITLE: Bond Investing and Interest Income Taxation
+SOURCE: IRS Publication 550, TreasuryDirect.gov
+CATEGORY: tax
+
+Bonds are debt securities where you lend money to government or corporations in exchange for periodic interest payments and return of principal at maturity.
+
+Types of Bonds:
+1. U.S. Treasury Securities
+   - T-Bills (short-term, <1 year)
+   - T-Notes (medium-term, 2-10 years)
+   - T-Bonds (long-term, 20-30 years)
+   - TIPS (inflation-protected)
+   - I Bonds (savings bonds, inflation-adjusted)
+
+2. Municipal Bonds (Munis)
+   - Issued by state/local governments
+   - Interest usually federal tax-exempt
+
+3. Corporate Bonds
+   - Issued by companies
+   - Higher yields, higher risk than government bonds
+
+4. Agency Bonds
+   - Fannie Mae, Freddie Mac, etc.
+   - Backed by government agencies
+
+Interest Income Taxation:
+U.S. Treasury Securities:
+- Interest is federal taxable income
+- EXEMPT from state and local taxes
+- Report on Form 1040, Schedule B (if over $1,500)
+
+Municipal Bonds:
+- Interest EXEMPT from federal income tax
+- May be exempt from state tax if you live in issuing state
+- "Triple tax-free" if federal + state + local exempt
+- Private activity bonds may trigger Alternative Minimum Tax (AMT)
+
+Corporate Bonds:
+- Interest fully taxable (federal and state)
+- Report on Form 1040, Schedule B
+
+Example:
+$10,000 invested in 5% bonds:
+- Treasury bond: $500 interest (federal taxable, state exempt)
+- Municipal bond: $400 interest (federal exempt, often state exempt)
+- Corporate bond: $500 interest (federal and state taxable)
+
+If in 24% federal bracket, 6% state bracket:
+- Treasury: $500 - $120 (federal) = $380 after tax
+- Municipal: $500 (no tax) = $500 after tax (best despite lower rate!)
+- Corporate: $500 - $120 (federal) - $30 (state) = $350 after tax
+
+Tax-Equivalent Yield:
+Formula: Tax-Exempt Yield ÷ (1 - Tax Rate)
+
+Example:
+4% municipal bond
+You're in 24% federal + 6% state = 30% total tax bracket
+Tax-equivalent yield: 4% ÷ (1 - 0.30) = 5.71%
+
+This means a 4% muni bond is equivalent to a 5.71% taxable bond for you.
+
+U.S. Savings Bonds (Series EE and I Bonds):
+Series EE Bonds:
+- Earn fixed interest rate
+- Interest compounds semiannually
+- Tax-deferred until redemption or maturity (30 years)
+- Can elect to report interest annually (rarely done)
+- Purchase limit: $10,000 per person per year (electronic)
+
+Series I Bonds:
+- Interest rate = fixed rate + inflation rate (adjusted every 6 months)
+- Purchase limit: $10,000 electronic + $5,000 paper (via tax refund)
+- Cannot be redeemed first 12 months
+- 3-month interest penalty if redeemed before 5 years
+- Tax-deferred like EE bonds
+
+Education Tax Exclusion:
+Savings bond interest may be tax-free if used for qualified education expenses:
+- Must be Series EE or I bonds issued after 1989
+- Must be purchased after age 24
+- Income limits apply (2024: phase-out $100,800-$130,800 single, $167,800-$197,800 married)
+- Must use for tuition/fees (not room/board)
+- Report on Form 8815
+
+Treasury Inflation-Protected Securities (TIPS):
+TIPS adjust principal for inflation:
+- Interest rate fixed, but paid on adjusted principal
+- Principal increases with CPI (inflation)
+- At maturity, receive higher of adjusted or original principal
+
+Tax Treatment:
+- Interest payments: Taxable when received
+- Principal adjustments (inflation): Taxable annually (even though not received until maturity)
+- This creates "phantom income" - you owe tax on money you haven't received yet
+
+Example:
+$10,000 TIPS, 2% interest rate
+Inflation: 3% in year 1
+- Principal adjusts to $10,300
+- Interest payment: $206 (2% of $10,300)
+- Taxable income: $206 (interest) + $300 (principal adjustment) = $506
+
+Best held in retirement accounts to defer phantom income tax.
+
+Bond Sales Before Maturity:
+If you sell bonds before maturity:
+- Calculate capital gain/loss (sale price - cost basis)
+- Short-term (<1 year) or long-term (>1 year) treatment
+- Report on Form 8949 and Schedule D
+
+Example:
+Bought corporate bond for $10,000
+Sold after 18 months for $10,500
+- Long-term capital gain: $500
+- Taxed at preferential rates (0%, 15%, 20%)
+
+Bond Premium Amortization:
+If you buy a bond for MORE than face value (at premium):
+- You can elect to amortize the premium (reduce it each year)
+- Reduces your taxable interest income
+- Adjusts cost basis downward
+- Use Form 8815 to make election
+
+Example:
+Buy $10,000 face value bond for $11,000 (premium of $1,000)
+Bond pays 5% interest = $500/year
+Maturity: 10 years
+Annual premium amortization: $100
+
+Each year:
+- Interest received: $500
+- Minus amortization: $100
+- Taxable interest: $400
+
+At maturity:
+- Receive $10,000 face value
+- Cost basis adjusted to $10,000
+- No capital loss
+
+Bond Discount:
+If you buy bonds for LESS than face value:
+- Original Issue Discount (OID): Built-in interest, taxable annually
+- Market Discount: Gain when redeemed or sold
+
+OID Reporting:
+- Brokerage provides Form 1099-OID showing taxable amount
+- Report on Form 1040, Schedule B
+- Increases your cost basis
+
+Zero-Coupon Bonds:
+Bonds that pay no periodic interest:
+- Sold at deep discount
+- Entire gain at maturity
+- OID rules apply - must report "phantom income" annually
+- Best held in tax-deferred retirement accounts
+
+Example:
+Buy zero-coupon bond for $6,000
+Matures in 10 years for $10,000
+- Each year, you owe tax on imputed interest (even though not paid)
+- Basis increases each year
+- At maturity, no additional taxable gain (already taxed)
+
+Municipal Bond Funds:
+Mutual funds or ETFs investing in municipal bonds:
+- Dividends generally federal tax-exempt
+- Some portion may be taxable (fund reports breakdown)
+- Capital gains distributions: Taxable
+- Gains from selling fund shares: Taxable
+
+Where to Buy Bonds:
+- TreasuryDirect.gov (direct purchase of U.S. Treasury securities)
+- Brokerage accounts (Fidelity, Schwab, etc.)
+- Bond mutual funds / ETFs
+- Directly from issuers (some municipal bonds)
+
+Bond Laddering Strategy:
+Purchase bonds with staggered maturity dates:
+- Year 1: $10,000 bond
+- Year 2: $10,000 bond
+- Year 3: $10,000 bond
+- etc.
+
+Benefits:
+- Regular income as bonds mature
+- Reduce interest rate risk
+- Flexibility to reinvest at prevailing rates
+
+Interest Reporting:
+Form 1099-INT:
+- Box 1: Interest income (taxable)
+- Box 3: Interest on U.S. Savings Bonds and Treasury obligations
+- Box 8: Tax-exempt interest (municipal bonds)
+
+Report on:
+- Schedule B if over $1,500 total interest
+- Form 1040, line 2b (taxable interest)
+- Form 1040, line 2a (tax-exempt interest - informational, not taxed)
+
+---
+
+=== DOCUMENT 3: Mutual Funds and ETF Taxation ===
+TITLE: Tax Treatment of Mutual Funds and Exchange-Traded Funds
+SOURCE: IRS Publication 550
+CATEGORY: tax
+
+Mutual funds and ETFs pool money from many investors to buy diversified portfolios of stocks, bonds, or other assets.
+
+Mutual Funds vs. ETFs:
+Mutual Funds:
+- Priced once daily (end of day NAV)
+- Bought/sold directly with fund company
+- Minimum investments often required
+- May have load fees (sales charges)
+
+ETFs:
+- Trade like stocks throughout the day
+- Bought/sold on stock exchanges
+- No minimum investment (buy 1 share)
+- Generally lower fees than mutual funds
+- More tax-efficient (in-kind creation/redemption)
+
+Tax Events for Fund Investors:
+1. Dividend distributions - taxable when received
+2. Capital gain distributions - taxable when received (even if reinvested)
+3. Selling fund shares - capital gain/loss
+
+Dividend Distributions:
+Funds pass through income to shareholders:
+- Ordinary dividends: Taxed at ordinary rates (10%-37%)
+- Qualified dividends: Taxed at capital gains rates (0%, 15%, 20%)
+- Reported on Form 1099-DIV
+
+Example:
+Mutual fund owns Apple, Microsoft, Google stock
+These companies pay dividends to fund
+Fund distributes dividends to you
+- Taxable in year received
+- Even if you reinvest (buy more shares)
+
+Capital Gain Distributions:
+When fund sells stocks at profit:
+- Fund distributes gains to shareholders (usually December)
+- Short-term capital gain distributions: Taxed as ordinary income
+- Long-term capital gain distributions: Taxed at preferential rates
+- Reported on Form 1099-DIV
+
+Important: You owe tax on these gains even if:
+- You didn't sell any fund shares
+- You reinvested the distributions
+- Your fund share price went down
+
+This is a common "surprise" tax bill for new investors.
+
+Reinvested Distributions:
+If you reinvest dividends/capital gains:
+- Still taxable in year received
+- INCREASES your cost basis (important!)
+
+Example:
+Bought fund shares for $10,000 (1,000 shares at $10)
+Received $500 dividend (reinvested to buy 50 more shares)
+- Taxable income: $500
+- Now own 1,050 shares
+- Cost basis: $10,500 ($10,000 original + $500 reinvested)
+
+When you sell:
+If you sell all 1,050 shares for $11,000
+- Gain: $11,000 - $10,500 = $500 (NOT $1,000)
+
+Failing to track reinvestments = overpaying taxes!
+
+Selling Fund Shares:
+Report on Form 8949 and Schedule D:
+- Date acquired
+- Date sold
+- Proceeds
+- Cost basis
+- Gain or loss
+
+Cost Basis Methods for Mutual Funds:
+1. Average Cost (default for mutual funds)
+   - Average price of all shares owned
+   - Single-category: Simple average
+   - Double-category: Separate short-term and long-term averages
+
+2. Specific Identification
+   - Choose which shares to sell
+   - Must notify fund BEFORE sale
+   - Best for tax optimization
+
+3. First-In-First-Out (FIFO)
+   - Sell oldest shares first
+
+Example - Average Cost:
+Bought 100 shares at $10 = $1,000
+Bought 100 shares at $15 = $1,500
+Total: 200 shares, $2,500 invested
+Average cost: $12.50/share
+
+Sell 50 shares at $20:
+- Proceeds: $1,000
+- Cost basis: 50 × $12.50 = $625
+- Gain: $375
+
+Example - Specific Identification:
+Sell the 50 shares purchased at $15:
+- Proceeds: $1,000
+- Cost basis: 50 × $15 = $750
+- Gain: $250 (lower tax!)
+
+Tax Efficiency: ETFs vs. Mutual Funds:
+ETFs are generally MORE tax-efficient:
+- Fewer capital gain distributions (often $0)
+- In-kind redemption mechanism avoids realizing gains
+- Lower turnover
+- You only pay taxes when YOU sell shares
+
+Mutual funds:
+- Actively managed funds often have high turnover
+- Generate more capital gain distributions
+- Less control over tax timing
+
+Index Funds:
+Whether mutual fund or ETF, index funds are tax-efficient:
+- Low turnover (only rebalance when index changes)
+- Fewer capital gain distributions
+- Lower fees
+
+Tax-Managed Funds:
+Some funds specifically minimize taxes:
+- Avoid short-term gains
+- Harvest losses to offset gains
+- Defer realizing gains when possible
+
+Bond Funds:
+Interest income passed through to investors:
+- Taxable if corporate/Treasury bond fund
+- Tax-exempt if municipal bond fund
+- Reported monthly or quarterly
+
+Tax-Exempt Bond Funds:
+Dividends usually federal tax-exempt:
+- Still must report on Form 1040, line 2a (informational)
+- May trigger AMT (Alternative Minimum Tax)
+- State tax treatment varies
+
+Form 1099-DIV Breakdown:
+Box 1a: Total ordinary dividends
+Box 1b: Qualified dividends (subset of 1a, taxed favorably)
+Box 2a: Total capital gain distributions
+Box 2b: Section 1250 gain (unrecaptured gains, 25% rate)
+Box 2c: Section 1202 gain (qualified small business stock)
+Box 2d: Collectibles gain (28% rate)
+Box 11: Exempt-interest dividends (municipal bond funds)
+
+Foreign Tax Paid:
+If fund invests internationally:
+- May pay foreign taxes on dividends
+- You can claim Foreign Tax Credit
+- Reported on Form 1099-DIV, Box 7
+- File Form 1116 to claim credit
+
+Year-End Tax Planning:
+Avoid buying mutual funds in late December:
+- Funds distribute capital gains in December
+- If you buy before distribution, you owe tax immediately
+- Wait until after distribution to avoid "buying a tax bill"
+
+Example:
+Fund price $50/share on Dec 1
+Dec 15: Fund distributes $5/share capital gain
+New fund price: $45/share
+
+If you bought Dec 1:
+- Paid $50/share
+- Received $5 distribution (taxable)
+- Now worth $45
+- Result: Owe tax on $5 but have $5 loss!
+
+Better: Wait until Dec 16, buy at $45, avoid tax.
+
+Target-Date Retirement Funds:
+"Set and forget" funds that adjust allocation over time:
+- 2050 Target Fund (for someone retiring in 2050)
+- Automatically becomes more conservative as target date approaches
+- Tax treatment same as regular mutual funds
+- Best held in retirement accounts (401k, IRA)
+
+Retirement Account Considerations:
+Funds in 401(k), IRA, Roth IRA:
+- NO tax on dividends or capital gains while in account
+- Traditional: Withdrawals taxed as ordinary income
+- Roth: Qualified withdrawals tax-free
+- No Form 1099-DIV issued
+
+Best Location Strategy:
+Taxable accounts:
+- Tax-efficient index funds / ETFs
+- Municipal bond funds (if high tax bracket)
+
+Retirement accounts:
+- Actively managed funds (high turnover)
+- Taxable bond funds
+- REITs (real estate investment trusts)
+
+Wash Sale Rule:
+Applies to mutual funds and ETFs:
+- Sell fund at loss
+- Buy "substantially identical" fund within 30 days
+- Loss disallowed
+
+"Substantially identical" is tricky:
+- Selling Vanguard S&P 500 fund, buying Fidelity S&P 500 fund: Likely substantially identical
+- Selling S&P 500 fund, buying Total Stock Market fund: Probably NOT substantially identical
+
+State Taxation:
+Most states tax fund dividends and capital gains as ordinary income:
+- No preferential rates for long-term gains
+- Municipal bond fund dividends may be state tax-exempt (if in-state bonds)
+
+Record Keeping:
+Keep ALL statements showing:
+- Purchase confirmations
+- Dividend reinvestment records
+- Capital gain distributions
+- Year-end cost basis reports
+
+Brokerage provides cost basis for shares purchased after 2012, but YOU are responsible for earlier purchases.

@@ -1,6 +1,6 @@
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_community.embeddings import HuggingFaceInferenceAPIEmbeddings
+from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from supabase import create_client, Client
 from typing import List, Dict
 import os
@@ -21,9 +21,9 @@ def get_llm():
 def get_embeddings():
     """Cached HuggingFace Inference API Embeddings"""
     print("🔄 Loading embedding model (API)...")
-    model = HuggingFaceInferenceAPIEmbeddings(
-        api_key=os.getenv("HF_TOKEN"),
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    model = HuggingFaceEndpointEmbeddings(
+        huggingfacehub_api_token=os.getenv("HF_TOKEN"),
+        model="sentence-transformers/all-MiniLM-L6-v2"
     )
     print("✅ Embedding model loaded")
     return model
@@ -174,7 +174,11 @@ Provide a helpful answer that considers the conversation history and cites sourc
             }
 
 # Singleton instance
-rag_service = RAGService()
+try:
+    rag_service = RAGService()
+except Exception as e:
+    print(f"⚠️ RAGService initialization failed: {e}")
+    rag_service = None
 
 # Pre-warm the service
 try:

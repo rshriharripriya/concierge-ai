@@ -16,3 +16,4 @@ supabase>=2.3.0
 
 # Heavy ML (Removed for Vercel - using API)
 huggingface-hub>=0.20.0
+langchain-huggingface>=0.0.1

@@ -120,4 +120,8 @@ class ComplexityScorer:
         return "Straightforward question suitable for AI response"
 
 # Singleton instance
-complexity_scorer = ComplexityScorer()
+try:
+    complexity_scorer = ComplexityScorer()
+except Exception as e:
+    print(f"⚠️ ComplexityScorer initialization failed: {e}")
+    complexity_scorer = None
