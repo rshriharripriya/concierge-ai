@@ -5,12 +5,13 @@ import sys
 import os
 from contextlib import asynccontextmanager
 
-# Env vars loaded below
-
+# Load environment variables (only in development, Vercel provides them automatically)
 from dotenv import load_dotenv
+import os
 
-# Load environment variables
-load_dotenv(dotenv_path=".env.local")
+# Only load .env.local if not running on Vercel
+if not os.environ.get("VERCEL"):
+    load_dotenv(dotenv_path=".env.local")
 
 # Add current directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
