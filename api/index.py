@@ -34,8 +34,7 @@ app = FastAPI(
     title="Concierge AI API",
     description="Intelligent customer-to-expert routing system inspired by Intuit VEP",
     version="1.0.0",
-    lifespan=lifespan,
-    root_path="/api/py" if os.environ.get("VERCEL") else ""
+    lifespan=lifespan
 )
 
 # CORS middleware
@@ -46,6 +45,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+@app.middleware("http")
+async def handle_vercel_routing(request: Request, call_next):
+    # Vercel passes the path as a query parameter when using rewrites
+    if request.query_params.get("path"):
+        # Reconstruct the correct path
+        path = "/" + request.query_params.get("path")
+        # Create a new scope with the correct path
+        scope = dict(request.scope)
+        scope["path"] = path
+        scope["query_string"] = b""  # Clear query string
+        request = Request(scope)
+    
+    print(f"🔍 Request path: {request.url.path}")
+    print(f"🔍 Request method: {request.method}")
+    response = await call_next(request)
+    return response
 
 # Include routers
 app.include_router(chat.router, prefix="/chat", tags=["chat"])
