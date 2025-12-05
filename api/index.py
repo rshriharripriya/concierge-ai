@@ -63,4 +63,7 @@ async def health_check():
     return {"status": "healthy", "serverless": True}
 
 # Vercel serverless handler
-handler = Mangum(app)
+# Only wrap in Mangum if running on Vercel (WSGI)
+# Local uvicorn needs the raw ASGI app
+if os.environ.get("VERCEL"):
+    app = Mangum(app)
