@@ -158,7 +158,11 @@ export default function ChatPage() {
                                         className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} relative z-20`}
                                     >
                                         <div className="max-w-[85%]">
-                                            <ChatBubble role={message.role} content={message.content} />
+                                            <ChatBubble
+                                                role={message.role}
+                                                content={message.content}
+                                                sources={message.metadata?.sources}
+                                            />
 
                                             {/* Routing Details (Debug Info) */}
                                             {message.role !== "user" && message.metadata && (

@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
-from mangum import Mangum
+from a2wsgi import ASGIMiddleware
 import sys
 import os
 from contextlib import asynccontextmanager
@@ -63,7 +63,7 @@ async def health_check():
     return {"status": "healthy", "serverless": True}
 
 # Vercel serverless handler
-# Only wrap in Mangum if running on Vercel (WSGI)
+# Only wrap in ASGIMiddleware if running on Vercel (WSGI)
 # Local uvicorn needs the raw ASGI app
 if os.environ.get("VERCEL"):
-    app = Mangum(app)
+    app = ASGIMiddleware(app)

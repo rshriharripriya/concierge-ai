@@ -53,7 +53,7 @@ class RAGService:
             - Avoid long paragraphs and complex jargon
             - If you're not confident, say so
             - Cite sources using [1], [2] format corresponding to the source numbers
-            - List the full source titles at the end of your response
+            - Do NOT list the full source titles at the end (the UI will handle this)
             - For complex scenarios, recommend connecting with an expert"""),
             ("user", """Conversation History:
 {conversation_history}
