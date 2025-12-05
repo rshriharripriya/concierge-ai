@@ -52,13 +52,11 @@ async def handle_vercel_routing(request: Request, call_next):
     if request.query_params.get("path"):
         # Reconstruct the correct path
         path = "/" + request.query_params.get("path")
-        # Create a new scope with the correct path
-        scope = dict(request.scope)
-        scope["path"] = path
-        scope["query_string"] = b""  # Clear query string
-        request = Request(scope)
+        # Modify the scope directly
+        request.scope["path"] = path
+        request.scope["query_string"] = b""  # Clear query string
     
-    print(f"🔍 Request path: {request.url.path}")
+    print(f"🔍 Request path: {request.scope['path']}")
     print(f"🔍 Request method: {request.method}")
     response = await call_next(request)
     return response
