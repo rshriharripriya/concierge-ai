@@ -34,7 +34,8 @@ app = FastAPI(
     title="Concierge AI API",
     description="Intelligent customer-to-expert routing system inspired by Intuit VEP",
     version="1.0.0",
-    lifespan=lifespan
+    lifespan=lifespan,
+    root_path="/api/py" if os.environ.get("VERCEL") else ""
 )
 
 # CORS middleware
