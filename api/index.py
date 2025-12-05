@@ -3,7 +3,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from a2wsgi import ASGIMiddleware
 import sys
 import os
-from contextlib import asynccontextmanager
 
 # Load environment variables (only in development, Vercel provides them automatically)
 from dotenv import load_dotenv
@@ -19,23 +18,31 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from routers import chat, experts
 from services import rag_service, expert_matcher, semantic_router, complexity_scorer
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup: Initialize services
-    print("🚀 Starting up... Initializing AI services")
-    rag_service.initialize()
-    expert_matcher.initialize()
-    semantic_router.initialize()
-    complexity_scorer.initialize()
-    yield
-    # Shutdown: Clean up if needed
-    print("🛑 Shutting down...")
+# Flag to track if services have been initialized
+_services_initialized = False
+
+def initialize_services():
+    """Initialize all AI services (called on first request)"""
+    global _services_initialized
+    if _services_initialized:
+        return
+    
+    print("🚀 Initializing AI services...")
+    try:
+        rag_service.initialize()
+        expert_matcher.initialize()
+        semantic_router.initialize()
+        complexity_scorer.initialize()
+        _services_initialized = True
+        print("✅ All services initialized successfully")
+    except Exception as e:
+        print(f"❌ Service initialization failed: {e}")
+        raise
 
 app = FastAPI(
     title="Concierge AI API",
     description="Intelligent customer-to-expert routing system inspired by Intuit VEP",
-    version="1.0.0",
-    lifespan=lifespan
+    version="1.0.0"
 )
 
 # CORS middleware
@@ -49,6 +56,9 @@ app.add_middleware(
 
 @app.middleware("http")
 async def handle_vercel_routing(request: Request, call_next):
+    # Initialize services on first request (lazy loading for Vercel)
+    initialize_services()
+    
     # Vercel passes the path as a query parameter when using rewrites
     if request.query_params.get("path"):
         # Reconstruct the correct path
