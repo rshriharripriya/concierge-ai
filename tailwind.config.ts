@@ -45,9 +45,17 @@ const config: Config = {
         // Design System Colors
         violet: {
           500: '#8B5CF6',
+          800: '#5B21B6', // Stage 2 color
         },
         pink: {
           500: '#EC4899',
+          800: '#9D174D', // Stage 3 color
+        },
+        sky: {
+          800: '#075985', // Stage 1 color
+        },
+        blue: {
+          800: '#1E40AF', // Stage 4 color
         },
         gray: {
           900: '#1F2937', // Headings
@@ -58,6 +66,11 @@ const config: Config = {
         'primary-purple': '#8B5CF6',
         'accent-pink': '#EC4899',
         'text-dark': '#1F2937',
+        // Stage colors for consistency
+        'stage-1': '#075985', // sky-800
+        'stage-2': '#5B21B6', // violet-800
+        'stage-3': '#9D174D', // pink-800
+        'stage-4': '#1E40AF', // blue-800
       },
       fontFamily: {
         sans: ['Inter', 'SF Pro Display', 'system-ui', 'sans-serif'],

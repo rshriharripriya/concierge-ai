@@ -11,7 +11,13 @@ interface ChatBubbleProps {
     role: "user" | "assistant" | "expert";
     content: string;
     className?: string;
-    sources?: { title: string; source: string; similarity: number }[];
+    sources?: {
+        title: string;
+        source: string;
+        similarity: number;
+        chapter?: string;
+        source_url?: string;
+    }[];
 }
 
 export function ChatBubble({ role, content, className, sources }: ChatBubbleProps) {
@@ -59,17 +65,51 @@ export function ChatBubble({ role, content, className, sources }: ChatBubbleProp
 
                             {isSourcesOpen && (
                                 <div className="mt-2 space-y-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                                    {sources.map((source, idx) => (
-                                        <div key={idx} className="bg-white/50 p-2 rounded-lg border border-violet-50 text-xs">
-                                            <div className="font-medium text-gray-700 flex justify-between">
-                                                <span>[{idx + 1}] {source.title}</span>
-                                                <span className="text-gray-400 text-[10px]">{Math.round(source.similarity * 100)}% match</span>
+                                    {sources.map((source, idx) => {
+                                        // Format source text with chapter if available
+                                        const sourceText = source.chapter
+                                            ? `${source.source} - ${source.chapter}`
+                                            : source.source;
+
+                                        const SourceWrapper = source.source_url
+                                            ? ({ children }: { children: React.ReactNode }) => (
+                                                <a
+                                                    href={source.source_url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="block hover:bg-white/70 transition-colors rounded-lg"
+                                                >
+                                                    {children}
+                                                </a>
+                                            )
+                                            : ({ children }: { children: React.ReactNode }) => <>{children}</>;
+
+                                        return (
+                                            <div key={idx} className="bg-white/50 border border-violet-50 text-xs rounded-lg overflow-hidden">
+                                                <SourceWrapper>
+                                                    <div className="p-2">
+                                                        <div className="font-medium text-gray-700 flex justify-between items-start gap-2">
+                                                            <span className="flex-1">
+                                                                <span className="text-violet-600">[{idx + 1}]</span> {source.title}
+                                                            </span>
+                                                            <span className="text-gray-400 text-[10px] whitespace-nowrap">
+                                                                {Math.round(source.similarity * 100)}% match
+                                                            </span>
+                                                        </div>
+                                                        {sourceText !== 'Internal' && (
+                                                            <div className="text-gray-500 mt-0.5 text-[10px] flex items-center gap-1">
+                                                                <BookOpen className="w-3 h-3 inline" />
+                                                                {sourceText}
+                                                                {source.source_url && (
+                                                                    <span className="text-violet-500 ml-1">↗</span>
+                                                                )}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </SourceWrapper>
                                             </div>
-                                            {source.source !== 'Internal' && (
-                                                <div className="text-gray-500 mt-0.5 text-[10px]">{source.source}</div>
-                                            )}
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             )}
                         </div>

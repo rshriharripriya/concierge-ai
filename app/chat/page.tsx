@@ -7,8 +7,8 @@ import { useRouter } from "next/navigation";
 import { GlassCard } from "@/components/ui/GlassCard";
 import { ConciergeButton } from "@/components/ui/ConciergeButton";
 import { ChatBubble } from "@/components/ui/ChatBubble";
-import { GlassSurface } from "@/components/ui/GlassSurface";
 import { PlaceholdersAndVanishInput } from "@/components/ui/placeholders-and-vanish-input";
+import { ThinkingLoader } from "@/components/ui/ThinkingLoader";
 
 import { sendQuery } from "@/lib/api";
 
@@ -37,13 +37,14 @@ export default function ChatPage() {
         scrollToBottom();
     }, [messages, analyzing]);
 
-    const handleSend = async () => {
-        if (!input.trim() || isLoading) return;
+    const handleSend = async (queryText?: string) => {
+        const textToSend = queryText || input.trim();
+        if (!textToSend || isLoading) return;
 
         const userMessage: Message = {
             id: Date.now().toString(),
             role: "user",
-            content: input,
+            content: textToSend,
         };
 
         setMessages((prev) => [...prev, userMessage]);
@@ -54,7 +55,7 @@ export default function ChatPage() {
         try {
             await new Promise(resolve => setTimeout(resolve, 1500));
 
-            const data = await sendQuery(input, "demo_user", conversationId || undefined);
+            const data = await sendQuery(textToSend, "demo_user", conversationId || undefined);
             setConversationId(data.conversation_id);
             setAnalyzing(false);
 
@@ -95,29 +96,30 @@ export default function ChatPage() {
         <div className="min-h-screen relative flex flex-col font-sans text-gray-900 bg-gray-50 bg-noise selection:bg-pink-500/30">
 
             {/* Navbar */}
-            <nav className="fixed top-0 left-0 right-0 z-[100] flex justify-between items-center px-6 py-4 bg-gray-50/80 backdrop-blur-md ">
-                <button
-                    onClick={() => router.push('/')}
-                    className="glass-card p-2 rounded-full hover:bg-white/50 transition-colors"
-                >
-                    <ArrowLeft className="w-5 h-5 text-gray-700" />
-                </button>
-                <GlassSurface className="px-6 py-2">
-                    <span className="font-bold text-lg bg-clip-text text-gray-600 bg-gray-50/80 backdrop-blur-md">
-                        Concierge AI
-                    </span>
-                </GlassSurface>
-                <div className="w-10" />
+            <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center px-6 py-3 bg-gray-50/80 backdrop-blur-md">
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={() => router.push('/')}
+                        className="glass-card p-2 rounded-full hover:bg-white/50 transition-colors"
+                    >
+                        <ArrowLeft className="w-5 h-5 text-gray-700" />
+                    </button>
+                    <div className="">
+                        <span className="font-medium text-lg bg-clip-text text-gray-600 bg-gray-50/80 backdrop-blur-md">
+                            Concierge AI
+                        </span>
+                    </div>
+                </div>
             </nav>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex items-center justify-center p-6 pt-24 pb-10">
+            <div className="flex-1 flex items-center justify-center p-6 pb-10">
                 {/* FIX: 
                    1. max-w-6xl: Sets a constant "Big but not too big" width.
                    2. w-full: Forces the container to fill that width even when empty.
                    3. mx-auto: Centers it perfectly.
                 */}
-                <div className="w-full max-w-6xl mx-auto flex h-[calc(100vh-140px)] gap-6">
+                <div className="w-full max-w-6xl mx-auto flex h-[calc(100vh-120px)] gap-6">
 
                     {/* Chat Container */}
                     {/* FIX: 
@@ -135,10 +137,7 @@ export default function ChatPage() {
                                         {["What is the standard deduction for 2024?", "How do I file for an extension?", "Can I deduct my home office expenses?"].map((q, i) => (
                                             <button
                                                 key={i}
-                                                onClick={() => {
-                                                    setInput(q);
-                                                    setTimeout(() => handleSend(), 100);
-                                                }}
+                                                onClick={() => handleSend(q)}
                                                 className="px-4 py-2 rounded-full bg-white/40 hover:bg-white/70 border border-white/20 text-sm text-gray-600 transition-all cursor-pointer shadow-sm hover:shadow-md hover:text-violet-600"
                                             >
                                                 {q}
@@ -210,24 +209,18 @@ export default function ChatPage() {
                                         </div>
                                     </motion.div>
                                 ))}
-                            </AnimatePresence>
 
-                            {/* Analyzing Overlay */}
-                            {analyzing && (
-                                <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/20 backdrop-blur-[2px] z-30 rounded-[32px]">
+                                {/* Thinking Loader - inline in chat */}
+                                {analyzing && (
                                     <motion.div
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        className="flex flex-col items-center justify-center"
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="flex justify-start"
                                     >
-                                        <div className="relative w-16 h-16 mb-4">
-                                            <div className="absolute inset-0 rounded-full border-4 border-t-gray-800 border-r-transparent border-b-gray-400 border-l-transparent animate-spin" />
-                                            <div className="absolute inset-2 rounded-full border-4 border-t-gray-400 border-r-transparent border-b-gray-800 border-l-transparent animate-spin-reverse opacity-50" />
-                                        </div>
-                                        <p className="text-gray-600 font-medium animate-pulse">Analyzing complexity...</p>
+                                        <ThinkingLoader />
                                     </motion.div>
-                                </div>
-                            )}
+                                )}
+                            </AnimatePresence>
                             <div ref={messagesEndRef} />
                         </div>
 

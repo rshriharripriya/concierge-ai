@@ -90,6 +90,9 @@ async def process_query(request: QueryRequest):
         print(f"🤖 AI Confidence: {ai_confidence}")
         
         # Stage 4: Routing decision
+        # Confidence threshold determines when RAG confidence is high enough for AI response
+        # Current: 0.60 - Consider lowering to 0.50-0.55 if knowledge base is comprehensive
+        # Note: Improving knowledge base coverage is better than lowering threshold
         confidence_threshold = 0.60
         should_escalate = (
             requires_expert or 

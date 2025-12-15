@@ -43,13 +43,25 @@ class ComplexityScorer:
         """
         query_lower = query.lower()
         
-        # Check urgency
-        has_urgency = any(keyword in query_lower for keyword in self.urgency_keywords)
+        # Check urgency - use word boundaries to avoid false positives (e.g., "know" matching "now")
+        has_urgency = any(
+            re.search(r'\b' + re.escape(keyword) + r'\b', query_lower) 
+            for keyword in self.urgency_keywords
+        )
         
-        # Check complexity indicators
-        complex_count = sum(1 for kw in self.complex_keywords if kw in query_lower)
-        moderate_count = sum(1 for kw in self.moderate_keywords if kw in query_lower)
-        simple_count = sum(1 for kw in self.simple_keywords if kw in query_lower)
+        # Check complexity indicators (word boundaries here too)
+        complex_count = sum(
+            1 for kw in self.complex_keywords 
+            if re.search(r'\b' + re.escape(kw) + r'\b', query_lower)
+        )
+        moderate_count = sum(
+            1 for kw in self.moderate_keywords 
+            if re.search(r'\b' + re.escape(kw) + r'\b', query_lower)
+        )
+        simple_count = sum(
+            1 for kw in self.simple_keywords 
+            if re.search(r'\b' + re.escape(kw) + r'\b', query_lower)
+        )
         
         # Query length analysis
         word_count = len(query.split())
@@ -67,11 +79,16 @@ class ComplexityScorer:
         
         base_score = intent_scores.get(intent, 3)
         
-        # Adjust based on keywords
+        # Adjust based on keywords with intent-awareness
         if complex_count > 0:
             base_score = max(base_score, 4)
         elif moderate_count > 0:
-            base_score = max(base_score, 3)
+            # Intent-aware adjustment: don't auto-escalate simple_tax with just 1 moderate keyword
+            # This allows AI to handle common questions like "Can I deduct home office expenses?"
+            if intent == "simple_tax" and moderate_count == 1 and complex_count == 0:
+                base_score = max(base_score, 2)  # Keep it simple, let RAG confidence decide
+            else:
+                base_score = max(base_score, 3)
         elif simple_count > 0:
             base_score = min(base_score, 2)
         

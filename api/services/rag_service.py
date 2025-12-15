@@ -116,7 +116,7 @@ Standalone Question:""")
                 {
                     'query_embedding': query_embedding,
                     'match_count': k,
-                    'match_threshold': 0.4
+                    'match_threshold': 0.3  # Lowered to improve recall for casual queries
                 }
             ).execute()
             
@@ -194,7 +194,13 @@ Standalone Question:""")
             return {
                 "answer": response.content,
                 "sources": [
-                    {"title": doc['title'], "source": doc.get('source', 'Internal'), "similarity": doc.get('similarity', 0)}
+                    {
+                        "title": doc['title'],
+                        "source": doc.get('source', 'Internal'),
+                        "similarity": doc.get('similarity', 0),
+                        "chapter": doc.get('metadata', {}).get('chapter') if isinstance(doc.get('metadata'), dict) else None,
+                        "source_url": doc.get('metadata', {}).get('source_url') if isinstance(doc.get('metadata'), dict) else None
+                    }
                     for doc in documents
                 ],
                 "confidence": round(confidence, 2)

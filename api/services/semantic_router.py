@@ -29,10 +29,17 @@ def get_semantic_router():
         Route(
             name="simple_tax",
             utterances=[
+                # Standard deduction queries - common variations
                 "What is the standard deduction?",
                 "What is the standard deduction for 2024?",
                 "What is the std deduction?",
                 "std deduction 2024",
+                "tell me about standard deduction",
+                "tell me all you know about std deduction",
+                "tell me about the standard deduction",
+                "standard deduction amount",
+                "how much is the standard deduction",
+                # General filing questions
                 "When is the tax filing deadline?",
                 "How do I claim deductions?",
                 "What forms do I need?",
@@ -41,7 +48,13 @@ def get_semantic_router():
                 "How do I get a tax refund?",
                 "Am I eligible for the Earned Income Tax Credit?",
                 "What are the tax brackets for 2024?",
+                # Self-employment and home office (moderate but still simple)
                 "Can I deduct my home office expenses?",
+                "Can I deduct home office?",
+                "home office deduction",
+                "self employed tax deductions",
+                "What can I deduct as self employed?",
+                # Filing and extensions
                 "How do I file for an extension?",
             ]
         ),
