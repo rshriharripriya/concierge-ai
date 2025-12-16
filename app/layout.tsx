@@ -19,13 +19,13 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Concierge AI - Smart tax help",
     description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
-    images: ['/preview.png'],
+    images: ['preview.png'],
   },
   twitter: {
     card: 'summary_large_image',
     title: "Concierge AI - Smart tax help",
     description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
-    images: ['/preview.png'],
+    images: ['preview.png'],
   },
 };
 
