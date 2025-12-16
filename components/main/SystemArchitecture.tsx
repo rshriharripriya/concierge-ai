@@ -12,7 +12,7 @@ const LabelNode = React.forwardRef<
         <div
             ref={ref}
             className={cn(
-                "z-10 flex items-center justify-center rounded-full border  px-6 py-4 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)] text-sm font-semibold transition-all hover:scale-105 md:px-8 md:py-6 md:text-base",
+                "z-10 flex items-center justify-center rounded-full border px-6 py-4 shadow-[0_0_20px_-12px_rgba(0,0,0,0.8)] text-sm font-semibold font-serif transition-all hover:scale-105 md:px-8 md:py-6 md:text-base",
                 className,
             )}
         >

@@ -25,7 +25,7 @@ const Footer = () => {
         return (
             <div id="contacts" className="w-full h-auto py-4 px-6 dark text-white bg-black">
                 <div>
-                    <h1 className="text-3xl font-bold text-center mb-4 leading-relaxed">
+                    <h1 className="text-3xl font-bold text-center mb-4 leading-relaxed font-serif">
                         Get
                         <AuroraText> In </AuroraText>
                         Touch
@@ -67,32 +67,32 @@ const Footer = () => {
 
                     {/* Navigation Links */}
                     <div className="space-y-3 text-center">
-                        <div className="text-xl font-semibold mb-2">Quick Links</div>
+                        <div className="text-xl font-semibold mb-2 font-serif">Quick Links</div>
                         <div className="space-y-2">
                             <p className="cursor-pointer">
                                 <Link href="https://rshriharripriya.vercel.app/#about" target="_blank" rel="noopener noreferrer">
-                                    <span className="text-lg hover:text-purple-400 transition-colors">About Me</span>
+                                    <span className="text-lg hover:text-purple-400 transition-colors font-serif">About Me</span>
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
                                 <Link href="https://rshriharripriya.vercel.app/#projects" target="_blank" rel="noopener noreferrer">
-                                    <span className="text-lg hover:text-purple-400 transition-colors">My Projects</span>
+                                    <span className="text-lg hover:text-purple-400 transition-colors font-serif">My Projects</span>
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
                                 <Link href="https://rshriharripriya.vercel.app/#awards" target="_blank" rel="noopener noreferrer">
-                                    <span className="text-lg hover:text-purple-400 transition-colors">My Awards</span>
+                                    <span className="text-lg hover:text-purple-400 transition-colors font-serif">My Awards</span>
                                 </Link>
                             </p>
 
                             <p className="cursor-pointer">
                                 <Link href="mailto:rshriharripriya@outlook.com" className="hover:text-purple-400 transition-colors">
-                                    <div className="text-base">Hire Me </div>
+                                    <div className="text-base font-serif">Hire Me </div>
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
                                 <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors">
-                                    <span className="text-base">My Playlists</span>
+                                    <span className="text-base font-serif">My Playlists</span>
                                 </Link>
                             </p>
                         </div>
@@ -100,7 +100,7 @@ const Footer = () => {
 
                     {/* Copyright at the bottom */}
                     <div className="border-t border-gray-800 pt-3 mt-4 text-center">
-                        <div className="text-sm text-gray-400">
+                        <div className="text-sm text-gray-400 font-serif">
                             Made with 💌 by Shri Harri Priya Ramesh
                         </div>
                     </div>
@@ -112,7 +112,7 @@ const Footer = () => {
     return (
         <div id="contacts" className="w-full h-auto py-6 dark text-white bg-black">
             <div>
-                <h1 className="flex justify-center text-4xl align-middle font-bold tracking-tighter md:text-5xl lg:text-5xl mb-6">
+                <h1 className="flex justify-center text-4xl align-middle font-bold tracking-tighter md:text-5xl lg:text-5xl mb-6 font-serif">
                     Get <AuroraText>In</AuroraText> Touch
                 </h1>
             </div>
@@ -146,7 +146,7 @@ const Footer = () => {
                                 </button>
                             </a>
                         </div>
-                        <div className="mt-0 text-[15px] text-center text-gray-400">
+                        <div className="mt-0 text-[15px] text-center text-gray-400 font-serif">
                             Made with 💌 by Shri Harri Priya Ramesh
                         </div>
                     </div>
@@ -154,35 +154,35 @@ const Footer = () => {
                     <div className="min-w-[200px] h-auto flex flex-col items-center justify-start pt-4 space-y-7">
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://rshriharripriya.vercel.app/#about" target="_blank" rel="noopener noreferrer">
-                                <span className="text-[15px] hover:text-purple-400 transition-colors">About Me</span>
+                                <span className="text-[15px] hover:text-purple-400 transition-colors font-serif">About Me</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://rshriharripriya.vercel.app/#projects" target="_blank" rel="noopener noreferrer">
-                                <span className="text-[15px] hover:text-purple-400 transition-colors">My projects</span>
+                                <span className="text-[15px] hover:text-purple-400 transition-colors font-serif">My projects</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://rshriharripriya.vercel.app/#awards" target="_blank" rel="noopener noreferrer">
-                                <span className="text-[15px] hover:text-purple-400 transition-colors">My awards</span>
+                                <span className="text-[15px] hover:text-purple-400 transition-colors font-serif">My awards</span>
                             </Link>
                         </p>
                     </div>
                     <div className="min-w-[200px] h-auto flex flex-col items-center justify-start pt-4 space-y-7">
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="mailto:rshriharripriya@outlook.com" target="_blank" className="hover:text-purple-400 transition-colors">
-                                <span className="text-[15px]">Hire me</span>
+                                <span className="text-[15px] font-serif">Hire me</span>
                             </Link  >
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://rshriharripriya.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors">
-                                <span className="text-[15px]">My blogs</span>
+                                <span className="text-[15px] font-serif">My blogs</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank" rel="noopener noreferrer"
                                 className="flex flex-row items-center hover:text-purple-400 transition-colors">
-                                <span className="text-[15px]">Check out my playlists</span>
+                                <span className="text-[15px] font-serif">Check out my playlists</span>
                             </Link>
                         </p>
                     </div>

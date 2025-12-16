@@ -78,6 +78,7 @@ const config: Config = {
       },
       fontFamily: {
         sans: ['Inter', 'SF Pro Display', 'system-ui', 'sans-serif'],
+        serif: ['Georgia', 'Cambria', 'Times New Roman', 'Times', 'serif'],
       },
       backgroundImage: {
         'concierge-gradient': 'linear-gradient(135deg, #610a0a 0%, #821e1e 100%)',

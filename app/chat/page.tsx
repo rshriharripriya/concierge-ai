@@ -113,7 +113,7 @@ export default function ChatPage() {
             </nav>
 
             {/* Main Content Area */}
-            <div className="flex-1 flex items-center justify-center p-6 pb-10">
+            <div className="flex-1 flex items-center justify-center p-4 sm:p-6 pb-10">
                 {/* FIX: 
                    1. max-w-6xl: Sets a constant "Big but not too big" width.
                    2. w-full: Forces the container to fill that width even when empty.
@@ -126,7 +126,7 @@ export default function ChatPage() {
                         1. w-full: Forces the card to stretch to the full width of the parent (6xl).
                         2. shrink-0: Prevents it from crushing when expert panel opens (if flex behavior tries to squish it).
                     */}
-                    <GlassCard className="flex-1 w-full rounded-[32px] flex flex-col overflow-hidden relative h-full p-0 !border-white/60 min-w-0 transition-all duration-500 ease-in-out shadow-xl shrink-0">
+                    <GlassCard className="flex-1 w-full rounded-[24px] sm:rounded-[32px] flex flex-col overflow-hidden relative h-full p-0 !border-white/60 min-w-0 transition-all duration-500 ease-in-out shadow-xl shrink-0">
                         <div className="flex-1 overflow-y-auto p-8 space-y-6 scrollbar-thin scrollbar-thumb-crimson-700/30 w-full relative">
 
                             {/* Greeting Overlay */}
@@ -243,46 +243,101 @@ export default function ChatPage() {
                         </div>
                     </GlassCard>
 
-                    {/* Expert Panel (Right Side) */}
+                    {/* Expert Panel (Right Side on Desktop, Modal on Mobile) */}
                     <AnimatePresence>
                         {matchedExpert && (
-                            <motion.div
-                                initial={{ opacity: 0, width: 0, x: 20 }}
-                                animate={{ opacity: 1, width: 350, x: 0 }}
-                                exit={{ opacity: 0, width: 0, x: 20 }}
-                                transition={{ duration: 0.5, ease: "easeInOut" }}
-                                className="h-full overflow-hidden shrink-0"
-                            >
-                                <GlassCard className="rounded-[32px] p-6 flex flex-col h-full w-[350px]">
-                                    <h3 className="text-lg font-bold text-[#610a0a] mb-6 ">Expert Profile</h3>
+                            <>
+                                {/* Mobile: Backdrop */}
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    className="lg:hidden fixed inset-0 bg-black/50 backdrop-blur-sm z-[200]"
+                                    onClick={() => setMatchedExpert(null)}
+                                />
 
-                                    <div className="flex flex-col items-center text-center mb-6">
-                                        <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4 overflow-hidden relative">
-                                            <img
-                                                src={matchedExpert.avatar_url}
-                                                alt={matchedExpert.expert_name}
-                                                className="w-full h-full object-cover"
-                                            />
+                                {/* Expert Panel */}
+                                <motion.div
+                                    initial={{ opacity: 0, width: 0, x: 20 }}
+                                    animate={{
+                                        opacity: 1,
+                                        width: 350,
+                                        x: 0
+                                    }}
+                                    exit={{ opacity: 0, width: 0, x: 20 }}
+                                    transition={{ duration: 0.5, ease: "easeInOut" }}
+                                    className="hidden lg:block h-full overflow-hidden shrink-0"
+                                >
+                                    <GlassCard className="rounded-[32px] p-6 flex flex-col h-full w-[350px]">
+                                        <h3 className="text-lg font-bold text-[#610a0a] mb-6">Expert Profile</h3>
+
+                                        <div className="flex flex-col items-center text-center mb-6">
+                                            <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4 overflow-hidden relative">
+                                                <img
+                                                    src={matchedExpert.avatar_url}
+                                                    alt={matchedExpert.expert_name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                            <h4 className="text-xl font-bold text-[#610a0a]">{matchedExpert.expert_name}</h4>
+                                            <p className="text-sm text-crimson-700 font-medium flex items-center gap-1 mt-1">
+                                                <Sparkles className="w-3 h-3" /> Secondary Support
+                                            </p>
                                         </div>
-                                        <h4 className="text-xl font-bold text-[#610a0a]">{matchedExpert.expert_name}</h4>
-                                        <p className="text-sm text-crimson-700 font-medium flex items-center gap-1 mt-1">
-                                            <Sparkles className="w-3 h-3" /> Secondary Support
-                                        </p>
-                                    </div>
 
-                                    <div className="bg-white/40 rounded-xl p-4 mb-6 text-sm text-[#610a0a] leading-relaxed border border-white/30 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-crimson-700/30">
-                                        {matchedExpert.expert_bio}
-                                    </div>
+                                        <div className="bg-white/40 rounded-xl p-4 mb-6 text-sm text-[#610a0a] leading-relaxed border border-white/30 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-crimson-700/30">
+                                            {matchedExpert.expert_bio}
+                                        </div>
 
-                                    <ConciergeButton
-                                        variant="secondary"
-                                        className="w-full justify-center text-[#610a0a] shadow-sm"
-                                        onClick={() => setMatchedExpert(null)}
-                                    >
-                                        Close
-                                    </ConciergeButton>
-                                </GlassCard>
-                            </motion.div>
+                                        <ConciergeButton
+                                            variant="secondary"
+                                            className="w-full justify-center text-[#610a0a] shadow-sm"
+                                            onClick={() => setMatchedExpert(null)}
+                                        >
+                                            Close
+                                        </ConciergeButton>
+                                    </GlassCard>
+                                </motion.div>
+
+                                {/* Mobile: Modal Expert Panel */}
+                                <motion.div
+                                    initial={{ opacity: 0, y: 50 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 50 }}
+                                    transition={{ duration: 0.3, ease: "easeOut" }}
+                                    className="lg:hidden fixed bottom-0 left-0 right-0 z-[250] max-h-[80vh]"
+                                >
+                                    <GlassCard className="rounded-t-[32px] p-6 flex flex-col max-h-[80vh]">
+                                        <h3 className="text-lg font-bold text-[#610a0a] mb-6">Expert Profile</h3>
+
+                                        <div className="flex flex-col items-center text-center mb-6">
+                                            <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4 overflow-hidden relative">
+                                                <img
+                                                    src={matchedExpert.avatar_url}
+                                                    alt={matchedExpert.expert_name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                            <h4 className="text-xl font-bold text-[#610a0a]">{matchedExpert.expert_name}</h4>
+                                            <p className="text-sm text-crimson-700 font-medium flex items-center gap-1 mt-1">
+                                                <Sparkles className="w-3 h-3" /> Secondary Support
+                                            </p>
+                                        </div>
+
+                                        <div className="bg-white/40 rounded-xl p-4 mb-6 text-sm text-[#610a0a] leading-relaxed border border-white/30 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-crimson-700/30">
+                                            {matchedExpert.expert_bio}
+                                        </div>
+
+                                        <ConciergeButton
+                                            variant="secondary"
+                                            className="w-full justify-center text-[#610a0a] shadow-sm"
+                                            onClick={() => setMatchedExpert(null)}
+                                        >
+                                            Close
+                                        </ConciergeButton>
+                                    </GlassCard>
+                                </motion.div>
+                            </>
                         )}
                     </AnimatePresence>
 

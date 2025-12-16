@@ -50,7 +50,7 @@ export default function Home() {
 
 
           {/* Feature Cards */}
-          <div id="features" className="scroll-mt-24">
+          <div id="features" className="scroll-mt-24 px-4 sm:px-0">
             <Features />
           </div>
 
