@@ -15,16 +15,16 @@ const playfair = Playfair_Display({
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'),
   title: "Concierge AI - Smart tax help",
-  description: "AI-powered customer-to-expert routing system inspired by Intuit VEP architecture",
+  description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
   openGraph: {
     title: "Concierge AI - Smart tax help",
-    description: "AI-powered customer-to-expert routing system inspired by Intuit VEP architecture",
+    description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
     images: ['/preview.png'],
   },
   twitter: {
     card: 'summary_large_image',
     title: "Concierge AI - Smart tax help",
-    description: "AI-powered customer-to-expert routing system inspired by Intuit VEP architecture",
+    description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
     images: ['/preview.png'],
   },
 };
