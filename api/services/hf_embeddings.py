@@ -17,8 +17,8 @@ class HuggingFaceEmbeddings:
     ):
         self.model = model
         self.api_token = api_token or os.getenv("HF_TOKEN")
-        # Updated to new HuggingFace Inference API format (old /pipeline/feature-extraction/ is deprecated)
-        self.api_url = f"https://api-inference.huggingface.co/models/{model}"
+        # Use new router endpoint (api-inference.huggingface.co is completely deprecated)
+        self.api_url = f"https://router.huggingface.co/hf-inference/models/{model}"
         self.headers = {"Authorization": f"Bearer {self.api_token}"}
     
     def embed_query(self, text: str) -> List[float]:
