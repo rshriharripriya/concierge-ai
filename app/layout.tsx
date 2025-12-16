@@ -13,6 +13,7 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'),
   title: "Concierge AI - Smart tax help",
   description: "AI-powered customer-to-expert routing system inspired by Intuit VEP architecture",
   openGraph: {
