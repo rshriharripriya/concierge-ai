@@ -4,6 +4,7 @@ a2wsgi>=1.9.0
 python-dotenv>=1.0.0
 pydantic>=2.5.3
 uvicorn>=0.27.0
+requests>=2.31.0
 
 # AI & RAG
 langchain>=0.1.0
@@ -15,9 +16,10 @@ groq>=0.4.1
 # Database
 supabase>=2.3.0
 
-# ML 
+# ML - lightweight API client only (no transformers/torch)
 huggingface-hub>=0.20.0
-langchain-huggingface>=0.0.1
 
-# PDF Processing
-pypdf>=4.0.0
+# NOTE: Heavy dependencies removed for production deployment:
+# - langchain-huggingface (includes torch/transformers - 1GB+)
+# - pypdf (only needed for local ingestion scripts)
+# Use hf_embeddings.py wrapper instead for lightweight API calls

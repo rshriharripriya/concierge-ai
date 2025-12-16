@@ -1,6 +1,9 @@
 # Ignore knowledge data files (already ingested into Supabase)
 knowledge_data/
 
+# Ignore ingestion scripts (only needed locally)
+scripts/
+
 # Python cache
 __pycache__/
 *.pyc

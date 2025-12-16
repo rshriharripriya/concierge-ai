@@ -1,21 +1,25 @@
 from semantic_router import Route, SemanticRouter
-from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from typing import List, Dict, Any
 from functools import lru_cache
 import os
+import sys
 
 from semantic_router.encoders import DenseEncoder
 from pydantic import PrivateAttr
 
+# Add parent directory to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from services.hf_embeddings import HuggingFaceEmbeddings
+
 class APIEncoder(DenseEncoder):
-    """Custom encoder using HuggingFace Inference API via LangChain"""
+    """Custom encoder using HuggingFace Inference API (lightweight)"""
     _embeddings: Any = PrivateAttr()
 
     def __init__(self, model_name: str = "sentence-transformers/all-MiniLM-L6-v2"):
         super().__init__(name=model_name, score_threshold=0.3)
-        self._embeddings = HuggingFaceEndpointEmbeddings(
-            huggingfacehub_api_token=os.getenv("HF_TOKEN"),
-            model=model_name
+        self._embeddings = HuggingFaceEmbeddings(
+            model=model_name,
+            api_token=os.getenv("HF_TOKEN")
         )
         self.type = "api"
 

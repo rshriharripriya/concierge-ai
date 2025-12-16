@@ -1,10 +1,10 @@
 from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from supabase import create_client, Client
 from typing import List, Dict
 import os
 from functools import lru_cache
+from services.hf_embeddings import HuggingFaceEmbeddings
 
 @lru_cache(maxsize=1)
 def get_llm():
@@ -21,9 +21,9 @@ def get_llm():
 def get_embeddings():
     """Cached HuggingFace Inference API Embeddings"""
     print("🔄 Loading embedding model (API)...")
-    model = HuggingFaceEndpointEmbeddings(
-        huggingfacehub_api_token=os.getenv("HF_TOKEN"),
-        model="sentence-transformers/all-MiniLM-L6-v2"
+    model = HuggingFaceEmbeddings(
+        model="sentence-transformers/all-MiniLM-L6-v2",
+        api_token=os.getenv("HF_TOKEN")
     )
     print("✅ Embedding model loaded")
     return model

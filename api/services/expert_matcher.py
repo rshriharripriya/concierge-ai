@@ -1,15 +1,20 @@
 from supabase import create_client, Client
-from langchain_huggingface import HuggingFaceEndpointEmbeddings
 from typing import List, Dict, Optional
 import os
 import math
+import sys
 from functools import lru_cache
+
+# Add parent directory to path
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+from services.hf_embeddings import HuggingFaceEmbeddings
 
 @lru_cache(maxsize=1)
 def get_embeddings():
-    return HuggingFaceEndpointEmbeddings(
-        huggingfacehub_api_token=os.getenv("HF_TOKEN"),
-        model="sentence-transformers/all-MiniLM-L6-v2"
+    """Cached embedding function"""
+    return HuggingFaceEmbeddings(
+        model="sentence-transformers/all-MiniLM-L6-v2",
+        api_token=os.getenv("HF_TOKEN")
     )
 
 @lru_cache(maxsize=1)

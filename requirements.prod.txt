@@ -1,0 +1,24 @@
+# Production-only requirements for Vercel deployment
+# Heavy dependencies like langchain-huggingface and pypdf are excluded
+# Those are only needed for local ingestion scripts
+
+# Core API dependencies
+fastapi>=0.109.0
+a2wsgi>=1.9.0
+python-dotenv>=1.0.0
+pydantic>=2.5.3
+
+# AI & RAG - using API-based embedding (no heavy models)
+langchain>=0.1.0
+langchain-groq>=0.0.1
+langchain-community>=0.0.13
+groq>=0.4.1
+
+# Database
+supabase>=2.3.0
+
+# Lightweight HF client for API calls only (not the full langchain-huggingface)
+huggingface-hub>=0.20.0
+
+# Semantic router
+semantic-router>=0.0.25
