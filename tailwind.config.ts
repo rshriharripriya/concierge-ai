@@ -42,15 +42,19 @@ const config: Config = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Design System Colors
-        violet: {
-          500: '#8B5CF6',
-          800: '#5B21B6', // Stage 2 color
+        // Design System Colors - Deep Crimson Luxury Theme
+        crimson: {
+          900: '#3b0505', // Very dark shading for gradients
+          800: '#610a0a', // Base deep blood red
+          700: '#821e1e', // Lighter for hover states
         },
-        pink: {
-          500: '#EC4899',
-          800: '#9D174D', // Stage 3 color
-        },
+        // Backgrounds
+        obsidian: '#050505', // Deepest black
+        charcoal: '#0F0F0F', // Card background
+        // Text
+        ivory: '#F5F5F5',
+        mist: '#A3A3A3',
+        // Keep stage colors for architecture diagram
         sky: {
           800: '#075985', // Stage 1 color
         },
@@ -63,29 +67,32 @@ const config: Config = {
           400: '#9CA3AF', // Caption/Disabled
           50: '#F8FAFC', // Background Base
         },
-        'primary-purple': '#8B5CF6',
-        'accent-pink': '#EC4899',
+        'primary-crimson': '#610a0a',
+        'accent-crimson': '#821e1e',
         'text-dark': '#1F2937',
         // Stage colors for consistency
         'stage-1': '#075985', // sky-800
-        'stage-2': '#5B21B6', // violet-800
-        'stage-3': '#9D174D', // pink-800
+        'stage-2': '#610a0a', // crimson-800 (replacing violet)
+        'stage-3': '#821e1e', // crimson-700 (replacing pink)
         'stage-4': '#1E40AF', // blue-800
       },
       fontFamily: {
         sans: ['Inter', 'SF Pro Display', 'system-ui', 'sans-serif'],
       },
       backgroundImage: {
-        'concierge-gradient': 'linear-gradient(135deg, #8B5CF6 0%, #EC4899 100%)',
-        'subtle-glow-gradient': 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(236, 72, 153, 0.15) 100%)',
+        'concierge-gradient': 'linear-gradient(135deg, #610a0a 0%, #821e1e 100%)',
+        'crimson-gradient': 'linear-gradient(135deg, #610a0a 0%, #821e1e 100%)',
+        'subtle-glow-gradient': 'linear-gradient(135deg, rgba(97, 10, 10, 0.15) 0%, rgba(130, 30, 30, 0.15) 100%)',
         'glass-gradient': 'linear-gradient(180deg, rgba(255,255,255,0.7) 0%, rgba(255,255,255,0.4) 100%)',
         'noise': "url('/noise.png')",
+        'gradient-radial': 'radial-gradient(ellipse at center, var(--tw-gradient-stops))',
       },
       boxShadow: {
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.05)', // Level 1
-        'glass-floater': '0 10px 40px -10px rgba(139, 92, 246, 0.2)', // Level 2
+        'glass-floater': '0 10px 40px -10px rgba(97, 10, 10, 0.2)', // Level 2 - Crimson
         'glass-hover': '0 20px 40px -5px rgba(0,0,0,0.1)',
-        'glow': '0 0 20px rgba(139, 92, 246, 0.4)',
+        'glow': '0 0 20px rgba(97, 10, 10, 0.4)', // Crimson glow
+        'crimson-deep': '0 4px 20px rgba(97, 10, 10, 0.4)',
       },
       backdropBlur: {
         xs: '2px',

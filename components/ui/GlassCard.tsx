@@ -17,7 +17,7 @@ export function GlassCard({
         <div
             className={cn(
                 "glass-card rounded-3xl p-8 transition-all duration-300",
-                hoverEffect && "hover:-translate-y-1 hover:shadow-glass-hover hover:border-violet-500/30",
+                hoverEffect && "hover:-translate-y-1 hover:shadow-glass-hover hover:border-crimson-700/30",
                 className
             )}
             {...props}

@@ -78,7 +78,7 @@ This project is structured as a monorepo for separated deployment:
 
 5.  **Run Locally**:
     -   **Frontend**: `npm run dev` (http://localhost:3000)
-    -   **Backend**: `python uvicorn backend.api.index:app --reload` (http://127.0.0.1:8000)
+    -   **Backend**: `python -m uvicorn backend.api.index:app --reload` (http://127.0.0.1:8000)
 
 ## 📦 Deployment
 

@@ -11,7 +11,7 @@ export default function AnimatedBackground() {
             {/* Gradient Orbs */}
             <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-gradient-to-r from-blue-400/30 to-purple-500/30 blur-[100px] animate-blob" />
             <div className="absolute top-[20%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-gradient-to-r from-pink-400/30 to-rose-500/30 blur-[100px] animate-blob animation-delay-2000" />
-            <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-r from-violet-400/30 to-indigo-500/30 blur-[100px] animate-blob animation-delay-4000" />
+            <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-gradient-to-r from-crimson-800/30 to-crimson-900/30 blur-[100px] animate-blob animation-delay-4000" />
 
             {/* Floating Elements */}
             <motion.div

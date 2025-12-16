@@ -40,7 +40,7 @@ export default function GlassButton({
     };
 
     const variants = {
-        primary: "px-6 py-2 rounded-full bg-portfolio-gradient text-white font-medium shadow-lg hover:shadow-xl hover:opacity-90 transition-all duration-300 border border-white/20",
+        primary: "px-6 py-2 rounded-full bg-portfolio-gradient text-white font-medium shadow-lg hover:shadow-xl hover:opacity-90 transition-all duration-300  border-white/20border",
         secondary: "px-6 py-2 rounded-full bg-white/30 backdrop-blur-md border border-white/40 text-text-dark font-medium hover:bg-white/50 transition-all duration-300",
         ghost: "bg-transparent hover:bg-white/20 text-gray-600 hover:text-gray-900",
     };

@@ -13,8 +13,8 @@ export function IconBadge({
     children,
     variant = "light",
     size = "md",
-    colorFrom = "violet-500",
-    colorTo = "pink-500",
+    colorFrom = "crimson-800",
+    colorTo = "crimson-700",
     className = "",
 }: IconBadgeProps) {
     const sizeClasses = {
@@ -28,8 +28,8 @@ export function IconBadge({
         ? "border border-white/50 shadow-sm"
         : "text-white font-bold shadow-lg";
 
-    // Use default light variant background for Features
-    const lightBg = "bg-gradient-to-br from-violet-500/10 to-pink-500/10";
+    // Use lighter variant background for dark feature cards
+    const lightBg = "bg-white/5 border-white/20";
 
     return (
         <div

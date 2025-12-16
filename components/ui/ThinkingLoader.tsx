@@ -15,11 +15,11 @@ export function ThinkingLoader() {
                     {/* Bow Tie Icon */}
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                         {/* Left triangle */}
-                        <path d="M 4 12 L 9 8 L 9 16 Z" fill="#6B7280" />
+                        <path d="M 4 12 L 9 8 L 9 16 Z" fill="#610a0a" />
                         {/* Right triangle */}
-                        <path d="M 20 12 L 15 8 L 15 16 Z" fill="#6B7280" />
+                        <path d="M 20 12 L 15 8 L 15 16 Z" fill="#610a0a" />
                         {/* Center circle */}
-                        <circle cx="12" cy="12" r="2" fill="#6B7280" />
+                        <circle cx="12" cy="12" r="2" fill="#610a0a" />
                     </svg>
                 </div>
 
@@ -27,10 +27,9 @@ export function ThinkingLoader() {
                 <svg className="absolute inset-0 -rotate-90" width="48" height="48">
                     <defs>
                         <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stopColor="rgb(7 89 133)" />
-                            <stop offset="33%" stopColor="rgb(91 33 182)" />
-                            <stop offset="66%" stopColor="rgb(157 23 77)" />
-                            <stop offset="100%" stopColor="rgb(30 64 175)" />
+                            <stop offset="0%" stopColor="#610a0a" />
+                            <stop offset="50%" stopColor="#821e1e" />
+                            <stop offset="100%" stopColor="#610a0a" />
                         </linearGradient>
                     </defs>
 

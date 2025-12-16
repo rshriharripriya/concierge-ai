@@ -17,7 +17,7 @@ export function ConciergeButton({
 
     const variants = {
         primary: "bg-concierge-gradient text-white shadow-lg hover:opacity-90 hover:-translate-y-0.5 hover:shadow-glass-hover active:scale-95",
-        secondary: "bg-white/50 border border-white/60 text-gray-900 backdrop-blur-md hover:bg-white/80 hover:border-pink-500 transition-colors",
+        secondary: "bg-white/50 border border-white/60 text-gray-900 backdrop-blur-md hover:bg-white/80 hover:border-crimson-700 transition-colors",
         ghost: "bg-transparent text-gray-600 hover:text-primary-purple hover:bg-white/10",
     };
 

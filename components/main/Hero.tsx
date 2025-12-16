@@ -3,37 +3,31 @@
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
-import { HoverBorderGradient } from "@/components/ui/hover-border-gradient";
-import { AuroraText } from "@/components/ui/aurora-text";
+import { FrostedButton } from "@/components/ui/FrostedButton";
 
 export function Hero() {
     const router = useRouter();
 
     return (
-        <div id="overview" className="max-w-4xl mx-auto text-center mb-32 scroll-mt-32">
+        <div id="overview" className="max-w-4xl mx-auto text-center h-[calc(80vh-5rem)] scroll-mt-32 flex justify-center items-center">
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
             >
-                <h1 className="text-6xl md:text-7xl font-bold mb-8 tracking-tight text-gray-900 leading-tight">
-                    Concierge <AuroraText>AI</AuroraText>
+                <h1 className="text-6xl md:text-7xl font-bold mb-8 tracking-tight text-[#F5F5F5] leading-tight font-serif">
+                    Concierge AI
                 </h1>
 
-                <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-xl mb-12 max-w-2xl mx-auto leading-relaxed text-[#F5F5F5] font-serif">
                     Smart tax help that knows when you need AI speed and when you need human expertise.
                 </p>
 
-                <div className="flex justify-center gap-4">
-                    <HoverBorderGradient
-                        containerClassName="rounded-full"
-                        as="button"
-                        className="dark:bg-black bg-white text-black dark:text-white flex items-center space-x-2 px-8 py-4 text-lg"
-                        onClick={() => router.push('/chat')}
-                    >
+                <div className="flex justify-center gap-4 font-serif">
+                    <FrostedButton onClick={() => router.push('/chat')}>
                         <span>Start Chatting</span>
-                        <ArrowRight className="w-5 h-5 ml-2" />
-                    </HoverBorderGradient>
+                        <ArrowRight className="w-5 h-5" />
+                    </FrostedButton>
                 </div>
             </motion.div>
         </div>

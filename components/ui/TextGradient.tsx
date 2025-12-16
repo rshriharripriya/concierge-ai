@@ -5,8 +5,8 @@ import { cn } from "@/lib/utils";
 export default function TextGradient({
     text,
     className,
-    from = "from-[#8B5CF6]",
-    to = "to-[#EC4899]",
+    from = "from-crimson-800",
+    to = "to-crimson-700",
 }: {
     text: string;
     className?: string;

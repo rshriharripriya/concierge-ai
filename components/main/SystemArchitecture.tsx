@@ -36,7 +36,8 @@ export default function SystemArchitecture() {
 
     return (
         <div
-            className="relative flex h-[800px] md:h-[500px] w-full md:w-[80%] lg:w-[70%] 2xl:w-[50%] items-center justify-center overflow-hidden rounded-lg border bg-background p-10 md:shadow-xl"
+            className="relative flex h-[800px] md:h-[500px] w-full md:w-[80%] lg:w-[70%] 2xl:w-[50%] items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-[#f5f5f5]/2
+            0 backdrop-blur-md p-10 md:shadow-xl"
             ref={containerRef}
         >
             <div className="flex size-full max-w-5xl flex-col items-stretch justify-between gap-10 md:gap-0">
@@ -47,26 +48,26 @@ export default function SystemArchitecture() {
 
                 {/* Middle Row (Vertical on mobile, Horizontal on desktop) */}
                 <div className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-0">
-                    <LabelNode ref={userRef} className="border-gray-200 text-gray-700">
+                    <LabelNode ref={userRef} className="border-[#821e1e]/30 text-[#610a0a]">
                         User
                     </LabelNode>
-                    <LabelNode ref={interfaceRef} className="border-violet-300 text-violet-800">
+                    <LabelNode ref={interfaceRef} className="border-[#821e1e]/40 text-[#610a0a]">
                         Interface
                     </LabelNode>
-                    <LabelNode ref={aiRef} className="border-pink-300 text-pink-800">
+                    <LabelNode ref={aiRef} className="border-[#610a0a]/40 text-[#610a0a]">
                         AI Agent
                     </LabelNode>
-                    <LabelNode ref={serviceRef} className="border-violet-300 text-violet-800">
+                    <LabelNode ref={serviceRef} className="border-[#821e1e]/40 text-[#610a0a]">
                         Service
                     </LabelNode>
-                    <LabelNode ref={validateRef} className="border-pink-200 text-pink-700">
+                    <LabelNode ref={validateRef} className="border-[#821e1e]/30 text-[#821e1e]">
                         Validate
                     </LabelNode>
                 </div>
 
                 {/* Bottom Row */}
                 <div className="flex flex-row items-center justify-center">
-                    <LabelNode ref={dbRef} className="w-2/3 border-violet-500/30 bg-violet-50/50 text-violet-900">
+                    <LabelNode ref={dbRef} className="w-2/3 border-[#821e1e]/30 bg-[#610a0a]/5 text-[#3b0505]">
                         Supabase Vector DB
                     </LabelNode>
                 </div>
@@ -120,8 +121,8 @@ export default function SystemArchitecture() {
                 fromRef={validateRef}
                 toRef={interfaceRef}
                 curvature={isDesktop ? 150 : 100}
-                gradientStartColor="#EC4899"
-                gradientStopColor="#8B5CF6"
+                gradientStartColor="#821e1e"
+                gradientStopColor="#610a0a"
                 startYOffset={isDesktop ? -50 : 0}
                 endYOffset={isDesktop ? -50 : 0}
                 startXOffset={isDesktop ? 0 : -60}
@@ -147,8 +148,8 @@ export default function SystemArchitecture() {
                 fromRef={aiRef}
                 toRef={dbRef}
                 curvature={isDesktop ? 0 : 0}
-                gradientStartColor="#EC4899"
-                gradientStopColor="#8B5CF6"
+                gradientStartColor="#821e1e"
+                gradientStopColor="#610a0a"
                 startYOffset={isDesktop ? 50 : 30}
                 endYOffset={isDesktop ? -50 : -50}
                 startXOffset={isDesktop ? -15 : 30}
@@ -159,8 +160,8 @@ export default function SystemArchitecture() {
                 fromRef={dbRef}
                 toRef={aiRef}
                 curvature={0}
-                gradientStartColor="#8B5CF6"
-                gradientStopColor="#EC4899"
+                gradientStartColor="#610a0a"
+                gradientStopColor="#821e1e"
                 startYOffset={isDesktop ? -50 : -50}
                 endYOffset={isDesktop ? 50 : 30}
                 startXOffset={isDesktop ? 15 : -30}
@@ -174,8 +175,8 @@ export default function SystemArchitecture() {
                 fromRef={serviceRef}
                 toRef={dbRef}
                 curvature={isDesktop ? 0 : -50}
-                gradientStartColor="#8B5CF6"
-                gradientStopColor="#EC4899"
+                gradientStartColor="#610a0a"
+                gradientStopColor="#821e1e"
                 startYOffset={isDesktop ? 50 : 20}
                 endYOffset={isDesktop ? -50 : -50}
                 endXOffset={isDesktop ? 60 : 50}
