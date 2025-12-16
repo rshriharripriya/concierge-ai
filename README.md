@@ -4,7 +4,7 @@
 
 Built with cutting-edge semantic routing, real-time RAG (Retrieval Augmented Generation), and intelligent expert matching, Concierge AI delivers the right answer, from the right source, at exactly the right time.
 
-## ✨ What Makes This Special
+## ✨ What Makes This AWESOME
 
 ### Intelligent Query Classification
 - **Semantic Intent Detection**: Advanced NLP models automatically classify user questions into categories like Simple Tax, Complex Tax, or Urgent scenarios
