@@ -26,9 +26,8 @@ export function Navigation({ onNavigate }: NavigationProps) {
                     <FrostedButton
                         variant="primary"
                         onClick={() => router.push('/chat')}
-                        className="font-serif text-sm px-4 py-2"
-                    >
-                        <span>Try Concierge</span>
+                        className="flex-1 px-3 py-2.5 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center text-[#F5F5F5] sm:text-sm font-medium font-serif hover:text-crimson-700 transition-colors whitespace-nowrap justify-center gap-2">
+                        <span className="text-[12px] font-medium font-serif hover:text-crimson-700 transition-colors whitespace-nowrap">Try Concierge</span>
                     </FrostedButton>
                 </div>
 
