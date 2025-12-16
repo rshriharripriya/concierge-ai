@@ -13,19 +13,27 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'),
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_URL ||
+    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
+  ),
   title: "Concierge AI - Smart tax help",
   description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
   openGraph: {
     title: "Concierge AI - Smart tax help",
     description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
-    images: ['preview.png'],
+    images: ['preview-og.jpg'],
+    type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: "Concierge AI - Smart tax help",
     description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
-    images: ['preview.png'],
+    images: ['preview-og.jpg'],
+  },
+  other: {
+    'image': 'preview-og.jpg',
+    'description': 'Smart tax help that knows when you need AI speed and when you need human expertise.',
   },
 };
 
