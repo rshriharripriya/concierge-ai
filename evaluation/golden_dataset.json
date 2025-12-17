@@ -1,0 +1,155 @@
+{
+    "test_queries": [
+        {
+            "id": "simple_001",
+            "query": "What is the standard deduction for 2024?",
+            "expected_intent": "simple_tax",
+            "expected_route": "ai",
+            "expected_complexity": 1,
+            "has_answer_in_kb": true,
+            "expected_answer_contains": [
+                "14600",
+                "single",
+                "29200",
+                "married"
+            ],
+            "ground_truth": "The standard deduction for 2024 is $14,600 for single filers and $29,200 for married couples filing jointly."
+        },
+        {
+            "id": "simple_002",
+            "query": "When is the tax filing deadline?",
+            "expected_intent": "simple_tax",
+            "expected_route": "ai",
+            "expected_complexity": 1,
+            "has_answer_in_kb": true,
+            "expected_answer_contains": [
+                "April 15"
+            ],
+            "ground_truth": "The tax filing deadline is April 15th for most taxpayers."
+        },
+        {
+            "id": "complex_001",
+            "query": "I sold my cryptocurrency for a profit and also have staking rewards. How do I report this?",
+            "expected_intent": "complex_tax",
+            "expected_route": "human",
+            "expected_complexity": 4,
+            "has_answer_in_kb": false,
+            "reasoning": "Multiple tax implications, requires professional judgment"
+        },
+        {
+            "id": "complex_002",
+            "query": "I live in California but work remotely for a New York company. How do I handle state taxes?",
+            "expected_intent": "complex_tax",
+            "expected_route": "human",
+            "expected_complexity": 5,
+            "has_answer_in_kb": false,
+            "reasoning": "Multi-state taxation requires expert analysis"
+        },
+        {
+            "id": "urgent_001",
+            "query": "I received an IRS audit notice yesterday, what should I do?",
+            "expected_intent": "urgent",
+            "expected_route": "human",
+            "expected_complexity": 5,
+            "urgency": true,
+            "expected_expert_specialty": "audit"
+        },
+        {
+            "id": "urgent_002",
+            "query": "The IRS sent me a penalty notice for $5000, I need help immediately",
+            "expected_intent": "urgent",
+            "expected_route": "human",
+            "expected_complexity": 5,
+            "urgency": true,
+            "expected_expert_specialty": "audit"
+        },
+        {
+            "id": "ambiguous_001",
+            "query": "Can I deduct my car?",
+            "expected_intent": "disambiguation_needed",
+            "expected_route": "clarification",
+            "should_ask_clarification": true,
+            "clarification_should_ask": [
+                "self-employed",
+                "business use",
+                "commuting"
+            ]
+        },
+        {
+            "id": "ambiguous_002",
+            "query": "What about home office?",
+            "expected_intent": "disambiguation_needed",
+            "expected_route": "clarification",
+            "should_ask_clarification": true,
+            "clarification_should_ask": [
+                "employee",
+                "self-employed",
+                "percentage"
+            ]
+        },
+        {
+            "id": "bookkeeping_001",
+            "query": "How do I categorize meals and entertainment in QuickBooks?",
+            "expected_intent": "bookkeeping",
+            "expected_route": "human",
+            "expected_complexity": 3,
+            "expected_expert_specialty": "bookkeeping"
+        },
+        {
+            "id": "international_001",
+            "query": "As a US citizen living abroad, do I need to file FBAR?",
+            "expected_intent": "complex_tax",
+            "expected_route": "human",
+            "expected_complexity": 4,
+            "expected_expert_specialty": "international"
+        },
+        {
+            "id": "simple_003",
+            "query": "What is a W-2 form?",
+            "expected_intent": "simple_tax",
+            "expected_route": "ai",
+            "expected_complexity": 1,
+            "has_answer_in_kb": true,
+            "ground_truth": "A W-2 form is a Wage and Tax Statement that reports your annual wages and the amount of taxes withheld from your paycheck. Your employer sends you this form by January 31st."
+        },
+        {
+            "id": "simple_004",
+            "query": "Can I still file if I lost my W-2?",
+            "expected_intent": "simple_tax",
+            "expected_route": "ai",
+            "expected_complexity": 2,
+            "has_answer_in_kb": true
+        },
+        {
+            "id": "complex_003",
+            "query": "I inherited a trust from my deceased parent with stocks and real estate. What are the tax implications?",
+            "expected_intent": "complex_tax",
+            "expected_route": "human",
+            "expected_complexity": 5,
+            "expected_expert_specialty": "estate_planning"
+        },
+        {
+            "id": "startup_001",
+            "query": "My startup just gave me ISO stock options. When should I exercise them to minimize taxes?",
+            "expected_intent": "complex_tax",
+            "expected_route": "human",
+            "expected_complexity": 5,
+            "expected_expert_specialty": "startup"
+        },
+        {
+            "id": "simple_005",
+            "query": "Do I need to report interest from my savings account?",
+            "expected_intent": "simple_tax",
+            "expected_route": "ai",
+            "expected_complexity": 1,
+            "has_answer_in_kb": true
+        }
+    ],
+    "evaluation_criteria": {
+        "routing_accuracy": "Percentage of queries routed correctly (ai vs human)",
+        "intent_accuracy": "Percentage of intents classified correctly",
+        "complexity_mae": "Mean Absolute Error of complexity scores (1-5 scale)",
+        "disambiguation_recall": "Percentage of ambiguous queries that triggered clarification",
+        "expert_match_accuracy": "For human routes, did we match correct specialty?"
+    }
+}

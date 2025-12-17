@@ -5,6 +5,10 @@ from typing import List, Dict
 import os
 from functools import lru_cache
 from services.hf_embeddings import HuggingFaceEmbeddings
+import logging
+import re
+
+logger = logging.getLogger(__name__)
 
 @lru_cache(maxsize=1)
 def get_llm():
@@ -20,12 +24,12 @@ def get_llm():
 @lru_cache(maxsize=1)
 def get_embeddings():
     """Cached HuggingFace Inference API Embeddings"""
-    print("🔄 Loading embedding model (API)...")
+    logger.info("🔄 Loading embedding model (API)...")
     model = HuggingFaceEmbeddings(
         model="sentence-transformers/all-MiniLM-L6-v2",
         api_token=os.getenv("HF_TOKEN")
     )
-    print("✅ Embedding model loaded")
+    logger.info("✅ Embedding model loaded")
     return model
 
 @lru_cache(maxsize=1)
@@ -42,28 +46,58 @@ class RAGService:
         self.embeddings = get_embeddings()
         self.supabase: Client = get_supabase()
         
+        # Initialize hybrid retriever and reranker
+        from services import hybrid_retriever, reranker
+        hybrid_retriever.initialize(self.embeddings)
+        self.retriever = hybrid_retriever.service_instance
+        self.reranker = reranker.service_instance
+        
+        # Main RAG prompt for answer generation
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a helpful tax and financial assistant for Concierge AI.
-            Answer questions accurately using the provided context and conversation history.
-            
-            Guidelines:
-            - Use conversation history to understand context and follow-up questions
-            - Be EXTREMELY concise and easy to understand
-            - Use bullet points for lists or steps
-            - Avoid long paragraphs and complex jargon
-            - If you're not confident, say so
-            - Cite sources using [1], [2] format corresponding to the source numbers
-            - Do NOT list the full source titles at the end (the UI will handle this)
-            - For complex scenarios, recommend connecting with an expert"""),
-            ("user", """Conversation History:
+            ("system", """You are a knowledgeable tax assistant. Answer questions using the provided context.
+
+CRITICAL FORMATTING RULES (MUST FOLLOW):
+
+1. MARKDOWN FORMATTING:
+   - Use **bold** for key terms and important points
+   - For bullet lists, use DASH (-) with proper line breaks:
+   
+- First item
+- Second item
+- Third item
+
+   - NOT asterisks (*), NOT inline like "* item1 * item2"
+   - Leave blank lines before and after lists
+
+2. CITATIONS (STRICT):
+   - ONLY use [1], [2], [3] - nothing else
+   - NEVER write "References:" section
+   - NEVER write full source titles like "[Source 1: Title]"
+   - NEVER write "[1] Title - Author - Chapter"
+   - Just use [1] at the end of sentences
+   
+3. COMPREHENSIVE ANSWERS - DON'T ASK QUESTIONS:
+   - For common tax questions (standard deduction, filing status, etc), provide ALL relevant scenarios
+   - Example: "What is the standard deduction?" → Give amounts for single, married, head of household
+   - DON'T ask "Are you single or married?" - just give both answers
+   - Cover the most common cases in your answer
+   
+4. WHAT NOT TO DO:
+   ❌ * inline * asterisks * for lists
+   ❌ References: [1] Book - Author
+   ❌ "Are you single or married?"
+   ❌ "What is your filing status?"
+   
+   ✅ Proper bullet lists with dashes
+   ✅ Simple [1] citations only
+   ✅ Comprehensive coverage: "For single filers: $X, for married: $Y"
+
+Previous conversation:
 {conversation_history}
 
-Context documents:
-{context}
-
-Current Question: {query}
-
-Provide a helpful answer that considers the conversation history and cites sources.""")
+Context:
+{context}"""),
+            ("user", "{query}")
         ])
         
         self.contextualize_q_prompt = ChatPromptTemplate.from_messages([
@@ -76,8 +110,8 @@ User Question: {query}
 Standalone Question:""")
         ])
     
-    async def get_conversation_history(self, conversation_id: str, limit: int = 5) -> str:
-        """Retrieve recent conversation history"""
+    async def get_conversation_history(self, conversation_id: str, limit: int = 3) -> str:
+        """Retrieve recent conversation history (limited to save tokens)"""
         if not conversation_id:
             return "No prior conversation"
         
@@ -104,26 +138,105 @@ Standalone Question:""")
             return "No prior conversation"
     
     async def retrieve_documents(self, query: str, k: int = 5) -> List[Dict]:
-        """Retrieve relevant documents using vector similarity search"""
+        """
+        Retrieve relevant documents using hybrid search + reranking + contextual expansion.
+        
+        Implements "Search Small, Feed Big" strategy:
+        - Search with small chunks (precise matching)
+        - Expand by fetching neighboring chunks from same chapter
+        - Feed large context to LLM (semantic coherence)
+        """
         try:
-            # Generate query embedding using HuggingFace Inference API
-            # Returns list of floats directly
-            query_embedding = self.embeddings.embed_query(query)
+            # Step 1: Hybrid retrieval (BM25 + Vector)
+            # Get more documents than needed for reranking
+            rerank_top_k = int(os.getenv("RERANK_TOP_K", "20"))
             
-            # Search using pgvector function
-            result = self.supabase.rpc(
-                'match_knowledge_documents',
-                {
-                    'query_embedding': query_embedding,
-                    'match_count': k,
-                    'match_threshold': 0.3  # Lowered to improve recall for casual queries
-                }
-            ).execute()
+            if self.retriever:
+                logger.info(f"Using hybrid retrieval (BM25 + vector) for top-{rerank_top_k}")
+                candidates = await self.retriever.retrieve(query, k=rerank_top_k)
+            else:
+                # Fallback: vector-only search
+                logger.warning("Hybrid retriever not available, using vector-only")
+                query_embedding = self.embeddings.embed_query(query)
+                result = self.supabase.rpc(
+                    'match_knowledge_documents',
+                    {
+                        'query_embedding': query_embedding,
+                        'match_count': rerank_top_k,
+                        'match_threshold': 0.3
+                    }
+                ).execute()
+                candidates = result.data if result.data else []
             
-            return result.data if result.data else []
+            # Step 2: Rerank if enabled and beneficial
+            top_similarity = candidates[0].get('similarity', 0) if candidates else 0
+            
+            if self.reranker and self.reranker.enabled and len(candidates) > 0:
+                if top_similarity > 0.85:
+                    logger.info(f"Skipping reranking (top similarity {top_similarity:.3f} > 0.85)")
+                    reranked = candidates[:k]
+                else:
+                    logger.info(f"Reranking {len(candidates)} candidates to top-{k}")
+                    reranked = await self.reranker.rerank(query, candidates, top_n=k)
+            else:
+                reranked = candidates[:k]
+            
+            # Step 3: CONTEXTUAL CHUNK EXPANSION
+            # Fetch neighboring chunks from same chapter for better context
+            expanded_results = []
+            expand_chunks = 1  # Fetch 1 chunk before/after (reduced from 2 to stay under token limits)
+            
+            for result in reranked:
+                metadata = result.get('metadata', {})
+                chapter = metadata.get('chapter')
+                chunk_index = metadata.get('chunk_index')
+                total_chunks = metadata.get('total_chunks')
+                
+                # If no chapter info, use chunk as-is
+                if not all([chapter, chunk_index, total_chunks]):
+                    expanded_results.append(result)
+                    continue
+                
+                # Fetch surrounding chunks from same chapter
+                start_idx = max(1, chunk_index - expand_chunks)
+                end_idx = min(total_chunks, chunk_index + expand_chunks)
+                
+                try:
+                    context_chunks = self.supabase.table('knowledge_documents')\
+                        .select('content, metadata')\
+                        .eq('metadata->>chapter', chapter)\
+                        .gte('metadata->>chunk_index', start_idx)\
+                        .lte('metadata->>chunk_index', end_idx)\
+                        .order('metadata->>chunk_index')\
+                        .execute()
+                    
+                    if context_chunks.data:
+                        # Merge into single context window
+                        expanded_content = '\n\n'.join([
+                            chunk['content'] for chunk in context_chunks.data
+                        ])
+                        
+                        expanded_results.append({
+                            **result,  # Keep original scores (similarity, rerank_score, etc.)
+                            'content': expanded_content,  # Replace with expanded content
+                            'metadata': {
+                                **metadata,
+                                'expanded': True,
+                                'context_chunks': len(context_chunks.data),
+                                'original_chunk_index': chunk_index  # Track which chunk matched
+                            }
+                        })
+                        logger.info(f"Expanded chunk {chunk_index} with {len(context_chunks.data)} chunks, similarity: {result.get('similarity', 0):.3f}")
+                    else:
+                        expanded_results.append(result)
+                except Exception as expand_error:
+                    logger.warning(f"Context expansion failed: {expand_error}, using original chunk")
+                    expanded_results.append(result)
+            
+            return expanded_results
         
         except Exception as e:
-            print(f"⚠️ Document retrieval error: {e}")
+            logger.error(f"⚠️ Document retrieval error: {e}")
             return []
     
     async def contextualize_query(self, query: str, conversation_history: str) -> str:
@@ -153,7 +266,7 @@ Standalone Question:""")
         print(f"🔄 Original query: '{query}' -> Standalone: '{standalone_query}'")
         
         # Retrieve relevant documents using STANDALONE query
-        documents = await self.retrieve_documents(standalone_query)
+        documents = await self.retrieve_documents(standalone_query, k=2)  # Reduced to 2 for Groq 12k token limit
         
         if not documents or len(documents) == 0:
             return {
@@ -162,9 +275,10 @@ Standalone Question:""")
                 "confidence": 0.3
             }
         
-        # Format context from retrieved documents
+        # Format context from retrieved documents (truncate to save tokens)
+        MAX_CONTENT_LENGTH = 500  # Limit each doc to 500 chars
         context = "\n\n".join([
-            f"[Source {i+1}: {doc['title']}]\n{doc['content']}\n(Relevance: {doc.get('similarity', 0):.2f})"
+            f"[Source {i+1}: {doc['title']}]\n{doc['content'][:MAX_CONTENT_LENGTH]}{'...' if len(doc['content']) > MAX_CONTENT_LENGTH else ''}\n(Relevance: {doc.get('similarity', 0):.2f})"
             for i, doc in enumerate(documents)
         ])
         
@@ -177,27 +291,56 @@ Standalone Question:""")
                 "query": query
             })
             
-            # Calculate confidence based on MAX document similarity
-            # Average penalizes having extra context. Max represents the best match found.
+            # Calculate immediate confidence (without faith faithfulness - async)
+            # This doesn't block the user response
             max_similarity = max(doc.get('similarity', 0) for doc in documents)
-            # Boost factor for MiniLM (which tends to have lower raw cosine scores)
-            confidence = min(0.95, max_similarity * 1.5)
+            rerank_score = max(doc.get('rerank_score', 0) for doc in documents) if documents else 0
             
-            # Check if answer suggests expert consultation
-            answer_lower = response.content.lower()
-            if any(phrase in answer_lower for phrase in [
-                'consult an expert', 'speak with an expert', 'expert can help',
-                'recommend talking to', 'personalized advice', 'individual circumstances'
-            ]):
-                confidence = min(confidence, 0.7)
+            # Check for citations
+            has_citations = bool(re.search(r'\[\d+\]', response.content))
+            
+            # Immediate confidence calculation
+            from services.faithfulness_scorer import calculate_confidence
+            retrieval_scores = {
+                'max_similarity': max_similarity,
+                'rerank_score': rerank_score
+            }
+            answer_metadata = {
+                'has_citations': has_citations,
+                'llm_confidence': 0.7  # Could extract from LLM if supported
+            }
+            
+            confidence = calculate_confidence(
+                retrieval_scores,
+                answer_metadata,
+                faithfulness_score=None  # Will be calculated async
+            )
+            
+            # Aggressively clean citations
+            cleaned_answer = response.content
+            
+            # Remove entire "References:" section at the end
+            cleaned_answer = re.sub(r'\n\s*References?:.*$', '', cleaned_answer, flags=re.DOTALL | re.IGNORECASE)
+            
+            # Convert verbose citations to simple numbers
+            # [Source 2: Title] -> [2]
+            cleaned_answer = re.sub(r'\[Source\s+(\d+):\s+[^\]]+\]', r'[\1]', cleaned_answer)
+            # [2: Title] -> [2]
+            cleaned_answer = re.sub(r'\[(\d+):\s+[^\]]+\]', r'[\1]', cleaned_answer)
+            # [2] Title - Author -> [2]
+            cleaned_answer = re.sub(r'\[(\d+)\]\s+[^[\n]+?(?=\n|$)', r'[\1]', cleaned_answer)
+            
+            # Clean up whitespace
+            cleaned_answer = re.sub(r'\n\s*\n\s*\n', '\n\n', cleaned_answer)  # Max 2 newlines
+            cleaned_answer = cleaned_answer.strip()
             
             return {
-                "answer": response.content,
+                "answer": cleaned_answer,
                 "sources": [
                     {
                         "title": doc['title'],
                         "source": doc.get('source', 'Internal'),
-                        "similarity": doc.get('similarity', 0),
+                        "similarity": min(1.0, max(0.0, doc.get('similarity', 0) / 100 if doc.get('similarity', 0) > 1 else doc.get('similarity', 0))),  # Normalize to 0-1
                         "chapter": doc.get('metadata', {}).get('chapter') if isinstance(doc.get('metadata'), dict) else None,
                         "source_url": doc.get('metadata', {}).get('source_url') if isinstance(doc.get('metadata'), dict) else None
                     }

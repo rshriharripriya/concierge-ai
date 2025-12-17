@@ -40,4 +40,11 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-concierge-ai/knowledge_data/books
+concierge-ai/knowledge_data/books\
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python

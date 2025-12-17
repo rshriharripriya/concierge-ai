@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, BackgroundTasks
 from pydantic import BaseModel
 from typing import Optional, List
 import uuid
@@ -7,10 +7,10 @@ import sys
 
 # Import services
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from services import semantic_router as semantic_router_lib
-from services import complexity_scorer as complexity_scorer_lib
+from services import llm_router as llm_router_lib
 from services import rag_service as rag_service_lib
 from services import expert_matcher as expert_matcher_lib
+from services import query_validator
 
 from supabase import create_client
 
@@ -38,13 +38,13 @@ class QueryResponse(BaseModel):
     reasoning: str
 
 @router.post("/query", response_model=QueryResponse)
-async def process_query(request: QueryRequest):
+async def process_query(request: QueryRequest, background_tasks: BackgroundTasks):
     """
-    Main query processing endpoint implementing 4-stage routing:
-    1. Intent Classification (Semantic Router)
-    2. Complexity Scoring
-    3. RAG Response Generation
-    4. Expert Matching (if needed)
+    Main query processing endpoint with async faithfulness scoring.
+    1. LLM-based Routing
+    2. RAG Response Generation  
+    3. Expert Matching (if needed)
+    4. Faithfulness Scoring (background - doesn't block response)
     """
     try:
         supabase = create_client(
@@ -55,31 +55,47 @@ async def process_query(request: QueryRequest):
         # Normalize query for better handling of abbreviations
         normalized_query = request.query.replace(" std ", " standard ").replace("std ", "standard ")
         
+        # STEP 0: Query Validation & Disambiguation
+        # Prevent "garbage in, garbage out" by checking for ambiguity
+        validation_result = await query_validator.validate_query(normalized_query)
+        
+        if validation_result.is_ambiguous and validation_result.confidence > 0.7:
+            # Query is too vague - ask for clarification
+            print(f"❓ Query ambiguous, asking for clarification: {validation_result.clarification_question}")
+            
+            # Return disambiguation response
+            return QueryResponse(
+                conversation_id=request.conversation_id or str(uuid.uuid4()),
+                intent="disambiguation",
+                complexity_score=0,
+                route_decision="clarification_needed",
+                response=validation_result.clarification_question,
+                confidence=validation_result.confidence,
+                expert=None,
+                sources=[],
+                reasoning=f"Missing: {', '.join(validation_result.missing_info)}"
+            )
+        
         # Get service instances
-        semantic_router = semantic_router_lib.service_instance
-        complexity_scorer = complexity_scorer_lib.service_instance
+        llm_router = llm_router_lib.service_instance
         rag_service = rag_service_lib.service_instance
         expert_matcher = expert_matcher_lib.service_instance
 
         # Check if services are initialized
-        if not semantic_router or not complexity_scorer or not rag_service or not expert_matcher:
-            raise HTTPException(status_code=500, detail="Backend services failed to initialize. Please check server logs and environment variables (HF_TOKEN, SUPABASE_URL, etc).")
+        if not llm_router or not rag_service or not expert_matcher:
+            raise HTTPException(status_code=500, detail="Backend services failed to initialize. Please check server logs and environment variables (HF_TOKEN, SUPABASE_URL, COHERE_API_KEY, etc).")
 
-        # Stage 1: Classify intent
-        intent_result = semantic_router.classify_intent(normalized_query)
-        intent = intent_result.get('intent') or "general"
+        # Stage 1: LLM-based routing decision
+        routing_result = await llm_router.route(request.query)
+        intent = routing_result.get('intent', 'general')
+        complexity_score = routing_result['complexity_score']
+        route_decision = routing_result['route_decision']
+        reasoning = routing_result['reasoning']
         
-        print(f"📍 Intent: {intent} (confidence: {intent_result['confidence']})")
+        print(f"🤖 LLM Router: {route_decision} (complexity: {complexity_score}/5, router: {routing_result['router_type']})")
+        print(f"📍 Intent: {intent} | Breakdown: Tech={routing_result['complexity_breakdown']['technical']}, Urgency={routing_result['complexity_breakdown']['urgency']}, Risk={routing_result['complexity_breakdown']['risk']}")
         
-        # Stage 2: Score complexity
-        complexity_result = complexity_scorer.score_complexity(request.query, intent)
-        complexity_score = complexity_result['complexity_score']
-        requires_expert = complexity_result['requires_expert']
-        reasoning = complexity_result['reasoning']
-        
-        print(f"📊 Complexity: {complexity_score}/5 - {reasoning}")
-        
-        # Stage 3: Attempt RAG response
+        # Stage 2: Generate RAG response
         # Pass conversation_id for memory
         rag_result = await rag_service.generate_answer(
             request.query, 
@@ -87,40 +103,50 @@ async def process_query(request: QueryRequest):
         )
         ai_confidence = rag_result['confidence']
         
-        print(f"🤖 AI Confidence: {ai_confidence}")
+        print(f"💡 AI Response generated (confidence: {ai_confidence})")
         
-        # Stage 4: Routing decision
-        # Confidence threshold determines when RAG confidence is high enough for AI response
-        # Current: 0.60 - Consider lowering to 0.50-0.55 if knowledge base is comprehensive
-        # Note: Improving knowledge base coverage is better than lowering threshold
-        confidence_threshold = 0.60
-        should_escalate = (
-            requires_expert or 
-            ai_confidence < confidence_threshold or
-            complexity_score >= 4 or
-            complexity_result['urgency_detected']
-        )
+        # Stage 3: Final routing decision
+        # LLM router already made primary decision, but we can override if AI confidence is very low
+        urgency_detected = routing_result['complexity_breakdown']['urgency'] >= 4
+        should_escalate = (route_decision == "human") or (ai_confidence < 0.60 and complexity_score >= 3)
         
-        route_decision = "human" if should_escalate else "ai"
-        expert_info = None
+        if should_escalate != (route_decision == "human"):
+            print(f"🔄 Overriding LLM decision due to AI confidence: {ai_confidence}")
         
-        print(f"🔀 Route Decision: {route_decision}")
-        
-        # If escalating, find best expert
+        # Stage 4: Expert matching (if escalating to human)
+        expert = None
         if should_escalate:
-            expert_info = await expert_matcher.find_best_expert(
-                request.query,
-                intent,
-                complexity_result['urgency_detected']
-            )
+            print(f"🔄 Escalating to expert (complexity: {complexity_score}, confidence: {ai_confidence}, urgency: {urgency_detected})")
             
-            if expert_info:
-                print(f"👤 Matched Expert: {expert_info['expert_name']} (score: {expert_info['match_score']})")
-            else:
-                print("⚠️ Expert matching failed or no expert found. Falling back to AI.")
+            try:
+                # Find best expert
+                expert_result = await expert_matcher.find_best_expert(
+                    request.query,
+                    intent,
+                    urgency_detected
+                )
+                
+                if expert_result and 'expert' in expert_result:
+                    expert = expert_result['expert']
+                    # Add match_score to expert object for frontend display
+                    expert['match_score'] = expert_result.get('match_score', 0)
+                    print(f"✅ Matched expert: {expert.get('name', 'Unknown')} (score: {expert['match_score']:.2f})")
+                else:
+                    print("⚠️ No expert found, continuing with AI response")
+                    should_escalate = False
+            except Exception as e:
+                print(f"❌ Expert matching failed: {e}, continuing with AI response")
                 should_escalate = False
         
-        # Create/update conversation in database
+        print(f"✅ Final Route Decision: {'human' if should_escalate else 'ai'}")
+        
+        # Save messages to database
+        supabase = create_client(
+            os.getenv("SUPABASE_URL"),
+            os.getenv("SUPABASE_KEY")
+        )
+        
+        # Ensure conversation_id existsabase
         conversation_id = request.conversation_id or str(uuid.uuid4())
         
         conversation_data = {
@@ -132,11 +158,13 @@ async def process_query(request: QueryRequest):
             "route_decision": route_decision,
             "ai_response": rag_result['answer'],
             "ai_confidence": float(ai_confidence),
-            "assigned_expert_id": expert_info['expert_id'] if should_escalate and expert_info else None,
+            "assigned_expert_id": expert.get('id') if should_escalate and expert else None,
             "status": "escalated" if should_escalate else "active",
             "context": {
                 "reasoning": reasoning,
-                "urgency": complexity_result['urgency_detected']
+                "urgency": urgency_detected,
+                "router_type": routing_result['router_type'],
+                "complexity_breakdown": routing_result['complexity_breakdown']
             }
         }
         
@@ -151,9 +179,9 @@ async def process_query(request: QueryRequest):
         }
         supabase.table('messages').insert(user_message).execute()
         
-        # Add AI/expert response message
-        if should_escalate and expert_info:
-            response_content = f"I'll connect you with {expert_info['expert_name']}, who specializes in {', '.join(expert_info['specialties'][:2])}. {expert_info['expert_bio']} They'll be with you in {expert_info['estimated_wait']}."
+        # Format response based on routing decision
+        if should_escalate and expert:
+            response_content = f"I'll connect you with {expert.get('name', 'an expert')}, who specializes in {', '.join(expert.get('specialties', [])[:2])}. They'll be with you shortly."
         else:
             response_content = rag_result['answer']
         
@@ -168,6 +196,16 @@ async def process_query(request: QueryRequest):
         }
         supabase.table('messages').insert(response_message).execute()
         
+        # ASYNC: Calculate faithfulness score in background (doesn't block user)
+        if not should_escalate and rag_result.get('sources'):
+            from services.faithfulness_scorer import score_faithfulness
+            background_tasks.add_task(
+                score_faithfulness,
+                request.query,
+                rag_result['answer'],
+                rag_result['sources']
+            )
+        
         # Return response
         return QueryResponse(
             conversation_id=conversation_id,
@@ -176,7 +214,7 @@ async def process_query(request: QueryRequest):
             route_decision=route_decision,
             response=response_content,
             confidence=ai_confidence,
-            expert=expert_info,
+            expert=expert,
             sources=rag_result['sources'],
             reasoning=reasoning
         )

@@ -120,11 +120,14 @@ class ExpertMatcher:
             estimated_wait = "< 5 min" if is_available else "15-30 min"
             
             return {
-                "expert_id": best_expert['id'],
-                "expert_name": best_expert['name'],
-                "expert_bio": best_expert['bio'],
-                "avatar_url": best_expert['avatar_url'],
-                "specialties": best_expert['specialties'],
+                "expert": {
+                    "id": best_expert['id'],
+                    "name": best_expert['name'],
+                    "bio": best_expert['bio'],
+                    "avatar_url": best_expert['avatar_url'],
+                    "specialties": best_expert['specialties'],
+                    "email": best_expert['email']
+                },
                 "match_score": best_expert['match_score'],
                 "estimated_wait": estimated_wait,
                 "performance": best_expert['performance_metrics']
@@ -132,6 +135,8 @@ class ExpertMatcher:
         
         except Exception as e:
             print(f"⚠️ Expert matching error: {e}")
+            import traceback
+            traceback.print_exc()
             return None
 
 # Global instance

@@ -200,7 +200,7 @@ export default function ChatPage() {
                                                         <div className="pt-1.5 mt-1.5 border-t border-gray-100 flex items-center gap-1.5">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-[#610a0a]"></span>
                                                             <span className="font-medium text-[#610a0a]">Matched Expert:</span>
-                                                            <span className="text-crimson-800 font-medium">{message.metadata.expert.expert_name}</span>
+                                                            <span className="text-crimson-800 font-medium">{message.metadata.expert.name}</span>
                                                             <span className="text-gray-400">({message.metadata.expert.match_score})</span>
                                                         </div>
                                                     )}
@@ -275,18 +275,18 @@ export default function ChatPage() {
                                             <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4 overflow-hidden relative">
                                                 <img
                                                     src={matchedExpert.avatar_url}
-                                                    alt={matchedExpert.expert_name}
+                                                    alt={matchedExpert.name}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>
-                                            <h4 className="text-xl font-bold text-[#610a0a]">{matchedExpert.expert_name}</h4>
+                                            <h4 className="text-xl font-bold text-[#610a0a]">{matchedExpert.name}</h4>
                                             <p className="text-sm text-crimson-700 font-medium flex items-center gap-1 mt-1">
                                                 <Sparkles className="w-3 h-3" /> Secondary Support
                                             </p>
                                         </div>
 
                                         <div className="bg-white/40 rounded-xl p-4 mb-6 text-sm text-[#610a0a] leading-relaxed border border-white/30 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-crimson-700/30">
-                                            {matchedExpert.expert_bio}
+                                            {matchedExpert.bio}
                                         </div>
 
                                         <ConciergeButton
@@ -314,18 +314,18 @@ export default function ChatPage() {
                                             <div className="w-24 h-24 rounded-full border-4 border-white shadow-lg mb-4 overflow-hidden relative">
                                                 <img
                                                     src={matchedExpert.avatar_url}
-                                                    alt={matchedExpert.expert_name}
+                                                    alt={matchedExpert.name}
                                                     className="w-full h-full object-cover"
                                                 />
                                             </div>
-                                            <h4 className="text-xl font-bold text-[#610a0a]">{matchedExpert.expert_name}</h4>
+                                            <h4 className="text-xl font-bold text-[#610a0a]">{matchedExpert.name}</h4>
                                             <p className="text-sm text-crimson-700 font-medium flex items-center gap-1 mt-1">
                                                 <Sparkles className="w-3 h-3" /> Secondary Support
                                             </p>
                                         </div>
 
                                         <div className="bg-white/40 rounded-xl p-4 mb-6 text-sm text-[#610a0a] leading-relaxed border border-white/30 flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-crimson-700/30">
-                                            {matchedExpert.expert_bio}
+                                            {matchedExpert.bio}
                                         </div>
 
                                         <ConciergeButton

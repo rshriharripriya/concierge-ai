@@ -15,7 +15,7 @@ if not os.environ.get("VERCEL"):
 # Add current directory to path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from routers import chat, experts
+from routers import chat, experts, metrics
 from services import rag_service, expert_matcher, semantic_router, complexity_scorer
 
 # Flag to track if services have been initialized
@@ -29,10 +29,13 @@ def initialize_services():
     
     print("🚀 Initializing AI services...")
     try:
-        rag_service.initialize()
-        expert_matcher.initialize()
-        semantic_router.initialize()
-        complexity_scorer.initialize()
+        # Use centralized initialization from services/__init__.py
+        from services import initialize_all
+        success = initialize_all()
+        
+        if not success:
+            print("⚠️ Some services failed to initialize, but continuing with fallbacks")
+        
         _services_initialized = True
         print("✅ All services initialized successfully")
     except Exception as e:
@@ -75,6 +78,7 @@ async def handle_vercel_routing(request: Request, call_next):
 # Include routers
 app.include_router(chat.router, prefix="/chat", tags=["chat"])
 app.include_router(experts.router, prefix="/experts", tags=["experts"])
+app.include_router(metrics.router, prefix="/metrics", tags=["metrics"])
 
 @app.get("/")
 async def root():
