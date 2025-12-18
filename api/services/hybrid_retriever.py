@@ -27,27 +27,60 @@ class HybridRetriever:
     def __init__(self, embeddings):
         self.supabase: Client = get_supabase()
         self.embeddings = embeddings
-        self.bm25_weight = float(os.getenv("BM25_WEIGHT", "0.3"))
-        self.vector_weight = float(os.getenv("VECTOR_WEIGHT", "0.7"))
+        self.bm25_weight = float(os.getenv("BM25_WEIGHT", "0.6"))
+        self.vector_weight = float(os.getenv("VECTOR_WEIGHT", "0.4"))
         self.use_hybrid = os.getenv("USE_HYBRID_SEARCH", "true").lower() == "true"
+        self.use_dynamic_weights = os.getenv("USE_DYNAMIC_WEIGHTS", "true").lower() == "true"
     
     def _tokenize(self, text: str) -> List[str]:
         """Simple tokenization for BM25"""
         # Lowercase and split on non-alphanumeric
         tokens = re.findall(r'\b\w+\b', text.lower())
         return tokens
+        
+    def _get_dynamic_weights(self, query: str) -> Dict[str, float]:
+        """
+        Detect query type and adjust BM25 vs Vector weights
+        Returns:
+            dict with 'bm25' and 'vector' weights
+        """
+        if not self.use_dynamic_weights:
+            return {"bm25": self.bm25_weight, "vector": self.vector_weight}
+            
+        # 1. Define patterns that need EXACT matching
+        exact_patterns = [
+            r'\bForm\s+\d+',           # "Form 1040", "Form 8889"
+            r'\b\d{4}\b',              # Years: "2024", "2023"
+            r'\bSchedule\s+[A-Z]\b',   # "Schedule C", "Schedule A"
+            r'\bW-?\d+\b',             # "W-2", "W4"
+            r'\b1099-\w+\b',           # "1099-INT", "1099-MISC"
+            r'\bIRS\s+Publication\s+\d+',  # "IRS Publication 970"
+        ]
+        
+        # 2. Check if query contains any exact patterns
+        has_exact_terms = any(
+            re.search(pattern, query, re.IGNORECASE) 
+            for pattern in exact_patterns
+        )
+        
+        # 3. Return appropriate weights
+        if has_exact_terms:
+            logger.info(f"🔍 Dynamic Weights: Detected exact terms in '{query}' -> Boosting BM25")
+            return {"bm25": 0.7, "vector": 0.3}
+        else:
+            # Default balanced approach for conceptual queries
+            # Use env defaults (usually 0.6/0.4)
+            return {"bm25": self.bm25_weight, "vector": self.vector_weight}
     
-    async def retrieve_bm25(self, query: str, k: int = 20) -> List[Dict]:
+    async def retrieve_bm25(self, query: str, k: int = 20, weight: float = None) -> List[Dict]:
         """
         Retrieve using PostgreSQL full-text search (BM25-like).
-        
-        Args:
-            query: Search query
-            k: Number of results
-            
-        Returns:
-            List of documents with bm25_score
         """
+        # Use provided weight or default
+        bm25_weight = weight if weight is not None else self.bm25_weight
+        # Use complement for vector if not provided (just for the rpc call signature compatibility)
+        vector_weight = 1.0 - bm25_weight
+        
         try:
             # Generate query embedding for hybrid search
             query_embedding = self.embeddings.embed_query(query)
@@ -59,8 +92,8 @@ class HybridRetriever:
                     'query_text': query,
                     'query_embedding': query_embedding,
                     'match_count': k,
-                    'bm25_weight': self.bm25_weight,
-                    'vector_weight': self.vector_weight
+                    'bm25_weight': bm25_weight,
+                    'vector_weight': vector_weight
                 }
             ).execute()
             
@@ -185,23 +218,21 @@ class HybridRetriever:
     async def retrieve(self, query: str, k: int = 20) -> List[Dict]:
         """
         Hybrid retrieval combining BM25 + vector search.
-        
-        Args:
-            query: Search query
-            k: Number of results to retrieve before reranking
-            
-        Returns:
-            Hybrid ranked documents
         """
         if not self.use_hybrid:
             logger.info("Hybrid search disabled, using vector-only")
             return await self.retrieve_vector(query, k)
         
+        # Calculate dynamic weights
+        weights = self._get_dynamic_weights(query)
+        bm25_w = weights["bm25"]
+        
         try:
             # Run both searches in parallel (async)
             import asyncio
+            # Pass dynamic weight to BM25 search
             bm25_results, vector_results = await asyncio.gather(
-                self.retrieve_bm25(query, k),
+                self.retrieve_bm25(query, k, weight=bm25_w),
                 self.retrieve_vector(query, k)
             )
             

@@ -60,7 +60,7 @@ Respond with ONLY a JSON object:
             model="groq/llama-3.3-70b-versatile",
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
-            fallbacks=["gemini/gemini-1.5-flash"],
+            fallbacks=["gemini/gemini-2.5-flash-preview-09-2025"],
             timeout=5,
             max_tokens=150
         )

@@ -1,4 +1,17 @@
-from langchain_groq import ChatGroq
+try:
+    from litellm import completion
+    import litellm
+    import logging
+    # Aggressively silence LiteLLM
+    litellm.set_verbose = False
+    litellm.suppress_handler_errors = True
+    litellm.add_status_to_exception = False
+    litellm.telemetry = False
+    logging.getLogger("LiteLLM").setLevel(logging.CRITICAL)
+    LITELLM_AVAILABLE = True
+except ImportError:
+    LITELLM_AVAILABLE = False
+
 from langchain_core.prompts import ChatPromptTemplate
 from supabase import create_client, Client
 from typing import List, Dict
@@ -10,16 +23,7 @@ import re
 
 logger = logging.getLogger(__name__)
 
-@lru_cache(maxsize=1)
-def get_llm():
-    """Cached LLM instance"""
-    return ChatGroq(
-        model="llama-3.3-70b-versatile",
-        groq_api_key=os.getenv("GROQ_API_KEY"),
-        temperature=0.7,
-        timeout=25,
-        max_retries=2
-    )
+# Removed get_llm cached function as we now use LiteLLM completion directly in generate_answer
 
 @lru_cache(maxsize=1)
 def get_embeddings():
@@ -42,7 +46,7 @@ def get_supabase():
 
 class RAGService:
     def __init__(self):
-        self.llm = get_llm()
+        self.enabled = LITELLM_AVAILABLE
         self.embeddings = get_embeddings()
         self.supabase: Client = get_supabase()
         
@@ -51,6 +55,14 @@ class RAGService:
         hybrid_retriever.initialize(self.embeddings)
         self.retriever = hybrid_retriever.service_instance
         self.reranker = reranker.service_instance
+
+        # Model Config
+        self.model = os.getenv("RAG_MODEL", "gemini-2.5-flash-lite-preview-09-2025")
+        fallbacks_str = os.getenv("RAG_FALLBACKS", "")
+        self.fallbacks = [f.strip() for f in fallbacks_str.split(",")] if fallbacks_str else [
+            "groq/llama-3.3-70b-versatile",
+            "openrouter/google/gemini-2.0-flash-exp:free"
+        ]
         
         # Main RAG prompt for answer generation
         self.prompt = ChatPromptTemplate.from_messages([
@@ -69,28 +81,46 @@ CRITICAL FORMATTING RULES (MUST FOLLOW):
    - NOT asterisks (*), NOT inline like "* item1 * item2"
    - Leave blank lines before and after lists
 
+4. TEMPORAL RELEVANCE (CRITICAL):
+   - PRIORITIZE 2024 information over 2023 or earlier.
+   - If context contains conflicting numbers (e.g. 2023 vs 2024), USE THE 2024 NUMBERS.
+   - Explicitly state "For 2024..." to confirm you are using the latest data.
+
 2. CITATIONS (STRICT):
-   - ONLY use [1], [2], [3] - nothing else
+   - IF information comes from the provided context (numbers, specific rules), YOU MUST cite it using [1], [2], etc.
+   - IF information is general knowledge (definitions, concepts), DO NOT cite it.
+   - NEVER use "[No Citation]" or similar tags. Just leave it blank.
    - NEVER write "References:" section
-   - NEVER write full source titles like "[Source 1: Title]"
-   - NEVER write "[1] Title - Author - Chapter"
    - Just use [1] at the end of sentences
    
-3. COMPREHENSIVE ANSWERS - DON'T ASK QUESTIONS:
-   - For common tax questions (standard deduction, filing status, etc), provide ALL relevant scenarios
-   - Example: "What is the standard deduction?" → Give amounts for single, married, head of household
-   - DON'T ask "Are you single or married?" - just give both answers
-   - Cover the most common cases in your answer
+3. COMPREHENSIVE ANSWERS - MINIMAL CLARIFICATION QUESTIONS:
+   - For common tax questions (standard deduction, filing status, deadlines, etc), provide ALL relevant scenarios in your first response.
+   - Example 1: \"What is the standard deduction?\"
+     - Right now: \"What is your filing status?\" (❌ WRONG)
+     - Improvement: \"Explain what standard deduction is and how it depends on your filing status and other factors:
+       - If you are single: $X
+       - If you are married filing jointly: $Y
+       - If you are head of household: $Z
+       If you can tell me your status, I could provide more detailed info.\" (✅ CORRECT)
+   - Example 2: "Can I deduct my car?"
+     - Improvement: Provide general rules for self-employed vs employees, and mention that if they provide more context (e.g., business use %), you can be more specific.
    
 4. WHAT NOT TO DO:
    ❌ * inline * asterisks * for lists
    ❌ References: [1] Book - Author
    ❌ "Are you single or married?"
    ❌ "What is your filing status?"
+   ❌ "Please tell me your income level first."
    
    ✅ Proper bullet lists with dashes
    ✅ Simple [1] citations only
    ✅ Comprehensive coverage: "For single filers: $X, for married: $Y"
+   ✅ Proactive information gathering: "Based on common scenarios... [info]. If you provide [specific detail], I can refine this."
+
+4. CONVERSATIONAL CLOSING:
+   - For general questions where you provided multiple scenarios (e.g. single vs married),
+     YOU MUST END WITH A QUESTION asking for their specific situation.
+   - Example closing: "To give you an exact number, are you filing single, married, or head of household?"
 
 Previous conversation:
 {conversation_history}
@@ -149,7 +179,7 @@ Standalone Question:""")
         try:
             # Step 1: Hybrid retrieval (BM25 + Vector)
             # Get more documents than needed for reranking
-            rerank_top_k = int(os.getenv("RERANK_TOP_K", "20"))
+            rerank_top_k = int(os.getenv("RERANK_TOP_K", "30"))
             
             if self.retriever:
                 logger.info(f"Using hybrid retrieval (BM25 + vector) for top-{rerank_top_k}")
@@ -172,8 +202,8 @@ Standalone Question:""")
             top_similarity = candidates[0].get('similarity', 0) if candidates else 0
             
             if self.reranker and self.reranker.enabled and len(candidates) > 0:
-                if top_similarity > 0.85:
-                    logger.info(f"Skipping reranking (top similarity {top_similarity:.3f} > 0.85)")
+                if top_similarity > 0.95: # Increased threshold for skipping
+                    logger.info(f"Skipping reranking (top similarity {top_similarity:.3f} > 0.95)")
                     reranked = candidates[:k]
                 else:
                     logger.info(f"Reranking {len(candidates)} candidates to top-{k}")
@@ -184,7 +214,7 @@ Standalone Question:""")
             # Step 3: CONTEXTUAL CHUNK EXPANSION
             # Fetch neighboring chunks from same chapter for better context
             expanded_results = []
-            expand_chunks = 1  # Fetch 1 chunk before/after (reduced from 2 to stay under token limits)
+            expand_chunks = int(os.getenv("CHUNK_EXPANSION_WINDOW", "1"))
             
             for result in reranked:
                 metadata = result.get('metadata', {})
@@ -266,7 +296,9 @@ Standalone Question:""")
         print(f"🔄 Original query: '{query}' -> Standalone: '{standalone_query}'")
         
         # Retrieve relevant documents using STANDALONE query
-        documents = await self.retrieve_documents(standalone_query, k=2)  # Reduced to 2 for Groq 12k token limit
+        # Use RERANK_FINAL_K from env (default 8)
+        final_k = int(os.getenv("RERANK_FINAL_K", "8"))
+        documents = await self.retrieve_documents(standalone_query, k=final_k)
         
         if not documents or len(documents) == 0:
             return {
@@ -276,20 +308,34 @@ Standalone Question:""")
             }
         
         # Format context from retrieved documents (truncate to save tokens)
-        MAX_CONTENT_LENGTH = 500  # Limit each doc to 500 chars
+        MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", "4000"))
         context = "\n\n".join([
             f"[Source {i+1}: {doc['title']}]\n{doc['content'][:MAX_CONTENT_LENGTH]}{'...' if len(doc['content']) > MAX_CONTENT_LENGTH else ''}\n(Relevance: {doc.get('similarity', 0):.2f})"
             for i, doc in enumerate(documents)
         ])
         
         try:
-            # Generate answer using LLM
-            chain = self.prompt | self.llm
-            response = chain.invoke({
-                "conversation_history": conversation_history,
-                "context": context,
-                "query": query
-            })
+            if not self.enabled:
+                raise Exception("LiteLLM not available")
+
+            # Provider Chain: Configurable via env
+            response = completion(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": self.prompt.messages[0].prompt.template.format(
+                        conversation_history=conversation_history,
+                        context=context
+                    )},
+                    {"role": "user", "content": query}
+                ],
+                fallbacks=self.fallbacks,
+                temperature=0.4, # Lower for tax accuracy
+                timeout=30,
+                max_tokens=1000
+            )
+            
+            # LiteLLM response structure differs from LangChain
+            message_content = response.choices[0].message.content
             
             # Calculate immediate confidence (without faith faithfulness - async)
             # This doesn't block the user response
@@ -297,7 +343,7 @@ Standalone Question:""")
             rerank_score = max(doc.get('rerank_score', 0) for doc in documents) if documents else 0
             
             # Check for citations
-            has_citations = bool(re.search(r'\[\d+\]', response.content))
+            has_citations = bool(re.search(r'\[\d+\]', message_content))
             
             # Immediate confidence calculation
             from services.faithfulness_scorer import calculate_confidence
@@ -317,7 +363,7 @@ Standalone Question:""")
             )
             
             # Aggressively clean citations
-            cleaned_answer = response.content
+            cleaned_answer = message_content
             
             # Remove entire "References:" section at the end
             cleaned_answer = re.sub(r'\n\s*References?:.*$', '', cleaned_answer, flags=re.DOTALL | re.IGNORECASE)
@@ -346,14 +392,17 @@ Standalone Question:""")
                     }
                     for doc in documents
                 ],
+                "contexts": [doc['content'] for doc in documents],
                 "confidence": round(confidence, 2)
             }
         
-        except Exception as e:
-            print(f"⚠️ LLM generation error: {e}")
+        except Exception:
+            # Clean logging
+            print("⚠️ RAG generation failed: All providers exhausted. Connecting to human support.")
             return {
-                "answer": "I encountered an issue generating a response. Let me connect you with an expert who can help.",
+                "answer": "I'm having trouble providing a complete answer right now. Let me connect you with an expert who can help.",
                 "sources": [],
+                "contexts": [],
                 "confidence": 0.2
             }
 

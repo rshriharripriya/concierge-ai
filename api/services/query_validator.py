@@ -46,36 +46,43 @@ async def validate_query(query: str) -> QueryValidator:
 
 Query: "{query}"
 
-Tax questions often require specific context:
-- **Filing status**: Single, Married Filing Jointly, Married Filing Separately, Head of Household
-- **State**: Tax rules vary by state
-- **Income type**: W2 employee, self-employed, 1099 contractor, etc.
-- **Tax year**: 2023, 2024, etc.
-- **Amounts**: Specific dollar amounts for calculations
+**PHILOSOPHY: Information First, Clarification Second**
+- If the query asks a CLEAR question about a tax topic, mark as **NOT ambiguous** (is_ambiguous=false).
+- The AI will provide a comprehensive answer covering all scenarios (e.g. all filing statuses) and THEN ask for details.
+- Only mark as **ambiguous** if the query is a FRAGMENT with NO clear tax topic.
 
-Guidelines:
-- If query is SPECIFIC enough (e.g., "What's the 2024 standard deduction for single filers?"), mark as NOT ambiguous
-- If query is TOO VAGUE (e.g., "Can I deduct my car?"), mark as ambiguous and ask a HELPFUL clarifying question
-- Make clarification questions conversational and include common options in parentheses
-- Examples of GOOD questions:
-  - "What is your filing status for 2024? (Single, Married Filing Jointly, Head of Household, etc.)"
-  - "Are you self-employed or a W2 employee?"
-  - "Which state do you live in? (This affects state tax rules)"
-- Don't be overly pedantic - only flag genuinely ambiguous queries
+**EXAMPLES - NOT AMBIGUOUS (is_ambiguous=false)**:
+- "What is the standard deduction?" -> Clear question. AI can provide all filing tax brackets.
+- "What is the standard deduction for 2024?" -> Clear question.
+- "Can I deduct my car?" -> Clear question. AI can explain self-employed vs employee rules.
+- "When is the deadline?" -> Clear question.
+
+**EXAMPLES - AMBIGUOUS (is_ambiguous=true)**:
+- "What about home office?" -> Fragment. Unclear what they are asking.
+- "Car deduction?" -> One word.
+- "Can I deduct it?" -> Pronoun with no context.
+
+Tax questions often require specific context (Filing status, State, Income type), BUT if the user asks a general question, let the AI answer generally FIRST.
 
 Respond in JSON format:
 {{
   "is_ambiguous": true/false,
   "missing_info": ["filing_status"],  // List missing details
-  "clarification_question": "What is your filing status for 2024? (Single, Married Filing Jointly, Head of Household, etc.)",  // Include options!
+  "clarification_question": "What is your filing status for 2024? (Single, Married Filing Jointly, Head of Household, etc.)",
   "confidence": 0.0-1.0
 }}"""
 
+        
+        # Configurable Model
+        model = os.getenv("QUERY_VALIDATOR_MODEL", "gpt-4o-mini")
+        fallbacks_str = os.getenv("QUERY_VALIDATOR_FALLBACKS", "")
+        fallbacks = [f.strip() for f in fallbacks_str.split(",")] if fallbacks_str else ["gemini/gemini-2.5-flash-lite-preview-09-2025"]
+
         response = completion(
-            model="groq/llama-3.3-70b-versatile",
+            model=model,
             messages=[{"role": "user", "content": prompt}],
             response_format={"type": "json_object"},
-            fallbacks=["gemini/gemini-1.5-flash"],
+            fallbacks=fallbacks,
             timeout=5,
             max_tokens=200
         )

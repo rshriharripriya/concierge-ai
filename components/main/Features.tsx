@@ -8,18 +8,18 @@ import { IconBadge } from "@/components/sub/IconBadge";
 export function Features() {
     const features = [
         {
-            title: "Intelligent event",
-            description: "Concierge customer convenient and designers end eras.",
+            title: "Instant AI Answers",
+            description: "Get immediate responses to common tax questions with accurate, cited information from IRS publications and tax resources.",
             icon: <MessageSquare className="w-6 h-6 text-[#F5F5F5]" />,
         },
         {
-            title: "Customer routing",
-            description: "Elevate your service with intelligent, white-glove sensory routing.",
+            title: "Smart Question Routing",
+            description: "Complex scenario? Our system automatically identifies when you need a human expert and connects you with the right tax professional.",
             icon: <Brain className="w-6 h-6 text-[#F5F5F5]" />,
         },
         {
-            title: "Security protection",
-            description: "Provide your service security and professional with exclusive.",
+            title: "Conversational Memory",
+            description: "Ask follow-up questions naturally. The AI remembers your conversation context for more relevant answers.",
             icon: <History className="w-6 h-6 text-[#F5F5F5]" />,
         },
     ];

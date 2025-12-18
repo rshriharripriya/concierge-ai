@@ -54,3 +54,23 @@ export async function getConversation(conversationId: string) {
 
     return response.json();
 }
+
+export async function getMetrics() {
+    const response = await fetch(`${API_BASE}/metrics/latest`);
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch metrics');
+    }
+
+    return response.json();
+}
+
+export async function getMetricsHistory() {
+    const response = await fetch(`${API_BASE}/metrics/history`);
+
+    if (!response.ok) {
+        throw new Error('Failed to fetch metrics history');
+    }
+
+    return response.json();
+}

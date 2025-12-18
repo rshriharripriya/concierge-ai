@@ -104,3 +104,57 @@ async def get_latest_metrics() -> Dict:
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error fetching evaluation results: {str(e)}")
+@router.get("/history")
+async def get_metrics_history() -> Dict:
+    """
+    Get formatted history of evaluation metrics for charting.
+    Returns last 5 runs.
+    """
+    try:
+        from supabase import create_client
+        
+        supabase_url = os.getenv("SUPABASE_URL")
+        supabase_key = os.getenv("SUPABASE_KEY")
+        
+        if not supabase_url or not supabase_key:
+            raise HTTPException(status_code=500, detail="Supabase credentials not configured")
+        
+        supabase = create_client(supabase_url, supabase_key)
+        
+        # Fetch last 5 runs
+        response = supabase.table("evaluation_runs")\
+            .select("created_at, faithfulness, context_precision, context_recall, context_relevancy, answer_relevancy, routing_accuracy")\
+            .order("created_at", desc=True)\
+            .limit(5)\
+            .execute()
+            
+        if not response.data:
+            return {"history": []}
+            
+        # Format for frontend (reverse to show chronological order left-to-right)
+        history = []
+        for run in reversed(response.data):
+            try:
+                # Parse timestamp to simpler format (e.g. "Dec 18 14:30")
+                dt = datetime.fromisoformat(run['created_at'].replace('Z', '+00:00'))
+                label = dt.strftime("%b %d %H:%M")
+                
+                history.append({
+                    "name": label,
+                    "date": run['created_at'],
+                    "Faithfulness": float(run['faithfulness']) if run['faithfulness'] else 0,
+                    "Context Precision": float(run['context_precision']) if run['context_precision'] else 0,
+                    "Context Recall": float(run['context_recall']) if run['context_recall'] else 0,
+                    "Context Relevancy": float(run['context_relevancy']) if run['context_relevancy'] else 0,
+                    "Answer Relevancy": float(run['answer_relevancy']) if run['answer_relevancy'] else 0,
+                    "Routing Accuracy": float(run['routing_accuracy']) if run['routing_accuracy'] else 0
+                })
+            except Exception as e:
+                print(f"Error parsing run for history: {e}")
+                continue
+                
+        return {"history": history}
+
+    except Exception as e:
+        print(f"History fetch error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))

@@ -13,6 +13,14 @@ logger = logging.getLogger(__name__)
 
 try:
     from litellm import completion
+    import litellm
+    import logging
+    # Aggressively silence LiteLLM
+    litellm.set_verbose = False
+    litellm.suppress_handler_errors = True
+    litellm.add_status_to_exception = False
+    litellm.telemetry = False
+    logging.getLogger("LiteLLM").setLevel(logging.CRITICAL)
     LITELLM_AVAILABLE = True
 except ImportError:
     LITELLM_AVAILABLE = False
@@ -32,22 +40,54 @@ def _get_llm_routing_decision(query: str) -> str:
     
     Returns JSON string with routing decision.
     """
-    routing_prompt = f"""You are a tax question routing system. Analyze this query and provide a structured routing decision.
+    routing_prompt = f"""You are a tax query classification system. Classify this query's intent and route.
 
 Query: "{query}"
 
-Evaluate on these dimensions (1-5 scale):
-- technical_complexity: How specialized is the tax knowledge needed? (1=basic, 5=expert-level)
-- urgency: Does this require immediate attention? (1=no rush, 5=urgent deadline/audit)
-- risk_exposure: What's the financial/legal risk of wrong advice? (1=low, 5=high penalties)
+**PHILOSOPHY: Information First, Clarification Second**
+- If the query asks a CLEAR question about a tax topic, route to AI (which will provide comprehensive answer + optional follow-up)
+- Only route to clarification if the query is a FRAGMENT with no clear tax topic
 
-Routing rules:
-- Route to "human" if: technical_complexity >= 4 OR urgency >= 4 OR risk_exposure >= 4
-- Route to "ai" otherwise
+**ALWAYS ROUTE TO AI (simple_tax):**
+- "What is the standard deduction?" → AI provides all filing statuses, then asks user's status
+- "What is the standard deduction for 2024?" → AI
+- "When is the tax deadline?" → AI
+- "Can I deduct my car?" → AI provides self-employed vs employee rules, then asks for details
+- "What is a W-2?" → AI
 
-Respond ONLY with valid JSON in this exact format:
+**ONLY ROUTE TO CLARIFICATION (disambiguation_needed):**
+- "What about home office?" → No clear question, just fragment
+- "Car deduction?" → One-word, unclear what they're asking
+- "That thing" → Pronoun-only reference
+
+**INTENT CLASSIFICATION:**
+1. **simple_tax** = Clear question about tax topic (provide info first)
+2. **complex_tax** = Multi-state, crypto, trusts, estate, international  
+3. **urgent** = IRS audit, penalty, deadline TODAY
+4. **bookkeeping** = QuickBooks, Xero, accounting software
+5. **disambiguation_needed** = Fragment with unclear topic
+
+**ROUTING RULES:**
+- simple_tax → route="ai" (RAG provides comprehensive answer + follow-up)
+- complex_tax → route="human"
+- urgent → route="human"
+- bookkeeping → route="human"
+- disambiguation_needed → route="clarification" (only for true fragments)
+
+**COMPLEXITY (1-5):**
+- 1 = Simple definition (W-2, standard deduction)
+- 2 = Procedure (lost W-2, deadline extension)
+- 3 = Scenario (home office, vehicle deduction)
+- 4 = Multi-state, crypto, FBAR
+- 5 = High-risk: audit, trust, ISO stock options, estate planning
+
+**CRITICAL: Stock Options & Equity = Complex!**
+- Any mention of ISO, RSU, stock options, equity → complex_tax, complexity=5
+
+Respond ONLY with JSON:
 {{
-  "route_decision": "ai" or "human",
+  "intent": "simple_tax" | "complex_tax" | "urgent" | "bookkeeping" | "disambiguation_needed",
+  "route": "ai" | "human" | "clarification",
   "technical_complexity": 1-5,
   "urgency": 1-5,
   "risk_exposure": 1-5,
@@ -56,14 +96,17 @@ Respond ONLY with valid JSON in this exact format:
 }}"""
 
     try:
-        # Groq → Gemini fallback chain (both free tier)
+        
+        # Provider Chain: Configurable via env
+        model, fallbacks = get_model_config()
+        
+        logger.info(f"Attempting LLM routing with model: {model}")
+        
         response = completion(
-            model="groq/llama-3.3-70b-versatile",
+            model=model,
             messages=[{"role": "user", "content": routing_prompt}],
             response_format={"type": "json_object"},
-            fallbacks=[
-                "gemini/gemini-2.0-flash-exp"  # Google Gemini 2.0 Flash (experimental, free)
-            ],
+            fallbacks=fallbacks,
             timeout=10,
             max_tokens=300
         )
@@ -71,8 +114,27 @@ Respond ONLY with valid JSON in this exact format:
         return response.choices[0].message.content
         
     except Exception as e:
-        logger.error(f"LLM routing failed (both Groq and Gemini): {e}")
+        # Keep logs clean as requested by user, BUT print for debugging now
+        print(f"❌ LLM Router Error (Model: {model}): {e}")
+        logger.error(f"LLM routing failed with model {model}: {e}")
         raise
+
+
+
+# Valid Intents
+VALID_INTENTS = ["simple_tax", "complex_tax", "cryptocurrency", "small_business", "interaction"]
+
+# Model Config
+# Model Config
+DEFAULT_MODEL = "gemini/gemini-2.0-flash-exp"
+DEFAULT_FALLBACKS = ["groq/llama-3.1-8b-instant", "openrouter/google/gemini-1.5-flash"]
+
+def get_model_config():
+    """Get model and fallbacks from env"""
+    model = os.getenv("LLM_ROUTER_MODEL", DEFAULT_MODEL)
+    fallbacks_str = os.getenv("LLM_ROUTER_FALLBACKS", "")
+    fallbacks = [f.strip() for f in fallbacks_str.split(",")] if fallbacks_str else DEFAULT_FALLBACKS
+    return model, fallbacks
 
 class LLMRouter:
     """LLM-as-judge routing with automatic provider fallback"""
@@ -105,40 +167,46 @@ class LLMRouter:
             result_json = cached_llm_routing(query)
             
             # Parse JSON response
+            if not result_json:
+                raise ValueError("LLM returned empty response")
+                
             result = json.loads(result_json)
             
             # Validate response structure
-            required_fields = ['route_decision', 'technical_complexity', 'urgency', 'risk_exposure', 'confidence', 'reasoning']
+            required_fields = ['route', 'intent', 'technical_complexity', 'urgency', 'risk_exposure', 'confidence', 'reasoning']
             if not all(field in result for field in required_fields):
-                raise ValueError(f"Missing required fields in LLM response: {result}")
+                # Fallback for old key name just in case
+                if 'route_decision' in result:
+                    result['route'] = result['route_decision']
+                else:
+                    raise ValueError(f"Missing required fields in LLM response: {result}")
             
             # Calculate overall complexity score (1-5)
             complexity_score = max(
-                result['technical_complexity'],
-                result['urgency'],
-                result['risk_exposure']
+                result.get('technical_complexity', 1),
+                result.get('urgency', 1),
+                result.get('risk_exposure', 1)
             )
             
+            # Integrated intent from the unified LLM call (Saves 1 LLM call!)
+            intent = result.get('intent', 'complex_tax')
             
-            # Use LLM Intent Classifier for accurate intent detection
-            intent_result = await llm_intent_classifier.service_instance.classify(query) if llm_intent_classifier.service_instance else {"intent": self._infer_intent(result), "confidence": 0.7}
-            
-            logger.info(f"LLM routing decision: {result['route_decision']} (complexity: {complexity_score}, confidence: {result['confidence']:.2f})")
-            logger.info(f"Intent: {intent_result['intent']} (method: {intent_result.get('method', 'fallback')})")
+            logger.info(f"LLM Unified decision: {result['route']} | Intent: {intent} (complexity: {complexity_score}, confidence: {result['confidence']:.2f})")
             
             return {
-                "route_decision": result['route_decision'],
+                "route": result['route'],
+                "route_decision": result['route'], # For backward compatibility
+                "router_type": "llm_unified",
+                "intent": intent,
                 "complexity_score": complexity_score,
-                "complexity_breakdown": {
-                    "technical": result['technical_complexity'],
-                    "urgency": result['urgency'],
-                    "risk": result['risk_exposure']
-                },
                 "confidence": result['confidence'],
                 "reasoning": result['reasoning'],
-                "intent": intent_result['intent'],
-                "intent_confidence": intent_result.get('confidence', 0.7),
-                "router_type": "llm"
+                "method": "llm_unified",
+                "complexity_breakdown": {
+                    "technical": result.get('technical_complexity', 1),
+                    "urgency": result.get('urgency', 1),
+                    "risk": result.get('risk_exposure', 1)
+                }
             }
             
         except Exception as e:

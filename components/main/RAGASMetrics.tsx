@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import { CheckCircle2, ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
+import { EvaluationHistoryChart } from "@/components/main/EvaluationHistoryChart";
+
+import { getMetrics } from "@/lib/api";
 
 export function RAGASMetrics() {
     const [metricsData, setMetricsData] = useState<any>(null);
@@ -10,8 +13,7 @@ export function RAGASMetrics() {
 
     useEffect(() => {
         // Fetch real evaluation metrics from API
-        fetch('http://localhost:8000/metrics/latest')
-            .then(res => res.json())
+        getMetrics()
             .then(data => {
                 setMetricsData(data);
                 setLoading(false);
@@ -208,6 +210,11 @@ export function RAGASMetrics() {
                     </div>
                 </div>
 
+                {/* Historical Chart */}
+                <div className="mb-12">
+                    <EvaluationHistoryChart />
+                </div>
+
                 {/* Footer Note */}
                 {/* <div className="text-center">
                     <p className="text-sm text-gray-600 font-serif">
@@ -220,6 +227,6 @@ export function RAGASMetrics() {
                     </p>
                 </div> */}
             </div>
-        </motion.div>
+        </motion.div >
     );
 }

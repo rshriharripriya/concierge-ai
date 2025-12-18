@@ -8,12 +8,12 @@
             "expected_complexity": 1,
             "has_answer_in_kb": true,
             "expected_answer_contains": [
-                "14600",
+                "$14,600",
+                "$29,200",
                 "single",
-                "29200",
                 "married"
             ],
-            "ground_truth": "The standard deduction for 2024 is $14,600 for single filers and $29,200 for married couples filing jointly."
+            "ground_truth": "The standard deduction for 2024 is $14,600 for single filers, $29,200 for married filing jointly, $21,900 for head of household, and $14,600 for married filing separately."
         },
         {
             "id": "simple_002",
@@ -34,7 +34,7 @@
             "expected_route": "human",
             "expected_complexity": 4,
             "has_answer_in_kb": false,
-            "reasoning": "Multiple tax implications, requires professional judgment"
+            "reasoning": "Multiple tax implications, requires professional judgment on capital gains vs ordinary income treatment"
         },
         {
             "id": "complex_002",
@@ -43,7 +43,7 @@
             "expected_route": "human",
             "expected_complexity": 5,
             "has_answer_in_kb": false,
-            "reasoning": "Multi-state taxation requires expert analysis"
+            "reasoning": "Multi-state taxation with complex sourcing rules requires expert analysis"
         },
         {
             "id": "urgent_001",
@@ -66,42 +66,49 @@
         {
             "id": "ambiguous_001",
             "query": "Can I deduct my car?",
-            "expected_intent": "disambiguation_needed",
-            "expected_route": "clarification",
-            "should_ask_clarification": true,
-            "clarification_should_ask": [
+            "expected_intent": "simple_tax",
+            "expected_route": "ai",
+            "expected_complexity": 3,
+            "has_answer_in_kb": true,
+            "expected_answer_contains": [
                 "self-employed",
                 "business use",
-                "commuting"
-            ]
+                "mileage"
+            ],
+            "reasoning": "Clear question - AI should provide comprehensive answer covering both self-employed and employee scenarios, then ask for user's specific situation",
+            "ground_truth": "Vehicle deductions depend on your employment situation. If you're self-employed, you can deduct business mileage or actual expenses. If you're a W-2 employee, you cannot deduct commuting or personal vehicle expenses (this changed in 2018)."
         },
         {
             "id": "ambiguous_002",
             "query": "What about home office?",
             "expected_intent": "disambiguation_needed",
             "expected_route": "clarification",
+            "expected_complexity": 2,
             "should_ask_clarification": true,
             "clarification_should_ask": [
                 "employee",
                 "self-employed",
                 "percentage"
-            ]
+            ],
+            "reasoning": "Extremely vague - unclear what specific aspect or whether user qualifies"
         },
         {
             "id": "bookkeeping_001",
             "query": "How do I categorize meals and entertainment in QuickBooks?",
             "expected_intent": "bookkeeping",
             "expected_route": "human",
-            "expected_complexity": 3,
-            "expected_expert_specialty": "bookkeeping"
+            "expected_complexity": 2,
+            "expected_expert_specialty": "bookkeeping",
+            "reasoning": "Software-specific bookkeeping question requires hands-on QuickBooks expertise"
         },
         {
             "id": "international_001",
             "query": "As a US citizen living abroad, do I need to file FBAR?",
             "expected_intent": "complex_tax",
             "expected_route": "human",
-            "expected_complexity": 4,
-            "expected_expert_specialty": "international"
+            "expected_complexity": 5,
+            "expected_expert_specialty": "international",
+            "reasoning": "International compliance with significant penalties requires specialized knowledge"
         },
         {
             "id": "simple_003",
@@ -110,7 +117,12 @@
             "expected_route": "ai",
             "expected_complexity": 1,
             "has_answer_in_kb": true,
-            "ground_truth": "A W-2 form is a Wage and Tax Statement that reports your annual wages and the amount of taxes withheld from your paycheck. Your employer sends you this form by January 31st."
+            "expected_answer_contains": [
+                "wage",
+                "employer",
+                "withhold"
+            ],
+            "ground_truth": "A W-2 form is a Wage and Tax Statement that reports your annual wages and the amount of taxes withheld from your paycheck. Your employer sends you this form by January 31st each year."
         },
         {
             "id": "simple_004",
@@ -118,7 +130,13 @@
             "expected_intent": "simple_tax",
             "expected_route": "ai",
             "expected_complexity": 2,
-            "has_answer_in_kb": true
+            "has_answer_in_kb": true,
+            "expected_answer_contains": [
+                "Form 4852",
+                "employer",
+                "substitute"
+            ],
+            "ground_truth": "Yes, you can still file. First, request a copy from your employer. If that fails, you can file using Form 4852 (Substitute for Form W-2) with your best estimate of income and withholdings."
         },
         {
             "id": "complex_003",
@@ -126,7 +144,8 @@
             "expected_intent": "complex_tax",
             "expected_route": "human",
             "expected_complexity": 5,
-            "expected_expert_specialty": "estate_planning"
+            "expected_expert_specialty": "estate_planning",
+            "reasoning": "Trust taxation, step-up basis, estate planning - requires specialized expertise"
         },
         {
             "id": "startup_001",
@@ -134,7 +153,8 @@
             "expected_intent": "complex_tax",
             "expected_route": "human",
             "expected_complexity": 5,
-            "expected_expert_specialty": "startup"
+            "expected_expert_specialty": "startup",
+            "reasoning": "ISO exercise timing, AMT implications, 83(b) elections require startup tax expertise. CRITICAL: Any equity compensation is complex_tax, complexity=5"
         },
         {
             "id": "simple_005",
@@ -142,14 +162,34 @@
             "expected_intent": "simple_tax",
             "expected_route": "ai",
             "expected_complexity": 1,
-            "has_answer_in_kb": true
+            "has_answer_in_kb": true,
+            "expected_answer_contains": [
+                "yes",
+                "1099-INT",
+                "$10"
+            ],
+            "ground_truth": "Yes, you must report all interest income from your savings account. Your bank will send you Form 1099-INT if you earned more than $10 in interest during the year."
         }
     ],
     "evaluation_criteria": {
-        "routing_accuracy": "Percentage of queries routed correctly (ai vs human)",
-        "intent_accuracy": "Percentage of intents classified correctly",
-        "complexity_mae": "Mean Absolute Error of complexity scores (1-5 scale)",
-        "disambiguation_recall": "Percentage of ambiguous queries that triggered clarification",
-        "expert_match_accuracy": "For human routes, did we match correct specialty?"
+        "routing_accuracy": "Percentage of queries routed correctly (ai vs human vs clarification)",
+        "intent_accuracy": "Percentage of intents classified correctly (simple_tax, complex_tax, urgent, bookkeeping, disambiguation_needed)",
+        "complexity_mae": "Mean Absolute Error of complexity scores (1-5 scale: 1=basic definition, 5=multi-jurisdictional/high-risk)",
+        "disambiguation_recall": "Percentage of ambiguous/vague queries that correctly triggered clarification route",
+        "expert_match_accuracy": "For human routes, percentage where matched expert has the required specialty",
+        "answer_quality": "For AI routes, percentage where generated answer contains expected keywords and facts",
+        "ragas_metrics": {
+            "faithfulness": "Are answers grounded in retrieved context? (Target: >0.90 for tax domain)",
+            "context_precision": "Are top-ranked docs most relevant? (Target: >0.80)",
+            "context_recall": "Did we retrieve all necessary info? (Target: >0.85)",
+            "context_relevance": "How much retrieved content is relevant? (Target: >0.70)",
+            "answer_relevancy": "Does answer address the question? (Target: >0.85)"
+        }
+    },
+    "notes": {
+        "unified_orchestration": "System now uses a single LLM call for both intent classification AND routing decisions to optimize API usage (saves ~50% on orchestration calls)",
+        "disambiguation_priority": "The orchestration prompt prioritizes disambiguation detection FIRST before any other classification to catch vague queries",
+        "comprehensive_answers": "For common questions (standard deduction, deadlines), RAG provides ALL filing statuses upfront instead of asking clarifying questions",
+        "complexity_calibration": "Simple definitional questions should score 1-2 on technical_complexity. Only multi-state, international, or high-penalty scenarios score 4-5"
     }
 }

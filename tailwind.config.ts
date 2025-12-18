@@ -47,6 +47,7 @@ const config: Config = {
           900: '#3b0505', // Very dark shading for gradients
           800: '#610a0a', // Base deep blood red
           700: '#821e1e', // Lighter for hover states
+          600: '#9c2c2c', // Lighter for hover states
         },
         // Backgrounds
         obsidian: '#050505', // Deepest black
