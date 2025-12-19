@@ -1,0 +1,3 @@
+# Evaluation results are stored in Supabase
+# JSON files are no longer saved to avoid wasting Vercel space
+results_*.json

@@ -22,17 +22,25 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Concierge AI - Smart tax help",
     description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
-    images: ['preview-og.jpg'],
+    url: 'https://concierge-ai-tax.vercel.app',
+    images: [
+      {
+        url: 'https://concierge-ai-tax.vercel.app/preview-og.jpg',
+        width: 1200,
+        height: 630,
+        alt: 'Concierge AI - Smart tax help',
+      }
+    ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: "Concierge AI - Smart tax help",
     description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
-    images: ['preview-og.jpg'],
+    images: ['https://concierge-ai-tax.vercel.app/preview-og.jpg'],
   },
   other: {
-    'image': 'preview-og.jpg',
+    'image': 'https://concierge-ai-tax.vercel.app/preview-og.jpg',
     'description': 'Smart tax help that knows when you need AI speed and when you need human expertise.',
   },
 };

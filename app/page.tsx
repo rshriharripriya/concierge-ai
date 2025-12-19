@@ -7,6 +7,7 @@ import { Features } from "@/components/main/Features";
 import { Navigation } from "@/components/main/Navigation";
 import { Hero } from "@/components/main/Hero";
 import { TechnicalOverview } from "@/components/main/TechnicalOverview";
+import { RAGASMetrics } from "@/components/main/RAGASMetrics";
 
 import Silk from "@/components/ui/Silk";
 
@@ -62,15 +63,19 @@ export default function Home() {
 
         </div>
 
-        {/* Architecture Section */}
         <div className="py-20 -mx-6 px-6 bg-[#f5f5f5]">
+
+
+
+          {/* Architecture Section */}
+
           <motion.div
             id="architecture"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.8 }}
-            className="scroll-mt-24"
+            className="scroll-mt-24 "
           >
             <div className="text-center mb-12">
               <h2 className="text-3xl font-bold text-[#610a0a] mb-4 font-serif">System Architecture</h2>
@@ -80,9 +85,17 @@ export default function Home() {
               <SystemArchitecture />
             </div>
           </motion.div>
+
+
+             {/* RAGAS Evaluation Metrics Section */}
+        <RAGASMetrics />
         </div>
 
+     
+
       </div>
+
+
 
       {/* Gradient Transition to Footer
       <div className="h-32 bg-gradient-to-b from-black/55 to-black" /> */}

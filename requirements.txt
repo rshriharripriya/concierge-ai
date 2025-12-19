@@ -7,19 +7,25 @@ uvicorn>=0.27.0
 requests>=2.31.0
 
 # AI & RAG
-langchain>=0.1.0
-langchain-groq>=0.0.1
-langchain-community>=0.0.13
 groq>=0.4.1
+
+
+# LLM Infrastructure
+litellm>=1.0.0  # Unified LLM interface with automatic provider fallback
+
+# Reranking
+cohere>=5.0.0  # Cohere Rerank API (free tier available)
+
+# Hybrid Search
+# rank-bm25 removed (unused)
 
 # Database
 supabase>=2.3.0
 
-# ML - lightweight API client only (no transformers/torch)
+# ML - API client
 huggingface-hub>=0.20.0
 
-# NOTE: Heavy dependencies removed for production deployment:
-# - langchain-huggingface (includes torch/transformers - 1GB+)
-# - pypdf (only needed for local ingestion scripts)
-# - semantic-router (pulls in litellm ~500MB + numpy dependencies)
-# Using lightweight custom implementations instead
+# NOTE: Moved from heavy local models to API-based approach for serverless
+# - Using LiteLLM for provider fallback (Groq → OpenAI → Claude)
+# - Using Cohere API for reranking (free tier)
+# - Using HuggingFace Inference API for embeddings

@@ -18,11 +18,15 @@ if not supabase_url or not supabase_key:
 
 supabase = create_client(supabase_url, supabase_key)
 
+# Add parent dir to path to allow imports from api
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from api.services.hf_embeddings import HuggingFaceEmbeddings
+
 # Initialize Embedding Model (API)
 print("🔄 Loading embedding model (API)...")
-model = HuggingFaceEndpointEmbeddings(
-    huggingfacehub_api_token=os.getenv("HF_TOKEN"),
-    model="sentence-transformers/all-MiniLM-L6-v2"
+model = HuggingFaceEmbeddings(
+    model="sentence-transformers/all-MiniLM-L6-v2",
+    api_token=os.getenv("HF_TOKEN")
 )
 print("✅ Model loaded")
 
@@ -76,7 +80,8 @@ if __name__ == "__main__":
     # Files to ingest
     files_to_ingest = [
         "knowledge_data/knowledge_international_students.txt",
-        "knowledge_data/knowledge_investments.txt"
+        "knowledge_data/knowledge_investments.txt",
+        "knowledge_data/knowledge_2024_updates.txt"
     ]
     
     documents = []

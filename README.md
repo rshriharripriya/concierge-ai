@@ -135,9 +135,17 @@ concierge-ai/
    npm run dev
    
    # Backend (in a separate terminal)
+
+   #Remove conda environment ( if using venv)
+
+   conda deactivate
    source .venv/bin/activate
+   cd concierge-ai
+   
    python -m uvicorn api.index:app --reload --port 8000
    ```
+
+
 
 ## 🎯 Core Features Explained
 

@@ -71,27 +71,27 @@ const Footer = () => {
                         <div className="space-y-2">
                             <p className="cursor-pointer">
                                 <Link href="https://rshriharripriya.vercel.app/#about" target="_blank" rel="noopener noreferrer">
-                                    <span className="text-lg hover:text-purple-400 transition-colors font-serif">About Me</span>
+                                    <span className="text-lg hover:text-[#9c2c2c] transition-colors font-serif">About Me</span>
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
                                 <Link href="https://rshriharripriya.vercel.app/#projects" target="_blank" rel="noopener noreferrer">
-                                    <span className="text-lg hover:text-purple-400 transition-colors font-serif">My Projects</span>
+                                    <span className="text-lg hover:text-[#9c2c2c] transition-colors font-serif">My Projects</span>
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
                                 <Link href="https://rshriharripriya.vercel.app/#awards" target="_blank" rel="noopener noreferrer">
-                                    <span className="text-lg hover:text-purple-400 transition-colors font-serif">My Awards</span>
+                                    <span className="text-lg hover:text-[#9c2c2c] transition-colors font-serif">My Awards</span>
                                 </Link>
                             </p>
 
                             <p className="cursor-pointer">
-                                <Link href="mailto:rshriharripriya@outlook.com" className="hover:text-purple-400 transition-colors">
+                                <Link href="mailto:rshriharripriya@outlook.com" className="hover:text-[#9c2c2c] transition-colors">
                                     <div className="text-base font-serif">Hire Me </div>
                                 </Link>
                             </p>
                             <p className="cursor-pointer">
-                                <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors">
+                                <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank" rel="noopener noreferrer" className="hover:text-[#9c2c2c] transition-colors">
                                     <span className="text-base font-serif">My Playlists</span>
                                 </Link>
                             </p>
@@ -154,34 +154,34 @@ const Footer = () => {
                     <div className="min-w-[200px] h-auto flex flex-col items-center justify-start pt-4 space-y-7">
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://rshriharripriya.vercel.app/#about" target="_blank" rel="noopener noreferrer">
-                                <span className="text-[15px] hover:text-purple-400 transition-colors font-serif">About Me</span>
+                                <span className="text-[15px] hover:text-[#9c2c2c] transition-colors font-serif">About Me</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://rshriharripriya.vercel.app/#projects" target="_blank" rel="noopener noreferrer">
-                                <span className="text-[15px] hover:text-purple-400 transition-colors font-serif">My projects</span>
+                                <span className="text-[15px] hover:text-[#9c2c2c] transition-colors font-serif">My projects</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://rshriharripriya.vercel.app/#awards" target="_blank" rel="noopener noreferrer">
-                                <span className="text-[15px] hover:text-purple-400 transition-colors font-serif">My awards</span>
+                                <span className="text-[15px] hover:text-[#9c2c2c] transition-colors font-serif">My awards</span>
                             </Link>
                         </p>
                     </div>
                     <div className="min-w-[200px] h-auto flex flex-col items-center justify-start pt-4 space-y-7">
                         <p className="flex flex-row items-center cursor-pointer">
-                            <Link href="mailto:rshriharripriya@outlook.com" target="_blank" className="hover:text-purple-400 transition-colors">
+                            <Link href="mailto:rshriharripriya@outlook.com" target="_blank" className="hover:text-[#9c2c2c] transition-colors">
                                 <span className="text-[15px] font-serif">Hire me</span>
                             </Link  >
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
-                            <Link href="https://rshriharripriya.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-purple-400 transition-colors">
+                            <Link href="https://rshriharripriya.vercel.app" target="_blank" rel="noopener noreferrer" className="hover:text-[#9c2c2c] transition-colors">
                                 <span className="text-[15px] font-serif">My blogs</span>
                             </Link>
                         </p>
                         <p className="flex flex-row items-center cursor-pointer">
                             <Link href="https://music.apple.com/profile/rshriharripriya" target="_blank" rel="noopener noreferrer"
-                                className="flex flex-row items-center hover:text-purple-400 transition-colors">
+                                className="flex flex-row items-center hover:text-[#9c2c2c] transition-colors">
                                 <span className="text-[15px] font-serif">Check out my playlists</span>
                             </Link>
                         </p>

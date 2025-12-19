@@ -36,8 +36,7 @@ export default function SystemArchitecture() {
 
     return (
         <div
-            className="relative flex h-[800px] md:h-[500px] w-full md:w-[80%] lg:w-[70%] 2xl:w-[50%] items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-[#f5f5f5]/2
-            0 backdrop-blur-md p-10 md:shadow-xl"
+            className="relative flex h-[800px] md:h-[500px] w-full md:w-[80%] lg:w-[70%] 2xl:w-[50%] items-center justify-center overflow-hidden rounded-lg border border-white/10 bg-[#f5f5f5]/20 backdrop-blur-md p-10 md:shadow-xl  bg-white rounded-2xl p-8 shadow-md border border-gray-200"
             ref={containerRef}
         >
             <div className="flex size-full max-w-5xl flex-col items-stretch justify-between gap-10 md:gap-0">
