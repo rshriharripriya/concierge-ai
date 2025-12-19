@@ -31,8 +31,18 @@ class CohereReranker:
     """Reranker using Cohere Rerank API"""
     
     def __init__(self):
-        self.client = get_cohere_client()
-        self.enabled = self.client is not None and os.getenv("USE_RERANKING", "true").lower() == "true"
+        api_key = os.getenv("COHERE_API_KEY")
+        if not api_key:
+            # Warn instead of crash to allow fallback
+            logger.warning("COHERE_API_KEY not found in environment. Reranking will be disabled.")
+            self.client = None
+            self.enabled = False
+            return
+            
+        self.client = cohere.Client(api_key)
+        self.enabled = os.getenv("USE_RERANKING", "true").lower() == "true"
+        if self.enabled:
+            print("✅ Cohere reranker initialized")
     
     async def rerank(
         self, 
@@ -53,7 +63,7 @@ class CohereReranker:
         Returns:
             Reranked documents with 'rerank_score' field added
         """
-        if not self.enabled or not documents:
+        if not self.enabled or not self.client or not documents:
             logger.info("Reranking disabled or no documents, returning original order")
             return documents[:top_n]
         
@@ -63,38 +73,44 @@ class CohereReranker:
             
             # Call Cohere Rerank API
             logger.info(f"Reranking {len(documents)} documents with Cohere {model}")
-            results = self.client.rerank(
+            
+            # Using synchronous client in async method (Cohere SDK is sync)
+            response = self.client.rerank(
                 model=model,
                 query=query,
                 documents=doc_texts,
                 top_n=top_n,
-                return_documents=False  # We already have the docs
+                return_documents=True  # Critical for faithfulness/context
             )
             
-            # Merge rerank scores with original documents
+            logger.info(f"✅ Cohere reranked {len(documents)} → {len(response.results)} docs")
+            
+            # Reconstruct documents with new scores and order
             reranked_docs = []
-            for result in results.results:
+            for result in response.results:
+                # result.document.text contains the content
+                # We need to map back to original metadata if possible, 
+                # but since we passed text, we might lose metadata if we don't map by index.
+                # result.index tells us the index in original list.
+                
                 original_doc = documents[result.index]
+                
                 reranked_doc = {
                     **original_doc,
+                    'content': result.document.text, # Use the returned text to be safe
                     'rerank_score': result.relevance_score,
-                    'rerank_index': result.index
+                    'rerank_index': result.index,
+                    'similarity': original_doc.get('similarity', 0),
+                    'combined_score': original_doc.get('combined_score', 0)
                 }
                 reranked_docs.append(reranked_doc)
             
-            logger.info(f"Successfully reranked to top {len(reranked_docs)} documents")
+            logger.info(f"✅ Cohere reranked {len(documents)} → {len(response.results)} docs")
             return reranked_docs
         
         except Exception as e:
-            # Defensive: Handle Cohere rate limits (free tier: 10-20 req/min)
-            if "429" in str(e) or "rate" in str(e).lower():
-                logger.warning(f"⚠️ Cohere rate limit hit: {e}. Failing open with original ranking.")
-            elif "trial" in str(e).lower() or "quota" in str(e).lower():
-                logger.warning(f"⚠️ Cohere trial quota exceeded: {e}. Failing open.")
-            else:
-                logger.error(f"⚠️ Reranking failed: {e}. Failing open with original ranking.")
-            
-            # Fail open: return top-n from original ranking
+            logger.error(f"❌ Reranking failed: {e}")
+            # Fail gracefully - return original docs
             return documents[:top_n]
 
 # Global instance

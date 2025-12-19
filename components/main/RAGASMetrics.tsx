@@ -50,11 +50,11 @@ export function RAGASMetrics() {
             status: (ragas.faithfulness || 0) >= 0.90 ? "pass" : (ragas.faithfulness || 0) >= 0.85 ? "near" : "fail"
         },
         {
-            name: "Context Precision",
-            score: ragas.context_precision || 0,
-            target: 0.80,
-            description: "Hybrid search ranks relevant docs first",
-            status: (ragas.context_precision || 0) >= 0.80 ? "pass" : (ragas.context_precision || 0) >= 0.75 ? "near" : "fail"
+            name: "Routing Accuracy",
+            score: routing.llm_based || 0,
+            target: 0.90,
+            description: "Queries routed to correct expert/system",
+            status: (routing.llm_based || 0) >= 0.90 ? "pass" : (routing.llm_based || 0) >= 0.85 ? "near" : "fail"
         },
         {
             name: "Context Relevancy",

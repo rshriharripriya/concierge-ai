@@ -53,6 +53,7 @@ class RAGService:
         # Initialize hybrid retriever and reranker
         from services import hybrid_retriever, reranker
         hybrid_retriever.initialize(self.embeddings)
+        reranker.initialize()  # Initialize reranker!
         self.retriever = hybrid_retriever.service_instance
         self.reranker = reranker.service_instance
 
@@ -66,67 +67,44 @@ class RAGService:
         
         # Main RAG prompt for answer generation
         self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a knowledgeable tax assistant. Answer questions using the provided context.
+            ("system", """You are a knowledgeable tax assistant providing accurate, focused answers.
 
-CRITICAL FORMATTING RULES (MUST FOLLOW):
+Retrieved sources are ranked by relevance (Source 1 = most relevant).
 
-1. MARKDOWN FORMATTING:
-   - Use **bold** for key terms and important points
-   - For bullet lists, use DASH (-) with proper line breaks:
-   
-- First item
-- Second item
-- Third item
+ANSWER RULES:
+1. **Be direct and complete**: Include dollar amounts, thresholds, form numbers, deadlines
+2. **Prioritize Source 1**: Use information from top-ranked sources first
+3. **Cite sources**: Use [1], [2] after facts
+4. **Match answer length to question complexity**:
+   - Simple factual questions (W-2 definition, deadlines): 2-4 sentences
+   - Procedural questions (how to deduct): 2-3 paragraphs with bullet lists
+   - Complex scenarios: Comprehensive breakdown
+5. **Only ask follow-ups when NECESSARY**: Don't ask filing status for universal rules
 
-   - NOT asterisks (*), NOT inline like "* item1 * item2"
-   - Leave blank lines before and after lists
+EXAMPLES:
 
-4. TEMPORAL RELEVANCE (CRITICAL):
-   - PRIORITIZE 2024 information over 2023 or earlier.
-   - If context contains conflicting numbers (e.g. 2023 vs 2024), USE THE 2024 NUMBERS.
-   - Explicitly state "For 2024..." to confirm you are using the latest data.
+Query: "Do I need to report interest from my savings account?"
+✅ GOOD: "Yes, if you earned $10 or more in interest, you must report it. You'll receive Form 1099-INT from your bank [1]. Report this on Schedule B of Form 1040 [2]."
+❌ BAD: "Yes, you generally need to report interest... To give you more specific information, what is your filing status?"
 
-2. CITATIONS (STRICT):
-   - IF information comes from the provided context (numbers, specific rules), YOU MUST cite it using [1], [2], etc.
-   - IF information is general knowledge (definitions, concepts), DO NOT cite it.
-   - NEVER use "[No Citation]" or similar tags. Just leave it blank.
-   - NEVER write "References:" section
-   - Just use [1] at the end of sentences
-   
-3. COMPREHENSIVE ANSWERS - MINIMAL CLARIFICATION QUESTIONS:
-   - For common tax questions (standard deduction, filing status, deadlines, etc), provide ALL relevant scenarios in your first response.
-   - Example 1: \"What is the standard deduction?\"
-     - Right now: \"What is your filing status?\" (❌ WRONG)
-     - Improvement: \"Explain what standard deduction is and how it depends on your filing status and other factors:
-       - If you are single: $X
-       - If you are married filing jointly: $Y
-       - If you are head of household: $Z
-       If you can tell me your status, I could provide more detailed info.\" (✅ CORRECT)
-   - Example 2: "Can I deduct my car?"
-     - Improvement: Provide general rules for self-employed vs employees, and mention that if they provide more context (e.g., business use %), you can be more specific.
-   
-4. WHAT NOT TO DO:
-   ❌ * inline * asterisks * for lists
-   ❌ References: [1] Book - Author
-   ❌ "Are you single or married?"
-   ❌ "What is your filing status?"
-   ❌ "Please tell me your income level first."
-   
-   ✅ Proper bullet lists with dashes
-   ✅ Simple [1] citations only
-   ✅ Comprehensive coverage: "For single filers: $X, for married: $Y"
-   ✅ Proactive information gathering: "Based on common scenarios... [info]. If you provide [specific detail], I can refine this."
+Query: "What is a W-2 form?"
+✅ GOOD: "A W-2 form is a Wage and Tax Statement that your employer provides by January 31st [1]. It reports your annual wages and taxes withheld [1]. You need it to file your tax return."
+❌ BAD: [300-word essay] + "To give you more specific information, are you an employee or self-employed?"
 
-4. CONVERSATIONAL CLOSING:
-   - For general questions where you provided multiple scenarios (e.g. single vs married),
-     YOU MUST END WITH A QUESTION asking for their specific situation.
-   - Example closing: "To give you an exact number, are you filing single, married, or head of household?"
+Query: "Can I deduct my car?"
+✅ GOOD: "You can deduct car expenses if you use it for business [1]. Two methods:
+- **Standard Mileage**: $0.67/mile for 2024 [2]
+- **Actual Expenses**: Gas, insurance, repairs [1]
+
+You must track business vs personal mileage [3]. If you're an employee, you cannot deduct commuting [2]. Are you self-employed or a W-2 employee?"
+❌ BAD: [900-word comprehensive guide with all edge cases] + question
 
 Previous conversation:
 {conversation_history}
 
-Context:
+Retrieved Context (ordered by relevance):
 {context}"""),
+
             ("user", "{query}")
         ])
         
@@ -198,17 +176,27 @@ Standalone Question:""")
                 ).execute()
                 candidates = result.data if result.data else []
             
-            # Step 2: Rerank if enabled and beneficial
-            top_similarity = candidates[0].get('similarity', 0) if candidates else 0
-            
+            # Step 2: Rerank (ALWAYS for tax domain)
+            # Log candidates BEFORE reranking
+            logger.info(f"🔍 Hybrid search returned {len(candidates)} candidates")
+            logger.info("Before reranking (Top 3):")
+            for i, doc in enumerate(candidates[:3]):
+                score = doc.get('combined_score') or doc.get('similarity') or 0
+                title = doc.get('title', 'Unknown')
+                logger.info(f"  #{i+1}: {title[:50]}... (score: {score:.3f})")
+
             if self.reranker and self.reranker.enabled and len(candidates) > 0:
-                if top_similarity > 0.95: # Increased threshold for skipping
-                    logger.info(f"Skipping reranking (top similarity {top_similarity:.3f} > 0.95)")
-                    reranked = candidates[:k]
-                else:
-                    logger.info(f"Reranking {len(candidates)} candidates to top-{k}")
-                    reranked = await self.reranker.rerank(query, candidates, top_n=k)
+                logger.info(f"🎯 Reranking {len(candidates)} candidates to top-{k}")
+                reranked = await self.reranker.rerank(query, candidates, top_n=k)
+                
+                # Log results AFTER reranking
+                logger.info("After reranking (Top 3):")
+                for i, doc in enumerate(reranked[:3]):
+                    score = doc.get('rerank_score', 0)
+                    title = doc.get('title', 'Unknown')
+                    logger.info(f"  #{i+1}: {title[:50]}... (rerank: {score:.3f})")
             else:
+                logger.warning("⚠️ Reranker not available/enabled! Using hybrid results directly")
                 reranked = candidates[:k]
             
             # Step 3: CONTEXTUAL CHUNK EXPANSION
@@ -221,6 +209,11 @@ Standalone Question:""")
                 chapter = metadata.get('chapter')
                 chunk_index = metadata.get('chunk_index')
                 total_chunks = metadata.get('total_chunks')
+                
+                # Capture original scores BEFORE expansion to preserve them
+                original_similarity = result.get('similarity', 0)
+                original_rerank_score = result.get('rerank_score', 0)
+                original_combined_score = result.get('combined_score', 0)
                 
                 # If no chapter info, use chunk as-is
                 if not all([chapter, chunk_index, total_chunks]):
@@ -247,8 +240,11 @@ Standalone Question:""")
                         ])
                         
                         expanded_results.append({
-                            **result,  # Keep original scores (similarity, rerank_score, etc.)
+                            **result,  # Keep original fields
                             'content': expanded_content,  # Replace with expanded content
+                            'similarity': original_similarity,  # Explicitly restore
+                            'rerank_score': original_rerank_score,  # Explicitly restore
+                            'combined_score': original_combined_score,  # Explicitly restore
                             'metadata': {
                                 **metadata,
                                 'expanded': True,
@@ -256,7 +252,7 @@ Standalone Question:""")
                                 'original_chunk_index': chunk_index  # Track which chunk matched
                             }
                         })
-                        logger.info(f"Expanded chunk {chunk_index} with {len(context_chunks.data)} chunks, similarity: {result.get('similarity', 0):.3f}")
+                        logger.info(f"Expanded chunk {chunk_index} with {len(context_chunks.data)} chunks, similarity: {original_similarity:.3f}, rerank: {original_rerank_score:.3f}")
                     else:
                         expanded_results.append(result)
                 except Exception as expand_error:
@@ -297,7 +293,7 @@ Standalone Question:""")
         
         # Retrieve relevant documents using STANDALONE query
         # Use RERANK_FINAL_K from env (default 8)
-        final_k = int(os.getenv("RERANK_FINAL_K", "8"))
+        final_k = int(os.getenv("RERANK_FINAL_K", "5"))
         documents = await self.retrieve_documents(standalone_query, k=final_k)
         
         if not documents or len(documents) == 0:
@@ -307,12 +303,36 @@ Standalone Question:""")
                 "confidence": 0.3
             }
         
-        # Format context from retrieved documents (truncate to save tokens)
-        MAX_CONTENT_LENGTH = int(os.getenv("MAX_CONTENT_LENGTH", "4000"))
-        context = "\n\n".join([
-            f"[Source {i+1}: {doc['title']}]\n{doc['content'][:MAX_CONTENT_LENGTH]}{'...' if len(doc['content']) > MAX_CONTENT_LENGTH else ''}\n(Relevance: {doc.get('similarity', 0):.2f})"
-            for i, doc in enumerate(documents)
-        ])
+        # Smart Context Construction (Total Budget)
+        # Truncate the TOTAL context, not each document
+        MAX_TOTAL_CONTEXT = int(os.getenv("MAX_TOTAL_CONTEXT", "8000"))  # Total char budget
+        
+        context_parts = []
+        total_chars = 0
+        
+        for i, doc in enumerate(documents):
+            # Reserve space for source header
+            # Add relevance score to help LLM prioritize
+            relevance = doc.get('similarity', 0)
+            source_header = f"[Source {i+1} - Relevance: {relevance:.2f}]\nTitle: {doc['title']}\n"
+            
+            # Calculate remaining space
+            available_space = MAX_TOTAL_CONTEXT - total_chars - len(source_header)
+            
+            if available_space < 200:  # Minimum useful chunk size
+                break
+            
+            # Use available space for this doc
+            content_to_use = doc['content'][:available_space]
+            context_parts.append(f"{source_header}{content_to_use}")
+            
+            total_chars += len(source_header) + len(content_to_use)
+            
+            # Stop if we've filled the budget
+            if total_chars >= MAX_TOTAL_CONTEXT:
+                break
+                
+        context = "\n\n".join(context_parts)
         
         try:
             if not self.enabled:
@@ -339,7 +359,10 @@ Standalone Question:""")
             
             # Calculate immediate confidence (without faith faithfulness - async)
             # This doesn't block the user response
-            max_similarity = max(doc.get('similarity', 0) for doc in documents)
+            max_similarity = max(
+                doc.get('rerank_score') or doc.get('similarity', 0) 
+                for doc in documents
+            )
             rerank_score = max(doc.get('rerank_score', 0) for doc in documents) if documents else 0
             
             # Check for citations
@@ -386,7 +409,10 @@ Standalone Question:""")
                     {
                         "title": doc['title'],
                         "source": doc.get('source', 'Internal'),
-                        "similarity": min(1.0, max(0.0, doc.get('similarity', 0) / 100 if doc.get('similarity', 0) > 1 else doc.get('similarity', 0))),  # Normalize to 0-1
+                        # Prefer rerank_score over similarity
+                        "similarity": doc.get('rerank_score') or doc.get('similarity', 0),
+                        "rerank_score": doc.get('rerank_score'),  # Keep both for debugging
+                        "original_similarity": doc.get('similarity'),  # Keep original
                         "chapter": doc.get('metadata', {}).get('chapter') if isinstance(doc.get('metadata'), dict) else None,
                         "source_url": doc.get('metadata', {}).get('source_url') if isinstance(doc.get('metadata'), dict) else None
                     }
