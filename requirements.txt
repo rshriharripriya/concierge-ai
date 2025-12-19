@@ -17,8 +17,7 @@ litellm>=1.0.0  # Unified LLM interface with automatic provider fallback
 # Reranking
 cohere>=5.0.0  # Cohere Rerank API (free tier available)
 
-# Hybrid Search
-# rank-bm25 removed (unused)
+
 
 # Database
 supabase>=2.3.0
