@@ -9,10 +9,14 @@ python-dotenv>=1.0.0
 pydantic>=2.5.3
 
 # AI & RAG - using API-based embedding (no heavy models)
+numpy>=1.26.0
 langchain>=0.1.0
 langchain-groq>=0.0.1
 langchain-community>=0.0.13
 groq>=0.4.1
+
+# Reranking
+cohere>=5.0.0
 
 # Database
 supabase>=2.3.0

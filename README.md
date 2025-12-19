@@ -38,7 +38,7 @@ Built with cutting-edge semantic routing, real-time RAG (Retrieval Augmented Gen
 
 ### Backend & AI Infrastructure
 - **FastAPI**: High-performance Python API framework with automatic documentation
-- **LangChain**: Advanced LLM orchestration and chain management
+- **LiteLLM**: Unified LLM interface (serverless optimized)
 - **Semantic Router**: Intent classification and query routing engine
 - **Sentence Transformers**: State-of-the-art embeddings for semantic search
 - **Groq LLM**: Ultra-fast inference with Llama 3 models
@@ -94,7 +94,12 @@ concierge-ai/
    ```bash
    python -m venv .venv
    source .venv/bin/activate  # On Windows: .venv\Scripts\activate
+   
+   # For Production/Vercel (Lightweight):
    pip install -r requirements.txt
+   
+   # For Local Dev & Eval (Includes Ragas/LangChain):
+   pip install -r requirements-dev.txt
    ```
 
 4. **Configure environment variables**

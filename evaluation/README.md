@@ -12,44 +12,56 @@ This framework provides **reproducible, automated testing** for the Concierge AI
 
 ## 📊 Quick Start
 
+
+### Prerequisites
+
+```bash
+# Install development dependencies (includes Ragas & LangChain)
+pip install -r requirements-dev.txt
+```
+
 ### Run All Tests
 
 ```bash
 # From project root
-cd evaluation
-python run_evaluation.py
+python evaluation/run_evaluation.py --force --ragas
 ```
+
+**Flags:**
+- `--force`: Bypass the one-week cooldown period (useful for development)
+- `--ragas`: Enable expensive Ragas evaluation (context precision, faithfulness, etc.)
+- `--rerun-failed`: Only retry tests that failed in the last run
 
 ### Expected Output
 
 ```
-🧪 Testing: simple_001
-   Query: What is the standard deduction for 2024?
-   Intent: simple_tax (expected: simple_tax) - PASS
-   Route: ai (expected: ai) - PASS
-   Complexity: 1 (expected: 1) - PASS
+Testing: simple_001
+Query: What is the standard deduction for 2024?
+Intent: simple_tax (expected: simple_tax) - PASS
+Route: ai (expected: ai) - PASS
+Complexity: 1 (expected: 1) - PASS
 
 ================================================================
 EVALUATION RESULTS
 ================================================================
 
-📊 METRICS:
-   Routing Accuracy:        87.5%
-   Intent Accuracy:         93.3%
-   Complexity MAE:          0.4
-   Disambiguation Recall:   100.0%
-   Expert Match Accuracy:   80.0%
+METRICS:
+Routing Accuracy:        87.5%
+Intent Accuracy:         93.3%
+Complexity MAE:          0.4
+Disambiguation Recall:   100.0%
+Expert Match Accuracy:   80.0%
 
-📈 SUMMARY:
-   Total Tests:    15
-   Passed:         13 ✅
-   Failed:         2 ❌
+SUMMARY:
+Total Tests:    15
+Passed:         13 
+Failed:         2 
 
-🎯 OVERALL RATING: ✨ STRONG (7-8/10)
+OVERALL RATING: STRONG (7-8/10)
 ================================================================
 ```
 
-## 📁 Files
+## Files
 
 ### `golden_dataset.json`
 Contains 15 carefully curated test cases covering:
@@ -77,7 +89,7 @@ Automated test runner that:
 2. Runs each test query through the full pipeline
 3. Compares actual vs expected outcomes
 4. Calculates aggregate metrics
-5. Saves detailed results to `results_TIMESTAMP.json`
+5. Saves detailed results to Supabase (`evaluation_runs` table)
 
 ## 🔬 What Gets Tested
 
@@ -137,41 +149,43 @@ Automated test runner that:
 3. Run evaluation to see impact
 
 ### A/B Testing Changes
-
-```bash
-# Baseline (before changes)
-python run_evaluation.py
-# Results saved to results_20241216_120000.json
-
-# Make changes to routing logic
-# ...
-
-# Test again  
-python run_evaluation.py
-# Results saved to results_20241216_120500.json
-
-# Compare results
-python compare_results.py results_20241216_120000.json results_20241216_120500.json
-```
+ 
+ ```bash
+ # Baseline (before changes)
+ python evaluation/run_evaluation.py
+ # Results saved to Supabase (Record ID: 123)
+ 
+ # Make changes to routing logic
+ # ...
+ 
+ # Test again  
+ python evaluation/run_evaluation.py
+ # Results saved to Supabase (Record ID: 124)
+ 
+ # Compare results
+ # Check the Metric History visualization in the frontend or query Supabase directly
+ ```
 
 ## 🏆 Expert-Level Checklist
 
 - [x] **Evaluation Framework**: Automated testing with golden dataset
 - [x] **LLM Intent Classifier**: Replaces keyword regex matching
 - [x] **Reproducible Metrics**: JSON results with timestamps
-- [ ] **Query Disambiguation**: Detect ambiguous queries (in progress)
 - [ ] **100+ Test Cases**: Expand golden dataset
-- [ ] **Continuous Monitoring**: Track metrics over time
-- [ ] **A/B Testing**: Compare routing strategies
+
+
 
 ## 📦 Results Archive
 
-All evaluation runs are saved to `results_TIMESTAMP.json` with:
+All evaluation runs are saved directly to the **Supabase** `evaluation_runs` table with:
 - Full test results for each query
 - Pass/fail status per test
 - Aggregate metrics
+- Ragas scores (if enabled)
 - Timestamp for tracking improvement over time
+
+You can query the results history via the `evaluation_runs` table or the metrics API endpoints.
 
 ---
 
-**Pro Tip**: Run evaluation before AND after every major change to prove improvements with data, not claims.
+**Pro Tip**: Run evaluation before AND after every major change to prove improvements with data.
