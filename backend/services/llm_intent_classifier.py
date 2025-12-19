@@ -1,5 +1,5 @@
 from typing import Dict
-from langchain_core.prompts import ChatPromptTemplate
+
 try:
     from litellm import completion
     import litellm
@@ -22,8 +22,8 @@ class LLMIntentClassifier:
     
     def __init__(self):
         self.enabled = LITELLM_AVAILABLE
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are an expert tax query classifier. Classify the user's query into ONE of these intents:
+        # Raw system prompt template
+        self.system_prompt_template = """You are an expert tax query classifier. Classify the user's query into ONE of these intents:
 
 **INTENT DEFINITIONS:**
 - simple_tax: Straightforward tax questions with clear answers (forms, deadlines, definitions)
@@ -67,8 +67,7 @@ Reasoning: International tax compliance with potential penalties, requires speci
 6. Missing context = disambiguation_needed
 
 Query: {query}
-Intent:"""),
-        ])
+Intent:"""
     
     async def classify(self, query: str) -> Dict[str, any]:
         """Classify query intent using LLM with fallback"""
@@ -77,7 +76,7 @@ Intent:"""),
 
         try:
             # Format prompt manually since we are using completion()
-            formatted_prompt = self.prompt.format(query=query)
+            formatted_prompt = self.system_prompt_template.format(query=query)
             
             # Configurable Model
             model = os.getenv("INTENT_CLASSIFIER_MODEL", "gpt-4o-mini")

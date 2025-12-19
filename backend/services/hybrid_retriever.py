@@ -7,7 +7,7 @@ from supabase import Client
 import os
 from functools import lru_cache
 import logging
-from rank_bm25 import BM25Okapi
+
 import re
 
 logger = logging.getLogger(__name__)

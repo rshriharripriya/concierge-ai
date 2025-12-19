@@ -7,10 +7,8 @@ uvicorn>=0.27.0
 requests>=2.31.0
 
 # AI & RAG
-langchain>=0.1.0
-langchain-groq>=0.0.1
-langchain-community>=0.0.13
 groq>=0.4.1
+
 
 # LLM Infrastructure
 litellm>=1.0.0  # Unified LLM interface with automatic provider fallback
@@ -19,7 +17,7 @@ litellm>=1.0.0  # Unified LLM interface with automatic provider fallback
 cohere>=5.0.0  # Cohere Rerank API (free tier available)
 
 # Hybrid Search
-rank-bm25>=0.2.2  # Pure Python BM25 implementation
+# rank-bm25 removed (unused)
 
 # Database
 supabase>=2.3.0

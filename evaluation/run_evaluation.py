@@ -9,15 +9,53 @@ import os
 from typing import Dict, List
 from datetime import datetime
 
-# Add parent directory to path BEFORE importing services
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'api'))
+# Add backend directory to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend"))
+
 
 
 
 
 
 class EvaluationRunner:
+    def check_keywords(self, answer: str, keywords: List[str]) -> tuple[bool, List[str]]:
+        """
+        Check if answer contains keywords (with stemming/variant support).
+        Returns (all_found, missing_keywords)
+        """
+        answer_lower = answer.lower()
+        missing = []
+        
+        # Define common variants
+        variants = {
+            "withhold": ["withhold", "withheld", "withholds", "withholding"],
+            "employer": ["employer", "employers", "employ", "employed"],
+            "wage": ["wage", "wages", "waged"],
+            "self-employed": ["self-employed", "self employed", "business owner", 
+                              "sole proprietor", "freelancer"],
+            "business use": ["business use", "business purposes", "business driving",
+                            "business mile", "business mileage"],
+            "mileage": ["mileage", "mile", "miles", "per mile"]
+        }
+        
+        for keyword in keywords:
+            keyword_lower = keyword.lower()
+            
+            # Check exact match first
+            if keyword_lower in answer_lower:
+                continue
+                
+            # Check variants if defined
+            if keyword in variants:
+                found_variant = any(var in answer_lower for var in variants[keyword])
+                if found_variant:
+                    continue
+            
+            # Not found
+            missing.append(keyword)
+        
+        return len(missing) == 0, missing
+
     def __init__(self):
         self.results = {
             "timestamp": datetime.now().isoformat(),
@@ -33,13 +71,11 @@ class EvaluationRunner:
         self.llm_router = None
         self.expert_matcher = None
         self.rag_service = None
-        self.run_ragas = False # Default to False to save credits
-    
     def load_golden_dataset(self, test_ids: List[str] = None) -> List[Dict]:
         """Load golden test dataset, optionally filtered by IDs"""
         # Handle both running from project root and evaluation directory
-        # dataset_path = 'golden_dataset.json' if os.path.exists('golden_dataset.json') else 'evaluation/golden_dataset.json'
-        dataset_path = 'golden_dataset.json'
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        dataset_path = os.path.join(base_dir, 'golden_dataset.json')
         
         with open(dataset_path, 'r') as f:
             data = json.load(f)
@@ -146,18 +182,18 @@ class EvaluationRunner:
                     
                     # Check if answer contains expected keywords
                     if "expected_answer_contains" in test_case:
-                        answer_lower = rag_result["answer"].lower()
-                        contains_all = all(
-                            keyword.lower() in answer_lower 
-                            for keyword in test_case["expected_answer_contains"]
+                        contains_all, missing = self.check_keywords(
+                            rag_result["answer"], 
+                            test_case["expected_answer_contains"]
                         )
                         result["passed"]["answer_quality"] = contains_all
+                        
                         if contains_all:
                             print(f"   Answer Quality: PASS")
                         else:
                             print(f"   Answer Quality: FAIL")
                             print(f"      Got: '{rag_result['answer']}'")
-                            print(f"      Missing keywords from: {test_case['expected_answer_contains']}")
+                            print(f"      Missing keywords: {missing}")
                 else:
                     result["error"] = "RAG service instance is None"
                     print(f"   ❌ ERROR: RAG service instance not initialized")

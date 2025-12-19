@@ -12,7 +12,7 @@ try:
 except ImportError:
     LITELLM_AVAILABLE = False
 
-from langchain_core.prompts import ChatPromptTemplate
+
 from supabase import create_client, Client
 from typing import List, Dict
 import os
@@ -66,8 +66,8 @@ class RAGService:
         ]
         
         # Main RAG prompt for answer generation
-        self.prompt = ChatPromptTemplate.from_messages([
-            ("system", """You are a knowledgeable tax assistant providing accurate, focused answers.
+        # Main RAG prompt template
+        self.system_prompt_template = """You are a knowledgeable tax assistant providing accurate, focused answers.
 
 Retrieved sources are ranked by relevance (Source 1 = most relevant).
 
@@ -92,31 +92,28 @@ Query: "What is a W-2 form?"
 ❌ BAD: [300-word essay] + "To give you more specific information, are you an employee or self-employed?"
 
 Query: "Can I deduct my car?"
-✅ GOOD: "You can deduct car expenses if you use it for business [1]. Two methods:
+✅ GOOD: "You can deduct car expenses if you're **self-employed** or a business owner [1]. Two methods:
 - **Standard Mileage**: $0.67/mile for 2024 [2]
 - **Actual Expenses**: Gas, insurance, repairs [1]
 
-You must track business vs personal mileage [3]. If you're an employee, you cannot deduct commuting [2]. Are you self-employed or a W-2 employee?"
-❌ BAD: [900-word comprehensive guide with all edge cases] + question
+You must track business vs personal mileage [3]. **W-2 employees cannot deduct commuting** or personal vehicle expenses [2]."
+❌ BAD: [Generic answer without clarifying who qualifies] + "Are you self-employed or an employee?"
 
 Previous conversation:
 {conversation_history}
 
 Retrieved Context (ordered by relevance):
-{context}"""),
-
-            ("user", "{query}")
-        ])
+{context}"""
         
-        self.contextualize_q_prompt = ChatPromptTemplate.from_messages([
-            ("system", """Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be understood without the chat history. Do NOT answer the question, just reformulate it if needed and otherwise return it as is."""),
-            ("user", """Chat History:
+        # Contextualization prompt
+        self.contextualize_system_prompt = """Given a chat history and the latest user question which might reference context in the chat history, formulate a standalone question which can be understood without the chat history. Do NOT answer the question, just reformulate it if needed and otherwise return it as is."""
+        
+        self.contextualize_user_template = """Chat History:
 {conversation_history}
 
 User Question: {query}
 
-Standalone Question:""")
-        ])
+Standalone Question:"""
     
     async def get_conversation_history(self, conversation_id: str, limit: int = 3) -> str:
         """Retrieve recent conversation history (limited to save tokens)"""
@@ -271,12 +268,27 @@ Standalone Question:""")
             return query
             
         try:
-            chain = self.contextualize_q_prompt | self.llm
-            response = chain.invoke({
-                "conversation_history": conversation_history,
-                "query": query
-            })
-            return response.content
+            if not self.enabled:
+                return query
+
+            user_msg = self.contextualize_user_template.format(
+                conversation_history=conversation_history,
+                query=query
+            )
+            
+            response = completion(
+                model=self.model,
+                messages=[
+                    {"role": "system", "content": self.contextualize_system_prompt},
+                    {"role": "user", "content": user_msg}
+                ],
+                fallbacks=self.fallbacks,
+                temperature=0.1,
+                timeout=10,
+                max_tokens=200
+            )
+            
+            return response.choices[0].message.content.strip()
         except Exception as e:
             print(f"⚠️ Query contextualization failed: {e}")
             return query
@@ -342,7 +354,7 @@ Standalone Question:""")
             response = completion(
                 model=self.model,
                 messages=[
-                    {"role": "system", "content": self.prompt.messages[0].prompt.template.format(
+                    {"role": "system", "content": self.system_prompt_template.format(
                         conversation_history=conversation_history,
                         context=context
                     )},
