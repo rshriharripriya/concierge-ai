@@ -12,8 +12,8 @@ import os
 if not os.environ.get("VERCEL"):
     load_dotenv(dotenv_path=".env.local")
 
-# Add current directory to path
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+# Add backend directory to path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend"))
 
 from routers import chat, experts, metrics
 from services import rag_service, expert_matcher, semantic_router, complexity_scorer
