@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     process.env.NEXT_PUBLIC_URL ||
     (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000')
   ),
-  title: "Concierge AI - Smart tax help",
+  title: "Tax Concierge AI - Smart tax help",
   description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
   openGraph: {
-    title: "Concierge AI - Smart tax help",
+    title: "Tax Concierge AI - Smart tax help",
     description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
     url: 'https://concierge-ai-tax.vercel.app',
     images: [
@@ -28,14 +28,14 @@ export const metadata: Metadata = {
         url: 'https://concierge-ai-tax.vercel.app/preview-og.jpg',
         width: 1200,
         height: 630,
-        alt: 'Concierge AI - Smart tax help',
+        alt: 'Tax Concierge AI - Smart tax help',
       }
     ],
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
-    title: "Concierge AI - Smart tax help",
+    title: "Tax Concierge AI - Smart tax help",
     description: "Smart tax help that knows when you need AI speed and when you need human expertise.",
     images: ['https://concierge-ai-tax.vercel.app/preview-og.jpg'],
   },

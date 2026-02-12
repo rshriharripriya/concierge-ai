@@ -106,7 +106,7 @@ export default function ChatPage() {
                     </button>
                     <div className="">
                         <span className="font-medium text-lg bg-clip-text text-[#610a0a] bg-gray-50/80 backdrop-blur-md font-serif">
-                            Concierge AI
+                            Tax Concierge AI
                         </span>
                     </div>
                 </div>
@@ -134,7 +134,7 @@ export default function ChatPage() {
                                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center z-10 p-8">
                                     <p className="text-xl font-medium mb-8 text-[#610a0a]">How can I help you today?</p>
                                     <div className="flex flex-wrap justify-center gap-3 max-w-md">
-                                        {["What is the standard deduction for 2024?", "How do I file for an extension?", "Can I deduct my home office expenses?"].map((q, i) => (
+                                        {["What is the standard deduction for this year?", "How do I file for an extension?", "Can I deduct my home office expenses?"].map((q, i) => (
                                             <button
                                                 key={i}
                                                 onClick={() => handleSend(q)}
@@ -228,10 +228,10 @@ export default function ChatPage() {
                         <div className="p-6 bg-white/40 backdrop-blur-md border-t border-white/30 relative z-20">
                             <PlaceholdersAndVanishInput
                                 placeholders={[
-                                    "What is the standard deduction for 2024?",
+                                    "What is the standard deduction for this year?",
                                     "How do I file for an extension?",
                                     "Can I deduct my home office expenses?",
-                                    "What are the tax brackets for 2024?",
+                                    "What are the tax brackets for 2025?",
                                     "Am I eligible for the Earned Income Tax Credit?"
                                 ]}
                                 onChange={(e) => setInput(e.target.value)}

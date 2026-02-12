@@ -9,11 +9,11 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 load_dotenv(dotenv_path='.env.local')
 
-from api.services.hf_embeddings import HuggingFaceEmbeddings
+from backend.services.hf_embeddings import HuggingFaceEmbeddings
 from supabase import create_client
 
 async def debug_retrieval():
-    print("🔍 Debugging Retrieval for 'Standard Deduction 2024'...")
+    print("🔍 Debugging Retrieval for 'Standard Deduction 2025'...")
     
     # 1. Setup
     supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_KEY"))
@@ -22,7 +22,7 @@ async def debug_retrieval():
         api_token=os.getenv("HF_TOKEN")
     )
     
-    query = "What is the standard deduction for 2024?"
+    query = "Earned Income Credit"
     print(f"\n📝 Query: {query}")
     
     # 2. Embed
@@ -35,26 +35,38 @@ async def debug_retrieval():
         'match_knowledge_documents',
         {
             'query_embedding': query_vec,
-            'match_count': 5,
+            'match_count': 20,
             'match_threshold': 0.3
         }
     ).execute()
     
-    # 4. Analyze Results
-    if not result.data:
-        print("❌ No matches found!")
-        return
-
-    print(f"✅ Found {len(result.data)} matches:\n")
-    for i, doc in enumerate(result.data):
-        print(f"--- Result {i+1} (Sim: {doc['similarity']:.3f}) ---")
-        print(f"Title: {doc['title']}")
-        print(f"Chunk Preview: {doc['content'][:150]}...")
-        if "2024" in doc['content']:
-            print("🎯 HIT: Contains '2024'")
-        else:
-            print("⚠️ MISS: No '2024' found")
-        print("\n")
+    # 4. Test Hybrid Search RPC
+    print("🔎 Testing Hybrid Search RPC...")
+    try:
+        hybrid_result = supabase.rpc(
+            'hybrid_search_knowledge_documents',
+            {
+                'query_text': query,
+                'query_embedding': query_vec,
+                'match_count': 10,
+                'bm25_weight': 0.5,
+                'vector_weight': 0.5
+            }
+        ).execute()
+        print(f"✅ Hybrid Search worked! Found {len(hybrid_result.data)} matches.")
+        for i, doc in enumerate(hybrid_result.data):
+             source = doc.get('metadata', {}).get('source') if doc.get('metadata') else doc.get('source')
+             title = doc.get('title', 'Unknown')
+             score = doc.get('combined_score', 0)
+             
+             if source and "rp-24-40" in source:
+                 print(f"🎯 Hybrid HIT: {title} (Score: {score:.3f})")
+             else:
+                 print(f"   Rank {i+1}: {title[:40]}... (Score: {score:.3f})")
+    except Exception as e:
+        print(f"❌ Hybrid Search Failed: {e}")
+        
+    print("\n✅ Setup Analysis Complete.")
 
 if __name__ == "__main__":
     asyncio.run(debug_retrieval())
