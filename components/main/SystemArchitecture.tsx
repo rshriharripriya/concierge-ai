@@ -120,8 +120,6 @@ export default function SystemArchitecture() {
                 fromRef={validateRef}
                 toRef={interfaceRef}
                 curvature={isDesktop ? 150 : 100}
-                gradientStartColor="#821e1e"
-                gradientStopColor="#610a0a"
                 startYOffset={isDesktop ? -50 : 0}
                 endYOffset={isDesktop ? -50 : 0}
                 startXOffset={isDesktop ? 0 : -60}
@@ -147,8 +145,6 @@ export default function SystemArchitecture() {
                 fromRef={aiRef}
                 toRef={dbRef}
                 curvature={isDesktop ? 0 : 0}
-                gradientStartColor="#821e1e"
-                gradientStopColor="#610a0a"
                 startYOffset={isDesktop ? 50 : 30}
                 endYOffset={isDesktop ? -50 : -50}
                 startXOffset={isDesktop ? -15 : 30}
@@ -159,8 +155,6 @@ export default function SystemArchitecture() {
                 fromRef={dbRef}
                 toRef={aiRef}
                 curvature={0}
-                gradientStartColor="#610a0a"
-                gradientStopColor="#821e1e"
                 startYOffset={isDesktop ? -50 : -50}
                 endYOffset={isDesktop ? 50 : 30}
                 startXOffset={isDesktop ? 15 : -30}
@@ -174,8 +168,6 @@ export default function SystemArchitecture() {
                 fromRef={serviceRef}
                 toRef={dbRef}
                 curvature={isDesktop ? 0 : -50}
-                gradientStartColor="#610a0a"
-                gradientStopColor="#821e1e"
                 startYOffset={isDesktop ? 50 : 20}
                 endYOffset={isDesktop ? -50 : -50}
                 endXOffset={isDesktop ? 60 : 50}

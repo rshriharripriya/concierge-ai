@@ -37,8 +37,8 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   pathColor = "gray",
   pathWidth = 2,
   pathOpacity = 0.2,
-  gradientStartColor = "#ffaa40",
-  gradientStopColor = "#9c40ff",
+  gradientStartColor = "#821e1e",
+  gradientStopColor = "#610a0a",
   startXOffset = 0,
   startYOffset = 0,
   endXOffset = 0,
@@ -47,6 +47,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
   const id = useId()
   const [pathD, setPathD] = useState("")
   const [svgDimensions, setSvgDimensions] = useState({ width: 0, height: 0 })
+  const [calculatedDuration, setCalculatedDuration] = useState(duration)
 
   // Calculate the gradient coordinates based on the reverse prop
   const gradientCoordinates = reverse
@@ -90,6 +91,12 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
             ? `M ${startX},${startY} Q ${(startX + endX) / 2 - curvature},${(startY + endY) / 2} ${endX},${endY}`
             : `M ${startX},${startY} Q ${(startX + endX) / 2},${controlY} ${endX},${endY}`
         setPathD(d)
+
+        const distance = Math.sqrt(Math.pow(endX - startX, 2) + Math.pow(endY - startY, 2))
+        // Shorter length -> slower speed -> larger duration proportionally.
+        // Formula: duration = 1000 / distance. Clamped between 2s and 10s.
+        const dynamicDuration = Math.min(Math.max(1000 / Math.max(distance, 1), 2), 10)
+        setCalculatedDuration(dynamicDuration)
       }
     }
 
@@ -163,7 +170,7 @@ export const AnimatedBeam: React.FC<AnimatedBeamProps> = ({
           }}
           transition={{
             delay,
-            duration,
+            duration: calculatedDuration,
             ease: [0.16, 1, 0.3, 1], // https://easings.net/#easeOutExpo
             repeat: Infinity,
             repeatDelay: 0,

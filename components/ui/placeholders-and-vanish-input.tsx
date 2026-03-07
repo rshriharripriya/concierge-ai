@@ -10,7 +10,7 @@ export function PlaceholdersAndVanishInput({
   onSubmit,
 }: {
   placeholders: string[];
-  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
 }) {
   const [currentPlaceholder, setCurrentPlaceholder] = useState(0);
@@ -44,7 +44,7 @@ export function PlaceholdersAndVanishInput({
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const newDataRef = useRef<any[]>([]);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = useState("");
   const [animating, setAnimating] = useState(false);
 
@@ -149,8 +149,9 @@ export function PlaceholdersAndVanishInput({
     animateFrame(start);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && !animating) {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey && !animating) {
+      e.preventDefault();
       vanishAndSubmit();
     }
   };
@@ -167,12 +168,17 @@ export function PlaceholdersAndVanishInput({
       );
       animate(maxX);
     }
+
+    // Natively trigger the form submit or manually call it
+    if (onSubmit) {
+      const formEvent = { preventDefault: () => { } } as React.FormEvent<HTMLFormElement>;
+      onSubmit(formEvent);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     vanishAndSubmit();
-    onSubmit && onSubmit(e);
   };
   return (
     <form
@@ -189,7 +195,7 @@ export function PlaceholdersAndVanishInput({
         )}
         ref={canvasRef}
       />
-      <input
+      <textarea
         onChange={(e) => {
           if (!animating) {
             setValue(e.target.value);
@@ -199,9 +205,9 @@ export function PlaceholdersAndVanishInput({
         onKeyDown={handleKeyDown}
         ref={inputRef}
         value={value}
-        type="text"
+        rows={1}
         className={cn(
-          "w-full relative text-sm sm:text-base z-50 border-none dark:text-white bg-transparent text-black h-full rounded-full focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20",
+          "w-full relative text-sm sm:text-base z-50 border-none dark:text-white bg-transparent text-black h-full rounded-full focus:outline-none focus:ring-0 pl-4 sm:pl-10 pr-20 resize-none py-3 scrollbar-hide flex items-center pt-3 sm:pt-3",
           animating && "text-transparent dark:text-transparent"
         )}
       />

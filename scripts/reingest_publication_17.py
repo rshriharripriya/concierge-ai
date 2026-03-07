@@ -45,6 +45,7 @@ HF_API_URL = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
 # Used to validate detected chapters and reject garbage
 # Replace KNOWN_CHAPTERS with this:
 CHAPTER_PAGE_RANGES = {
+    "0": {"title": "Whats New and Reminders",          "start": 1,  "end": 5}, 
     "1":  {"title": "Filing Information",                     "start": 6,   "end": 20},
     "2":  {"title": "Filing Status",                          "start": 21,  "end": 25},
     "3":  {"title": "Dependents",                             "start": 26,  "end": 36},
@@ -238,7 +239,7 @@ def find_page_offset(doc) -> int:
     return 0
 
 
-def ingest_publication_17(pdf_path: str, dry_run: bool = False) -> Dict[str, int]:
+def ingest_publication_17(pdf_path: str, dry_run: bool = False, only_chapter: str = None) -> Dict[str, int]:
     """Page-range based ingestion using TOC page numbers directly"""
 
     if not os.path.exists(pdf_path):
@@ -259,6 +260,8 @@ def ingest_publication_17(pdf_path: str, dry_run: bool = False) -> Dict[str, int
     }
 
     for chapter_num, info in CHAPTER_PAGE_RANGES.items():
+        if only_chapter and chapter_num != only_chapter:
+            continue
         title = info['title']
 
         # Convert printed page numbers → 0-indexed PDF pages
@@ -311,6 +314,7 @@ def main():
     parser.add_argument('--pdf', required=True, help='Path to Publication 17 PDF')
     parser.add_argument('--dry-run', action='store_true', help='Test without saving')
     parser.add_argument('--skip-delete', action='store_true', help='Skip deleting old chunks')
+    parser.add_argument('--chapter', help='Only ingest specific chapter number (e.g. 0)')
 
     args = parser.parse_args()
 
@@ -324,23 +328,24 @@ def main():
     print()
 
     if not args.dry_run:
-        response = input("⚠️  Delete existing Pub 17 chunks and re-ingest? (yes/no): ")
-        if response.strip().lower() != 'yes':
-            print("❌ Cancelled")
-            return
-
         if not args.skip_delete:
+            response = input("⚠️  Delete existing Pub 17 chunks and re-ingest? (yes/no): ")
+            if response.strip().lower() != 'yes':
+                print("❌ Cancelled")
+                return
             print("\n🗑️  Deleting existing Publication 17 chunks...")
             supabase.table('knowledge_documents').delete()\
                 .or_('title.ilike.%p17%,title.ilike.%Publication 17 (2025)%')\
                 .execute()
             print("✅ Deleted old chunks\n")
+        else:
+            print("⏭️  Skipping deletion (--skip-delete)\n")
 
     print("=" * 70)
     print("Starting Ingestion")
     print("=" * 70 + "\n")
 
-    stats = ingest_publication_17(args.pdf, args.dry_run)
+    stats = ingest_publication_17(args.pdf, args.dry_run, only_chapter=args.chapter)
 
     print("\n" + "=" * 70)
     print("📊 Results:")

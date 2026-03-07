@@ -174,7 +174,7 @@ export default function ChatPage() {
                                                         <div className="flex items-center gap-1.5">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-[#610a0a]"></span>
                                                             <span className="font-medium text-[#610a0a]">Intent:</span>
-                                                            <span className="bg-crimson-700/10 text-crimson-800 px-1.5 py-0.5 rounded text-[10px] border border-crimson-700/20 uppercase tracking-wider font-medium">{message.metadata.intent}</span>
+                                                            <span className="bg-crimson-700/10 text-crimson-800 px-1.5 py-0.5 rounded text-[10px] border border-crimson-700/20 uppercase tracking-wider font-medium">{message.metadata.intent?.replace(/_/g, ' ')}</span>
                                                         </div>
                                                         <div className="flex items-center gap-1.5">
                                                             <span className="w-1.5 h-1.5 rounded-full bg-[#610a0a]"></span>
