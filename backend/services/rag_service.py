@@ -59,6 +59,16 @@ class RAGService:
 
         # Model Config
         self.model = os.getenv("RAG_MODEL", "gemini-2.5-flash-lite-preview-09-2025")
+        self.contextualize_system_prompt = (
+            "Given the conversation history and a follow-up question, "
+            "rewrite the follow-up as a standalone question with no pronouns or references."
+        )
+
+        self.contextualize_user_template = (
+            "Conversation history:\n{conversationhistory}\n\n"
+            "Follow-up question: {query}\n\n"
+            "Standalone question:"
+        )
         fallbacks_str = os.getenv("RAG_FALLBACKS", "")
         self.fallbacks = [f.strip() for f in fallbacks_str.split(",")] if fallbacks_str else [
             "groq/llama-3.3-70b-versatile",
@@ -265,11 +275,11 @@ Retrieved Context (ordered by relevance - prioritize Source 1):
                 
                 try:
                     context_chunks = self.supabase.table('knowledge_documents')\
-                        .select('content, metadata')\
-                        .eq('metadata->>chapter', chapter)\
-                        .filter('(metadata->>chunk_index)::int', 'gte', start_idx)\
-                        .filter('(metadata->>chunk_index)::int', 'lte', end_idx)\
-                        .order('metadata->>chunk_index')\
+                        .select('content, metadata') \
+                        .eq('metadata->>chapter', chapter) \
+                        .filter("(metadata->>'chunk_index')::int", "gte", start_idx) \
+                        .filter("(metadata->>'chunk_index')::int", "lte", end_idx) \
+                        .order("metadata->>'chunk_index'") \
                         .execute()
                     
                     if context_chunks.data:
@@ -361,6 +371,7 @@ Retrieved Context (ordered by relevance - prioritize Source 1):
         standalone_query = await self.contextualize_query(query, conversation_history)
         logger.info(f"🔄 Original query: '{query}' -> Standalone: '{standalone_query}'")
         
+
         # Retrieve relevant documents using STANDALONE query
         # Use RERANK_FINAL_K from env (default 8)
         final_k = int(os.getenv("RERANK_FINAL_K", "5"))
