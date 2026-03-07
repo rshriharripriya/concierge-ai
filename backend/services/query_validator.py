@@ -56,6 +56,12 @@ Query: "{query}"
 - "What is the standard deduction for 2024?" -> Clear question.
 - "Can I deduct my car?" -> Clear question. AI can explain self-employed vs employee rules.
 - "When is the deadline?" -> Clear question.
+- "from which time to which time do i file taxes?" -> Clear question about tax period/filing window. Non-native English phrasing is NOT ambiguous.
+- "what year do i report income for?" -> Clear question about tax year.
+- "when does tax year start and end?" -> Clear question about tax period.
+
+**CRITICAL: Non-native English speakers may phrase questions unusually.
+Broken grammar ≠ ambiguous intent. Judge the TAX TOPIC, not the grammar.
 
 **EXAMPLES - AMBIGUOUS (is_ambiguous=true)**:
 - "What about home office?" -> Fragment. Unclear what they are asking.
@@ -74,7 +80,7 @@ Respond in JSON format:
 
         
         # Configurable Model
-        model = os.getenv("QUERY_VALIDATOR_MODEL", "gpt-4o-mini")
+        model = os.getenv("QUERY_VALIDATOR_MODEL", "gemini/gemini-2.5-flash-lite")
         fallbacks_str = os.getenv("QUERY_VALIDATOR_FALLBACKS", "")
         fallbacks = [f.strip() for f in fallbacks_str.split(",")] if fallbacks_str else ["gemini/gemini-2.5-flash-lite-preview-09-2025"]
 

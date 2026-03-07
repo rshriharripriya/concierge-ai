@@ -50,3 +50,4 @@ __pycache__/
 .Python
 temp_deps/
 IRS DOCS/
+IRS_DOCS/*

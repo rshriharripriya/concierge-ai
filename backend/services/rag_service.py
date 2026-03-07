@@ -67,6 +67,12 @@ class RAGService:
         
         # Main RAG prompt for answer generation
         self.system_prompt_template = """You are a knowledgeable tax assistant providing accurate, focused answers.
+CRITICAL TAX YEAR RULES:
+1. Each source shows "📅 APPLICABLE TAX YEAR(S)" - this is THE DEFINITIVE tax year for that information
+2. Sources may mention OTHER years as historical examples - IGNORE those
+3. Only use amounts/rules from sources with tax years matching the user's query
+4. If user asks "this year", they mean tax year {current_tax_year} (current filing season)
+5. Sources marked "⭐ [CURRENT YEAR FOR FILING]" are for the current tax year
 
 CRITICAL TAX FILING RULES:
 - Standard deduction varies by FILING STATUS
@@ -74,6 +80,8 @@ CRITICAL TAX FILING RULES:
 - Always state which filing status you're referring to
 
 CRITICAL: Retrieved sources are ranked by relevance (Source 1 = most relevant and most trustworthy).
+Current date: {current_date}
+Current tax year being filed: {current_tax_year}
 
 ANSWER FORMAT:
 1. **First sentence = Direct answer with specific numbers/facts**: "For 2025, the standard deduction is $15,000 for single filers [1]."
@@ -87,6 +95,7 @@ ANSWER FORMAT:
    - Complex scenarios: Comprehensive breakdown with sections
 
 WHAT TO DO:
+✅ Check the "📅 APPLICABLE TAX YEAR(S)" header for each source
 ✅ Lead with dollar amounts, dates, form numbers from Source 1
 ✅ Use bullets for lists, eligibility rules, multiple options
 ✅ Cite every factual statement with [1], [2]
@@ -198,13 +207,23 @@ Retrieved Context (ordered by relevance - prioritize Source 1):
                 title = doc.get('title', 'Unknown')
                 logger.info(f"  #{i+1}: {title[:50]}... (score: {score:.3f})")
             query_lower = query.lower()
-            if 'standard deduction' in query_lower:
-                # Filter out IRA/retirement docs
-                candidates = [
-                    doc for doc in candidates 
-                    if not any(pub in doc.get('title', '').lower() for pub in ['590-b', '590-a', 'ira', 'retirement'])
-                ]
-                logger.info(f"🔪 Filtered out IRA docs, {len(candidates)} candidates remaining")
+            # if 'standard deduction' in query_lower:
+            #     # Filter out IRA/retirement docs, but preserve chunks with actual standard deduction content
+            #     filtered_candidates = []
+            #     for doc in candidates:
+            #         title_lower = doc.get('title', '').lower()
+            #         content_lower = doc.get('content', '').lower()
+                    
+            #         is_ira_title = any(kw in title_lower for kw in ['590-b', '590-a', 'ira contribution', 'retirement'])
+            #         has_std_ded_content = 'table 10-1' in content_lower
+                    
+            #         if not is_ira_title or has_std_ded_content:
+            #             filtered_candidates.append(doc)
+            #         else:
+            #             logger.debug(f"⏭️ Filtered IRA doc: {doc.get('title', '')[:60]}")
+                
+            #     candidates = filtered_candidates
+            #     logger.info(f"🔪 Filtered IRA docs, {len(candidates)} candidates remaining")
             if self.reranker and self.reranker.enabled and len(candidates) > 0:
                 logger.info(f"🎯 Reranking {len(candidates)} candidates to top-{k}")
                 reranked = await self.reranker.rerank(query, candidates, top_n=k)
@@ -248,12 +267,15 @@ Retrieved Context (ordered by relevance - prioritize Source 1):
                     context_chunks = self.supabase.table('knowledge_documents')\
                         .select('content, metadata')\
                         .eq('metadata->>chapter', chapter)\
-                        .gte('metadata->>chunk_index', start_idx)\
-                        .lte('metadata->>chunk_index', end_idx)\
+                        .filter('(metadata->>chunk_index)::int', 'gte', start_idx)\
+                        .filter('(metadata->>chunk_index)::int', 'lte', end_idx)\
                         .order('metadata->>chunk_index')\
                         .execute()
                     
                     if context_chunks.data:
+                        logger.info(f"🔍 Expansion data sample: {context_chunks.data[0].keys()}")
+                        logger.info(f"🔍 First chunk content length: {len(context_chunks.data[0].get('content', ''))}")
+                        logger.info(f"🔍 First chunk metadata: {context_chunks.data[0].get('metadata', {})}")
                         # Merge into single context window
                         expanded_content = '\n\n'.join([
                             chunk['content'] for chunk in context_chunks.data
@@ -319,6 +341,19 @@ Retrieved Context (ordered by relevance - prioritize Source 1):
     async def generate_answer(self, query: str, conversation_id: str = None) -> Dict:
         """Generate RAG-based answer with conversation memory"""
         logger.info(f"🚨 GENERATE_ANSWER CALLED WITH QUERY: '{query}'")
+        
+        # Define datetime variables at the beginning to avoid scope issues
+        import datetime
+        current_year = datetime.datetime.now().year
+        current_month = datetime.datetime.now().month
+        current_date = datetime.datetime.now().strftime("%B %d, %Y")
+        
+        # Filing season logic: During Jan-Apr, "this year" means previous tax year
+        if 1 <= current_month <= 4:
+            tax_year = current_year - 1  # Feb 2026 → 2025
+        else:
+            tax_year = current_year
+        
         # Get conversation history
         conversation_history = await self.get_conversation_history(conversation_id)
         
@@ -350,12 +385,28 @@ Retrieved Context (ordered by relevance - prioritize Source 1):
         
         context_parts = []
         total_chars = 0
-        
+
         for i, doc in enumerate(documents):
-            # Reserve space for source header
-            # Add relevance score to help LLM prioritize
-            relevance = doc.get('similarity', 0)
-            source_header = f"[Source {i+1} - Relevance: {relevance:.2f}]\nDocument: {doc['title']}\nIMPORTANT: Pay attention to filing status (Single vs Married Filing Jointly)\n\n"
+            # Extract metadata
+            metadata = doc.get('metadata', {}) or {}
+            tax_years = metadata.get('tax_years', [])
+            is_current = metadata.get('is_current', False)
+            primary_tax_year = metadata.get('primary_tax_year')
+            
+            # Build enhanced header with tax year info
+            relevance = doc.get('rerank_score') or doc.get('similarity', 0)
+            source_header = f"[Source {i+1} - Relevance: {relevance:.2f}]\n"
+            
+            # Add tax year badge (CRITICAL for LLM)
+            if tax_years:
+                years_str = ", ".join(str(y) for y in tax_years)
+                source_header += f"📅 APPLICABLE TAX YEAR(S): {years_str}"
+                if is_current:
+                    source_header += " ⭐ [CURRENT YEAR FOR FILING]"
+                source_header += "\n"
+            
+            source_header += f"Document: {doc['title']}\n"
+            source_header += "IMPORTANT: Standard deduction amounts differ by filing status (Single ≠ Married Filing Jointly)\n\n"
             
             # Calculate remaining space
             available_space = MAX_TOTAL_CONTEXT - total_chars - len(source_header)
@@ -378,29 +429,20 @@ Retrieved Context (ordered by relevance - prioritize Source 1):
         try:
             if not self.enabled:
                 raise Exception("LiteLLM not available")
-            # In generate_answer(), right before calling completion():
-            import datetime
-
-            current_year = datetime.datetime.now().year
-            current_month = datetime.datetime.now().month
-
-            # During filing season (Jan-Apr), "this year" means previous tax year
-            if 1 <= current_month <= 4:
-                tax_year = current_year - 1
-                display_query = query.replace("this year", f"this year (tax year {tax_year})")
-                display_query = display_query.replace("This year", f"This year (tax year {tax_year})")
-            else:
-                # After April, "this year" means current calendar year
-                display_query = query.replace("this year", f"this year (tax year {current_year})")
-                display_query = display_query.replace("This year", f"This year (tax year {current_year})")
+            
+            # Clarify query with explicit tax year
+            display_query = query.replace("this year", f"this year (tax year {tax_year})")
+            display_query = display_query.replace("This year", f"This year (tax year {tax_year})")
             logger.info(f"📝 Clarified query for LLM: '{display_query}'")
-            # Use display_query in completion call
+
             response = completion(
                 model=self.model,
                 messages=[
                     {"role": "system", "content": self.system_prompt_template.format(
                         conversation_history=conversation_history,
-                        context=context
+                        context=context,
+                        current_date=current_date, 
+                        current_tax_year=tax_year
                     )},
                     {"role": "user", "content": display_query}  # Clarified query
                 ],
