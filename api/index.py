@@ -15,6 +15,16 @@ if not os.environ.get("VERCEL"):
 # Add backend directory to path
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "backend"))
 
+# Configure logging
+import logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
 from routers import chat, experts, metrics
 from services import rag_service, expert_matcher, semantic_router, complexity_scorer
 

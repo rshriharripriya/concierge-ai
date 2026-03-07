@@ -59,22 +59,22 @@ async def process_query(request: QueryRequest, background_tasks: BackgroundTasks
         # Prevent "garbage in, garbage out" by checking for ambiguity
         validation_result = await query_validator.validate_query(normalized_query)
         
-        if validation_result.is_ambiguous and validation_result.confidence > 0.7:
+        clarification_needed = validation_result.is_ambiguous and validation_result.confidence > 0.7
             # Query is too vague - ask for clarification
-            print(f"❓ Query ambiguous, asking for clarification: {validation_result.clarification_question}")
+            # print(f"❓ Query ambiguous, asking for clarification: {validation_result.clarification_question}")
             
             # Return disambiguation response
-            return QueryResponse(
-                conversation_id=request.conversation_id or str(uuid.uuid4()),
-                intent="disambiguation",
-                complexity_score=0,
-                route_decision="clarification_needed",
-                response=validation_result.clarification_question,
-                confidence=validation_result.confidence,
-                expert=None,
-                sources=[],
-                reasoning=f"Missing: {', '.join(validation_result.missing_info)}"
-            )
+            # return QueryResponse(
+            #     conversation_id=request.conversation_id or str(uuid.uuid4()),
+            #     intent="disambiguation",
+            #     complexity_score=0,
+            #     route_decision="clarification_needed",
+            #     response=validation_result.clarification_question,
+            #     confidence=validation_result.confidence,
+            #     expert=None,
+            #     sources=[],
+            #     reasoning=f"Missing: {', '.join(validation_result.missing_info)}"
+            # )
         
         # Get service instances
         llm_router = llm_router_lib.service_instance
@@ -184,6 +184,8 @@ async def process_query(request: QueryRequest, background_tasks: BackgroundTasks
             response_content = f"I'll connect you with {expert.get('name', 'an expert')}, who specializes in {', '.join(expert.get('specialties', [])[:2])}. They'll be with you shortly."
         else:
             response_content = rag_result['answer']
+            if clarification_needed and validation_result.clarification_question:
+                response_content += f"\n\n---\n{validation_result.clarification_question}"
         
         response_message = {
             "conversation_id": conversation_id,

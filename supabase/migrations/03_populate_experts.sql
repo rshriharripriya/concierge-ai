@@ -35,7 +35,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Estate Planning Specialist
 ('Jennifer Washington', 'jennifer@concierge.ai', 
- '["tax", "estate_planning", "trusts"]',
+ '{"tax", "estate_planning", "trusts"}',
  'Estate planning attorney and tax strategist with 15+ years helping families minimize estate taxes',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/jennifer_washington.jpg',
  '{"status": "available", "schedule": {}}',
@@ -43,7 +43,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Startup & VC Tax Expert
 ('Alex Martinez', 'alex@concierge.ai',
- '["tax", "startup", "equity_compensation"]',
+ '{"tax", "startup", "equity_compensation"}',
  'Former Big 4 tax consultant specializing in startup taxation, equity comp, and venture capital structures',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/alex_martinez.jpg',
  '{"status": "available", "schedule": {}}',
@@ -51,7 +51,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Real Estate Tax Specialist
 ('Michael O''Brien', 'michael@concierge.ai',
- '["tax", "real_estate", "1031_exchange"]',
+ '{"tax", "real_estate", "1031_exchange"}',
  'Real estate tax specialist with expertise in 1031 exchanges, rental property, and real estate professional status',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/michael_obrien.jpg',
  '{"status": "available", "schedule": {}}',
@@ -59,7 +59,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Non-Profit & Tax-Exempt Specialist
 ('Dr. Rachel Green', 'rachel@concierge.ai',
- '["tax", "nonprofit", "501c3"]',
+ '{"tax", "nonprofit", "501c3"}',
  'PhD in taxation specializing in non-profit organizations, 501(c)(3) compliance, and charitable giving strategies',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/rachel_green.jpg',
  '{"status": "available", "schedule": {}}',
@@ -67,7 +67,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Retirement & 401k Expert
 ('James Liu', 'james@concierge.ai',
- '["tax", "retirement", "401k", "ira"]',
+ '{"tax", "retirement", "401k", "ira"}',
  'Retirement planning specialist focusing on 401(k), IRA conversions, and tax-efficient withdrawal strategies',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/james_liu.jpg',
  '{"status": "available", "schedule": {}}',
@@ -75,7 +75,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Freelance & Gig Economy Tax
 ('Nina Patel', 'nina@concierge.ai',
- '["tax", "freelance", "gig_economy", "estimated_tax"]',
+ '{"tax", "freelance", "gig_economy", "estimated_tax"}',
  'Tax advisor for freelancers, gig workers, and independent contractors with focus on quarterly estimated taxes',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/nina_patel.jpg',
  '{"status": "available", "schedule": {}}',
@@ -83,7 +83,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Multi-State Tax Specialist
 ('Robert Taylor', 'robert@concierge.ai',
- '["tax", "multi_state", "apportionment"]',
+ '{"tax", "multi_state", "apportionment"}',
  'Multi-state tax expert helping remote workers and businesses navigate complex state tax obligations',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/robert_taylor.jpg',
  '{"status": "available", "schedule": {}}',
@@ -91,7 +91,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Healthcare & Medical Tax
 ('Dr. Priya Sharma', 'priya@concierge.ai',
- '["tax", "healthcare", "medical_deductions", "hsa"]',
+ '{"tax", "healthcare", "medical_deductions", "hsa"}',
  'CPA and former physician specializing in healthcare provider taxation, medical deductions, and HSA strategies',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/priya_sharma.jpg',
  '{"status": "available", "schedule": {}}',
@@ -99,7 +99,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- Divorce & Family Tax
 ('Amanda Foster', 'amanda@concierge.ai',
- '["tax", "divorce", "alimony", "child_support"]',
+ '{"tax", "divorce", "alimony", "child_support"}',
  'Family law tax specialist focusing on divorce tax implications, alimony, child support, and filing status changes',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/amanda_foster.jpg',
  '{"status": "available", "schedule": {}}',
@@ -107,7 +107,7 @@ INSERT INTO experts (name, email, specialties, bio, avatar_url, availability, pe
 
 -- IRS Audit Defense
 ('Carlos Mendez', 'carlos@concierge.ai',
- '["tax", "audit", "irs_representation", "tax_resolution"]',
+ '{"tax", "audit", "irs_representation", "tax_resolution"}',
  'Former IRS agent now helping taxpayers with audit defense, tax resolution, and IRS representation',
  'https://vxtedgxcdthcozuovtxx.supabase.co/storage/v1/object/public/Expert%20images/carlos_mendez.jpg',
  '{"status": "available", "schedule": {}}',

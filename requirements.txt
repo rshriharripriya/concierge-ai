@@ -29,3 +29,4 @@ huggingface-hub>=0.20.0
 # - Using LiteLLM for provider fallback (Groq → OpenAI → Claude)
 # - Using Cohere API for reranking (free tier)
 # - Using HuggingFace Inference API for embeddings
+

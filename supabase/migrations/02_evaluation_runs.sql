@@ -33,7 +33,7 @@ CREATE TABLE IF NOT EXISTS evaluation_runs (
 );
 
 -- Index for fetching latest results efficiently
-CREATE INDEX idx_evaluation_runs_created_at ON evaluation_runs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_evaluation_runs_created_at ON evaluation_runs(created_at DESC);
 
 -- Add table comment
 COMMENT ON TABLE evaluation_runs IS 'Stores evaluation run results for metrics dashboard and performance tracking';

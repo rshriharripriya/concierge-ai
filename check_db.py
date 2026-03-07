@@ -16,12 +16,10 @@ def check_db():
         count = supabase.table('knowledge_documents').select('*', count='exact', head=True).execute()
         print(f"📊 Total documents: {count.count}")
         
-        # Get latest 5 insertions
-        print("\n🕒 Latest 5 documents:")
+        print("\n🕒 Searching for '.06 Earned Income Credit':")
         response = supabase.table('knowledge_documents')\
-            .select('id, title, created_at, content')\
-            .order('created_at', desc=True)\
-            .limit(5)\
+            .select('id, title, content')\
+            .ilike('title', '%.06 Earned Income Credit%')\
             .execute()
             
         for doc in response.data:

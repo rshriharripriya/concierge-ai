@@ -1,0 +1,405 @@
+#!/usr/bin/env python3
+"""
+Complete re-ingestion script for Publication 17 (2025).
+- Properly chunks by chapter
+- Generates embeddings for each chunk
+- Populates all metadata fields correctly
+"""
+import os
+import re
+import sys
+from pathlib import Path
+from dotenv import load_dotenv
+from supabase import create_client
+import fitz  # PyMuPDF
+from litellm import embedding
+import time
+from typing import List, Dict, Tuple, Optional
+
+# Load environment
+env_path = Path(__file__).parent.parent / '.env.local'
+load_dotenv(dotenv_path=env_path)
+
+print("=" * 70)
+print("Publication 17 (2025) Re-Ingestion")
+print("Chunk → Embed → Upload with Proper Metadata")
+print("=" * 70 + "\n")
+
+# Initialize Supabase
+print("🔄 Connecting to Supabase...")
+supabase = create_client(
+    os.getenv("SUPABASE_URL"),
+    os.getenv("SUPABASE_KEY")
+)
+print("✅ Connected\n")
+
+# Configuration
+TAX_YEAR = 2025
+CHUNK_SIZE = 1200  # Characters per chunk (good balance)
+CHUNK_OVERLAP = 150  # Overlap to maintain context
+EMBEDDING_MODEL = "text-embedding-3-small"
+RATE_LIMIT_DELAY = 60  # Seconds between embedding calls
+
+
+def extract_chapter_info(text: str) -> Tuple[Optional[str], Optional[str]]:
+    """
+    Extract chapter number and title from text.
+    
+    Examples:
+    "Chapter 10 Standard Deduction" → ("10", "Standard Deduction")
+    "Chapter 1: Filing Information" → ("1", "Filing Information")
+    """
+    patterns = [
+        r'Chapter\s+(\d+)[:\.\s\-]+([A-Za-z\s\&\,\-]+?)(?:\n|\s{2,}|$)',
+        r'(\d+)\s+Chapter[:\.\s\-]+([A-Za-z\s\&\,\-]+?)(?:\n|\s{2,}|$)',
+    ]
+    
+    for pattern in patterns:
+        match = re.search(pattern, text, re.IGNORECASE | re.MULTILINE)
+        if match:
+            chapter_num = match.group(1).strip()
+            chapter_title = match.group(2).strip()
+            # Clean up title
+            chapter_title = re.sub(r'\s+', ' ', chapter_title)
+            return chapter_num, chapter_title
+    
+    return None, None
+
+
+def extract_tables_from_page(page) -> List[str]:
+    """Extract tables from page and format as readable text"""
+    tables = []
+    try:
+        tabs = page.find_tables()
+        if tabs and len(tabs.tables) > 0:
+            for table in tabs.tables:
+                # Extract table data
+                table_data = table.extract()
+                
+                # Format as text
+                table_text = "\n\n[TABLE]\n"
+                for row in table_data:
+                    if row:
+                        # Filter out None/empty cells
+                        cells = [str(cell).strip() for cell in row if cell]
+                        if cells:
+                            table_text += " | ".join(cells) + "\n"
+                table_text += "[/TABLE]\n"
+                
+                tables.append(table_text)
+    except Exception as e:
+        print(f"   ⚠️ Table extraction failed: {e}")
+    
+    return tables
+
+
+def chunk_text(text: str, chunk_size: int = 1200, overlap: int = 150) -> List[str]:
+    """
+    Split text into overlapping chunks at sentence boundaries.
+    
+    Args:
+        text: Text to chunk
+        chunk_size: Target size of each chunk in characters
+        overlap: Overlap between chunks to maintain context
+    
+    Returns:
+        List of text chunks
+    """
+    chunks = []
+    start = 0
+    text_length = len(text)
+    
+    while start < text_length:
+        end = min(start + chunk_size, text_length)
+        
+        # Try to break at sentence boundary
+        if end < text_length:
+            # Look for sentence end (., !, ?) within last 150 chars
+            search_start = max(start, end - 150)
+            
+            # Find best break point
+            for delimiter in ['. ', '.\n', '! ', '!\n', '? ', '?\n']:
+                sentence_end = text.rfind(delimiter, search_start, end)
+                if sentence_end > start:
+                    end = sentence_end + len(delimiter)
+                    break
+        
+        chunk = text[start:end].strip()
+        
+        # Only add non-empty chunks
+        if chunk and len(chunk) > 50:  # Minimum chunk size
+            chunks.append(chunk)
+        
+        # Move start position with overlap
+        start = end - overlap if end < text_length else text_length
+    
+    return chunks
+
+
+def generate_embedding(text: str) -> Optional[List[float]]:
+    """Generate embedding for text using OpenAI"""
+    try:
+        response = embedding(
+            model=EMBEDDING_MODEL,
+            input=[text]
+        )
+        return response.data[0]['embedding']
+    except Exception as e:
+        print(f"   ❌ Embedding generation failed: {e}")
+        return None
+
+
+def save_chapter_chunks(
+    chapter_num: str,
+    chapter_title: str,
+    chapter_text: str,
+    dry_run: bool = False
+) -> int:
+    """
+    Chunk chapter text, generate embeddings, and save to database.
+    
+    Returns:
+        Number of chunks successfully saved
+    """
+    # Clean up text
+    chapter_text = re.sub(r'\s+', ' ', chapter_text)  # Normalize whitespace
+    chapter_text = chapter_text.strip()
+    
+    # Split into chunks
+    chunks = chunk_text(chapter_text, CHUNK_SIZE, CHUNK_OVERLAP)
+    
+    print(f"   📝 Split into {len(chunks)} chunks")
+    
+    if dry_run:
+        print(f"   🔍 DRY RUN - Would save {len(chunks)} chunks")
+        return len(chunks)
+    
+    saved_count = 0
+    
+    for i, chunk_content in enumerate(chunks, 1):
+        # Build title
+        title = f"Publication 17 ({TAX_YEAR}) - Chapter {chapter_num}"
+        if chapter_title:
+            title += f": {chapter_title}"
+        
+        # Add part number if multiple chunks
+        if len(chunks) > 1:
+            title += f" (Part {i}/{len(chunks)})"
+        
+        # Generate embedding
+        print(f"   🔄 Chunk {i}/{len(chunks)}: Generating embedding...", end='')
+        embedding_vector = generate_embedding(chunk_content)
+        
+        if not embedding_vector:
+            print(" ❌ FAILED")
+            continue
+        
+        print(" ✅")
+        
+        # Build metadata
+        metadata = {
+            'tax_years': [TAX_YEAR],
+            'is_current': True,
+            'chapter': f"Chapter {chapter_num}",
+            'chapter_number': int(chapter_num),
+            'chapter_title': chapter_title or f"Chapter {chapter_num}",
+            'source': f'Publication 17 ({TAX_YEAR})',
+            'document_type': 'IRS Publication',
+            'chunk_index': i - 1,  # 0-indexed
+            'total_chunks': len(chunks),
+            'primary_tax_year': TAX_YEAR
+        }
+        
+        # Insert into database
+        try:
+            supabase.table('knowledge_documents').insert({
+                'title': title,
+                'content': chunk_content,
+                'metadata': metadata,
+                'content_embedding': embedding_vector
+            }).execute()
+            
+            saved_count += 1
+            
+        except Exception as e:
+            print(f"   ❌ Failed to save chunk {i}: {e}")
+        
+        # Rate limiting
+        time.sleep(RATE_LIMIT_DELAY)
+    
+    return saved_count
+
+
+def ingest_publication_17(pdf_path: str, dry_run: bool = False) -> Dict[str, int]:
+    """
+    Main ingestion function.
+    
+    Returns:
+        Dictionary with statistics: {
+            'total_pages': int,
+            'chapters_found': int,
+            'total_chunks': int
+        }
+    """
+    if not os.path.exists(pdf_path):
+        print(f"❌ PDF not found: {pdf_path}")
+        sys.exit(1)
+    
+    print(f"📄 Opening PDF: {pdf_path}\n")
+    doc = fitz.open(pdf_path)
+    
+    current_chapter = None
+    current_chapter_title = None
+    chapter_text = ""
+    
+    stats = {
+        'total_pages': len(doc),
+        'chapters_found': 0,
+        'total_chunks': 0
+    }
+    
+    for page_num in range(len(doc)):
+        page = doc[page_num]
+        page_text = page.get_text()
+        
+        # Check if this page starts a new chapter
+        chapter_num, chapter_title = extract_chapter_info(page_text)
+        
+        if chapter_num and chapter_num != current_chapter:
+            # Save previous chapter if exists
+            if current_chapter and chapter_text:
+                print(f"\n💾 Saving Chapter {current_chapter}: {current_chapter_title}")
+                chunks_saved = save_chapter_chunks(
+                    current_chapter,
+                    current_chapter_title,
+                    chapter_text,
+                    dry_run
+                )
+                stats['total_chunks'] += chunks_saved
+                print(f"✅ Chapter {current_chapter}: {chunks_saved} chunks saved\n")
+            
+            # Start new chapter
+            current_chapter = chapter_num
+            current_chapter_title = chapter_title
+            chapter_text = page_text
+            stats['chapters_found'] += 1
+            
+            print(f"📖 Chapter {current_chapter} found: {current_chapter_title}")
+        else:
+            # Continue current chapter
+            chapter_text += "\n" + page_text
+        
+        # Extract tables from this page
+        tables = extract_tables_from_page(page)
+        for table in tables:
+            chapter_text += "\n" + table
+        
+        # Progress indicator
+        if (page_num + 1) % 20 == 0:
+            print(f"   📄 Processed {page_num + 1}/{len(doc)} pages...")
+    
+    # Save last chapter
+    if current_chapter and chapter_text:
+        print(f"\n💾 Saving Chapter {current_chapter}: {current_chapter_title}")
+        chunks_saved = save_chapter_chunks(
+            current_chapter,
+            current_chapter_title,
+            chapter_text,
+            dry_run
+        )
+        stats['total_chunks'] += chunks_saved
+        print(f"✅ Chapter {current_chapter}: {chunks_saved} chunks saved\n")
+    
+    doc.close()
+    
+    return stats
+
+
+def main():
+    import argparse
+    
+    parser = argparse.ArgumentParser(
+        description="Re-ingest IRS Publication 17 (2025) with proper chunking and embeddings"
+    )
+    parser.add_argument(
+        '--pdf',
+        required=True,
+        help='Path to Publication 17 PDF file'
+    )
+    parser.add_argument(
+        '--dry-run',
+        action='store_true',
+        help='Test without saving to database'
+    )
+    parser.add_argument(
+        '--skip-backup',
+        action='store_true',
+        help='Skip creating backup of existing data'
+    )
+    
+    args = parser.parse_args()
+    
+    # Display configuration
+    print("📋 Configuration:")
+    print(f"   PDF: {args.pdf}")
+    print(f"   Tax Year: {TAX_YEAR}")
+    print(f"   Chunk Size: {CHUNK_SIZE} chars")
+    print(f"   Chunk Overlap: {CHUNK_OVERLAP} chars")
+    print(f"   Embedding Model: {EMBEDDING_MODEL}")
+    print(f"   Dry Run: {args.dry_run}")
+    print()
+    
+    if not args.dry_run:
+        # Confirm before proceeding
+        response = input("⚠️  This will delete existing Publication 17 chunks and re-ingest. Continue? (yes/no): ")
+        if response.strip().lower() != 'yes':
+            print("❌ Cancelled")
+            return
+        
+        # Create backup unless skipped
+        if not args.skip_backup:
+            print("\n📦 Creating backup...")
+            try:
+                result = supabase.rpc('create_backup_table', {
+                    'backup_name': 'knowledge_documents_backup_p17_20260212'
+                }).execute()
+                print("✅ Backup created")
+            except:
+                print("⚠️  Backup failed (table may already exist)")
+        
+        # Delete existing chunks
+        print("\n🗑️  Deleting existing Publication 17 chunks...")
+        result = supabase.table('knowledge_documents')\
+            .delete()\
+            .or_('title.ilike.%p17%,title.ilike.%Publication 17 (2025)%')\
+            .execute()
+        print(f"✅ Deleted old chunks\n")
+    
+    # Run ingestion
+    print("=" * 70)
+    print("Starting Ingestion")
+    print("=" * 70 + "\n")
+    
+    stats = ingest_publication_17(args.pdf, args.dry_run)
+    
+    # Display results
+    print("\n" + "=" * 70)
+    print("📊 Ingestion Complete!")
+    print("=" * 70)
+    print(f"   Total Pages: {stats['total_pages']}")
+    print(f"   Chapters Found: {stats['chapters_found']}")
+    print(f"   Total Chunks: {stats['total_chunks']}")
+    print("=" * 70 + "\n")
+    
+    if not args.dry_run:
+        print("✅ All chunks embedded and uploaded to Supabase!")
+        print("\n🧪 Test with: 'What is the standard deduction for this year?'")
+
+
+if __name__ == "__main__":
+    main()
+
+
+# python scripts/reingest_publication_17.py \
+#   --pdf IRS_DOCS/Publication_17_2025_Your_Federal_Income_Tax_Internal_Revenue_Service.pdf \ 
+#   --dry-run

@@ -16,7 +16,7 @@ export function Hero() {
                 transition={{ duration: 0.8 }}
             >
                 <h1 className="text-6xl md:text-7xl font-bold mb-8 tracking-tight text-[#F5F5F5] leading-tight font-serif">
-                    Concierge AI
+                    Tax Concierge AI
                 </h1>
 
                 <p className="text-xl mb-12 max-w-2xl mx-auto leading-relaxed text-[#F5F5F5] font-serif">

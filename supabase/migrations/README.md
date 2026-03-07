@@ -47,6 +47,18 @@ This directory contains SQL migrations for the Concierge AI database. Migrations
 
 ---
 
+### `04_temporal_tax_years.sql`
+**Purpose**: Extract tax years from documents for temporal ranking in hybrid retrieval
+
+**What it does**:
+- Creates `extract_all_tax_years()` function to find all year references (2000–current+1) in text
+- Creates `get_primary_tax_year()` function to return the most recent year
+- Updates all existing `knowledge_documents` metadata with `tax_years`, `primary_tax_year`, and `is_current` fields
+
+**When to run**: After enabling temporal ranking (`USE_TEMPORAL_RANKING=true` in `.env.local`)
+
+---
+
 ## How to Run Migrations
 
 ### Option 1: Supabase Dashboard
@@ -68,6 +80,7 @@ supabase db push
 psql "postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres" < supabase/migrations/01_bm25_search.sql
 psql "postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres" < supabase/migrations/02_evaluation_runs.sql
 psql "postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres" < supabase/migrations/03_populate_experts.sql
+psql "postgresql://postgres:[PASSWORD]@[HOST]:5432/postgres" < supabase/migrations/04_temporal_tax_years.sql
 ```
 
 ---
@@ -89,6 +102,11 @@ SELECT COUNT(*) as total_evaluations FROM evaluation_runs;
 
 -- Check expert profiles
 SELECT COUNT(*) as total_experts FROM experts;
+
+-- Check temporal tax year extraction
+SELECT COUNT(*) as docs_with_years 
+FROM knowledge_documents 
+WHERE metadata->'tax_years' IS NOT NULL;
 ```
 
 ---
