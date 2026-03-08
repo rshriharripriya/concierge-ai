@@ -1,195 +1,1673 @@
 {
-    "test_queries": [
-        {
-            "id": "simple_001",
-            "query": "What is the standard deduction for 2024?",
-            "expected_intent": "simple_tax",
-            "expected_route": "ai",
-            "expected_complexity": 1,
-            "has_answer_in_kb": true,
-            "expected_answer_contains": [
-                "$14,600",
-                "$29,200",
-                "single",
-                "married"
-            ],
-            "ground_truth": "The standard deduction for 2024 is $14,600 for single filers, $29,200 for married filing jointly, $21,900 for head of household, and $14,600 for married filing separately."
-        },
-        {
-            "id": "simple_002",
-            "query": "When is the tax filing deadline?",
-            "expected_intent": "simple_tax",
-            "expected_route": "ai",
-            "expected_complexity": 1,
-            "has_answer_in_kb": true,
-            "expected_answer_contains": [
-                "April 15"
-            ],
-            "ground_truth": "The tax filing deadline is April 15th for most taxpayers."
-        },
-        {
-            "id": "complex_001",
-            "query": "I sold my cryptocurrency for a profit and also have staking rewards. How do I report this?",
-            "expected_intent": "complex_tax",
-            "expected_route": "human",
-            "expected_complexity": 4,
-            "has_answer_in_kb": false,
-            "reasoning": "Multiple tax implications, requires professional judgment on capital gains vs ordinary income treatment"
-        },
-        {
-            "id": "complex_002",
-            "query": "I live in California but work remotely for a New York company. How do I handle state taxes?",
-            "expected_intent": "complex_tax",
-            "expected_route": "human",
-            "expected_complexity": 5,
-            "has_answer_in_kb": false,
-            "reasoning": "Multi-state taxation with complex sourcing rules requires expert analysis"
-        },
-        {
-            "id": "urgent_001",
-            "query": "I received an IRS audit notice yesterday, what should I do?",
-            "expected_intent": "urgent",
-            "expected_route": "human",
-            "expected_complexity": 5,
-            "urgency": true,
-            "expected_expert_specialty": "audit"
-        },
-        {
-            "id": "urgent_002",
-            "query": "The IRS sent me a penalty notice for $5000, I need help immediately",
-            "expected_intent": "urgent",
-            "expected_route": "human",
-            "expected_complexity": 5,
-            "urgency": true,
-            "expected_expert_specialty": "audit"
-        },
-        {
-            "id": "ambiguous_001",
-            "query": "Can I deduct my car?",
-            "expected_intent": "simple_tax",
-            "expected_route": "ai",
-            "expected_complexity": 3,
-            "has_answer_in_kb": true,
-            "expected_answer_contains": [
-                "self-employed",
-                "business use",
-                "mileage"
-            ],
-            "reasoning": "Clear question - AI should provide comprehensive answer covering both self-employed and employee scenarios, then ask for user's specific situation",
-            "ground_truth": "Vehicle deductions depend on your employment situation. If you're self-employed, you can deduct business mileage or actual expenses. If you're a W-2 employee, you cannot deduct commuting or personal vehicle expenses (this changed in 2018)."
-        },
-        {
-            "id": "ambiguous_002",
-            "query": "What about home office?",
-            "expected_intent": "disambiguation_needed",
-            "expected_route": "clarification",
-            "expected_complexity": 2,
-            "should_ask_clarification": true,
-            "clarification_should_ask": [
-                "employee",
-                "self-employed",
-                "percentage"
-            ],
-            "reasoning": "Extremely vague - unclear what specific aspect or whether user qualifies"
-        },
-        {
-            "id": "bookkeeping_001",
-            "query": "How do I categorize meals and entertainment in QuickBooks?",
-            "expected_intent": "bookkeeping",
-            "expected_route": "human",
-            "expected_complexity": 2,
-            "expected_expert_specialty": "bookkeeping",
-            "reasoning": "Software-specific bookkeeping question requires hands-on QuickBooks expertise"
-        },
-        {
-            "id": "international_001",
-            "query": "As a US citizen living abroad, do I need to file FBAR?",
-            "expected_intent": "complex_tax",
-            "expected_route": "human",
-            "expected_complexity": 5,
-            "expected_expert_specialty": "international",
-            "reasoning": "International compliance with significant penalties requires specialized knowledge"
-        },
-        {
-            "id": "simple_003",
-            "query": "What is a W-2 form?",
-            "expected_intent": "simple_tax",
-            "expected_route": "ai",
-            "expected_complexity": 1,
-            "has_answer_in_kb": true,
-            "expected_answer_contains": [
-                "wage",
-                "employer",
-                "withhold"
-            ],
-            "ground_truth": "A W-2 form is a Wage and Tax Statement that reports your annual wages and the amount of taxes withheld from your paycheck. Your employer sends you this form by January 31st each year."
-        },
-        {
-            "id": "simple_004",
-            "query": "Can I still file if I lost my W-2?",
-            "expected_intent": "simple_tax",
-            "expected_route": "ai",
-            "expected_complexity": 2,
-            "has_answer_in_kb": true,
-            "expected_answer_contains": [
-                "Form 4852",
-                "employer",
-                "substitute"
-            ],
-            "ground_truth": "Yes, you can still file. First, request a copy from your employer. If that fails, you can file using Form 4852 (Substitute for Form W-2) with your best estimate of income and withholdings."
-        },
-        {
-            "id": "complex_003",
-            "query": "I inherited a trust from my deceased parent with stocks and real estate. What are the tax implications?",
-            "expected_intent": "complex_tax",
-            "expected_route": "human",
-            "expected_complexity": 5,
-            "expected_expert_specialty": "estate_planning",
-            "reasoning": "Trust taxation, step-up basis, estate planning - requires specialized expertise"
-        },
-        {
-            "id": "startup_001",
-            "query": "My startup just gave me ISO stock options. When should I exercise them to minimize taxes?",
-            "expected_intent": "complex_tax",
-            "expected_route": "human",
-            "expected_complexity": 5,
-            "expected_expert_specialty": "startup",
-            "reasoning": "ISO exercise timing, AMT implications, 83(b) elections require startup tax expertise. CRITICAL: Any equity compensation is complex_tax, complexity=5"
-        },
-        {
-            "id": "simple_005",
-            "query": "Do I need to report interest from my savings account?",
-            "expected_intent": "simple_tax",
-            "expected_route": "ai",
-            "expected_complexity": 1,
-            "has_answer_in_kb": true,
-            "expected_answer_contains": [
-                "yes",
-                "1099-INT",
-                "$10"
-            ],
-            "ground_truth": "Yes, you must report all interest income from your savings account. Your bank will send you Form 1099-INT if you earned more than $10 in interest during the year."
-        }
-    ],
-    "evaluation_criteria": {
-        "routing_accuracy": "Percentage of queries routed correctly (ai vs human vs clarification)",
-        "intent_accuracy": "Percentage of intents classified correctly (simple_tax, complex_tax, urgent, bookkeeping, disambiguation_needed)",
-        "complexity_mae": "Mean Absolute Error of complexity scores (1-5 scale: 1=basic definition, 5=multi-jurisdictional/high-risk)",
-        "disambiguation_recall": "Percentage of ambiguous/vague queries that correctly triggered clarification route",
-        "expert_match_accuracy": "For human routes, percentage where matched expert has the required specialty",
-        "answer_quality": "For AI routes, percentage where generated answer contains expected keywords and facts",
-        "ragas_metrics": {
-            "faithfulness": "Are answers grounded in retrieved context? (Target: >0.90 for tax domain)",
-            "context_precision": "Are top-ranked docs most relevant? (Target: >0.80)",
-            "context_recall": "Did we retrieve all necessary info? (Target: >0.85)",
-            "context_relevance": "How much retrieved content is relevant? (Target: >0.70)",
-            "answer_relevancy": "Does answer address the question? (Target: >0.85)"
-        }
+  "test_queries": [
+    {
+      "id": "simple001",
+      "query": "What is the standard deduction for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+        "expected_answer_contains": ["15,750", "31,500", "single", "married"],
+
+     "ground_truth": "The standard deduction for 2025 is $15,750 for single filers, $31,500 for married filing jointly, and $23,625 for head of household."
+},
+
+    {
+      "id": "simple002",
+      "query": "When is the tax filing deadline?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "April 15"
+      ],
+      "ground_truth": "The tax filing deadline is April 15, 2026 for tax year 2025."
     },
-    "notes": {
-        "unified_orchestration": "System now uses a single LLM call for both intent classification AND routing decisions to optimize API usage (saves ~50% on orchestration calls)",
-        "disambiguation_priority": "The orchestration prompt prioritizes disambiguation detection FIRST before any other classification to catch vague queries",
-        "comprehensive_answers": "For common questions (standard deduction, deadlines), RAG provides ALL filing statuses upfront instead of asking clarifying questions",
-        "complexity_calibration": "Simple definitional questions should score 1-2 on technical_complexity. Only multi-state, international, or high-penalty scenarios score 4-5"
+    {
+      "id": "simple003",
+      "query": "What is a W-2 form?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "wage",
+        "employer",
+        "withhold"
+      ],
+      "ground_truth": "A W-2 form is a Wage and Tax Statement that reports your annual wages and the amount of taxes withheld from your paycheck. Your employer sends you this form by January 31st each year."
+    },
+    {
+      "id": "simple004",
+      "query": "Can I still file if I lost my W-2?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "Form 4852",
+        "employer",
+        "substitute"
+      ],
+      "ground_truth": "Yes, you can still file. First, request a copy from your employer. If that fails, you can file using Form 4852 (Substitute for Form W-2) with your best estimate of income and withholdings."
+    },
+    {
+      "id": "simple005",
+      "query": "Do I need to report interest from my savings account?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "yes",
+        "1099-INT",
+        "10"
+      ],
+      "ground_truth": "Yes, you must report all interest income from your savings account. Your bank will send you Form 1099-INT if you earned more than $10 in interest during the year."
+    },
+    {
+      "id": "simple006",
+      "query": "What is the standard deduction for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "15,750",
+        "31,500",
+        "single",
+        "married"
+      ],
+      "ground_truth": "The 2025 standard deduction is $15,750 for single filers, $31,500 for married filing jointly, and $23,625 for head of household."
+    },
+    {
+      "id": "simple007",
+      "query": "What changed from last year to this year in taxes?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "standard deduction",
+        "increased",
+        "2025"
+      ],
+      "ground_truth": "For 2025 vs 2024, the standard deduction increased to $15,750 (single) and $31,500 (married filing jointly). Tax brackets were also adjusted for inflation."
+    },
+    {
+      "id": "simple008",
+      "query": "How do I get a tax extension?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "Form 4868",
+        "6 months",
+        "October"
+      ],
+      "ground_truth": "File Form 4868 by April 15 to get an automatic 6-month extension until October 15. Note: this extends the filing deadline, not the payment deadline \u2014 taxes owed are still due April 15."
+    },
+    {
+      "id": "simple009",
+      "query": "What is the child tax credit for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "2,000",
+        "child",
+        "dependent"
+      ],
+      "ground_truth": "The child tax credit for 2025 is up to $2,000 per qualifying child under age 17. Up to $1,700 may be refundable as the Additional Child Tax Credit."
+    },
+    {
+      "id": "simple010",
+      "query": "What is the earned income tax credit?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "earned income",
+        "refundable",
+        "low"
+      ],
+      "ground_truth": "The Earned Income Tax Credit (EITC) is a refundable credit for low-to-moderate income workers. The amount depends on your income, filing status, and number of qualifying children."
+    },
+    {
+      "id": "simple011",
+      "query": "Do I need to pay taxes on my Social Security benefits?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "Social Security",
+        "income",
+        "85"
+      ],
+      "ground_truth": "Up to 85% of your Social Security benefits may be taxable depending on your combined income. If your combined income is below $25,000 (single) or $32,000 (married), benefits are generally not taxed."
+    },
+    {
+      "id": "simple012",
+      "query": "What is Form 1099-NEC?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "self-employed",
+        "independent contractor",
+        "nonemployee"
+      ],
+      "ground_truth": "Form 1099-NEC reports nonemployee compensation paid to independent contractors or self-employed workers. You receive this if a client paid you $600 or more during the year."
+    },
+    {
+      "id": "simple013",
+      "query": "What is the self-employment tax rate?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "15.3",
+        "Social Security",
+        "Medicare"
+      ],
+      "ground_truth": "The self-employment tax rate is 15.3%, consisting of 12.4% for Social Security and 2.9% for Medicare. You can deduct half of this amount on your income tax return."
+    },
+    {
+      "id": "simple014",
+      "query": "Can I deduct my home mortgage interest?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "itemize",
+        "Schedule A",
+        "750,000"
+      ],
+      "ground_truth": "Yes, you can deduct mortgage interest on loans up to $750,000 if you itemize deductions on Schedule A. This applies to your primary residence and one second home."
+    },
+    {
+      "id": "simple015",
+      "query": "What is the IRA contribution limit for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "7,000",
+        "IRA",
+        "catch-up"
+      ],
+      "ground_truth": "The IRA contribution limit for 2025 is $7,000 ($8,000 if you're 50 or older, including the $1,000 catch-up contribution)."
+    },
+    {
+      "id": "simple016",
+      "query": "What is a Roth IRA?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "after-tax",
+        "tax-free",
+        "retirement"
+      ],
+      "ground_truth": "A Roth IRA is a retirement account funded with after-tax dollars. Qualified withdrawals in retirement are tax-free, and there are no required minimum distributions during the owner's lifetime."
+    },
+    {
+      "id": "simple017",
+      "query": "What is the 401k contribution limit for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "23,500",
+        "401k",
+        "employer"
+      ],
+      "ground_truth": "The 401(k) employee contribution limit for 2025 is $23,500 ($31,000 if age 50+). Combined employer and employee contributions cannot exceed $70,000."
+    },
+    {
+      "id": "simple018",
+      "query": "Do I have to file taxes if I only made $5,000?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "filing threshold",
+        "gross income",
+        "required"
+      ],
+      "ground_truth": "It depends on your filing status and age. For 2025, single filers under 65 must file if gross income exceeds $15,000. At $5,000, you likely don't have to file, but you may want to in order to claim a refund."
+    },
+    {
+      "id": "simple019",
+      "query": "What is the difference between a tax deduction and a tax credit?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "deduction",
+        "credit",
+        "taxable income"
+      ],
+      "ground_truth": "A deduction reduces your taxable income, while a credit directly reduces your tax bill dollar-for-dollar. Credits are generally more valuable than deductions of the same amount."
+    },
+    {
+      "id": "simple020",
+      "query": "What is the capital gains tax rate?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "long-term",
+        "short-term",
+        "0",
+        "15",
+        "20"
+      ],
+      "ground_truth": "Short-term capital gains (assets held under 1 year) are taxed as ordinary income. Long-term capital gains rates are 0%, 15%, or 20% depending on your taxable income."
+    },
+    {
+      "id": "simple021",
+      "query": "How do I report freelance income?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "Schedule C",
+        "self-employment",
+        "1099"
+      ],
+      "ground_truth": "Report freelance income on Schedule C of Form 1040. You'll also owe self-employment tax on net earnings over $400, reported on Schedule SE."
+    },
+    {
+      "id": "simple022",
+      "query": "Can I deduct my student loan interest?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "2,500",
+        "above-the-line",
+        "income limit"
+      ],
+      "ground_truth": "You can deduct up to $2,500 of student loan interest per year as an above-the-line deduction. This phases out at higher income levels."
+    },
+    {
+      "id": "simple023",
+      "query": "What is the gift tax annual exclusion for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "19,000",
+        "gift",
+        "exclusion"
+      ],
+      "ground_truth": "The annual gift tax exclusion for 2025 is $19,000 per recipient. You can give up to this amount to any individual without filing a gift tax return."
+    },
+    {
+      "id": "simple024",
+      "query": "What forms do I need to file my taxes?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "Form 1040",
+        "W-2",
+        "1099"
+      ],
+      "ground_truth": "Most taxpayers need Form 1040 plus any applicable schedules. You'll also need W-2s from employers and 1099s for other income. Schedule A is needed if you itemize deductions."
+    },
+    {
+      "id": "simple025",
+      "query": "What is the AMT?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "Alternative Minimum Tax",
+        "exemption",
+        "parallel"
+      ],
+      "ground_truth": "The Alternative Minimum Tax (AMT) is a parallel tax system that ensures high-income taxpayers pay a minimum amount of tax. For 2025, the AMT exemption is $88,100 for single filers and $137,000 for married filing jointly."
+    },
+    {
+      "id": "simple026",
+      "query": "i forgot to fill my tax forms can you help me?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "April 15",
+        "extension",
+        "Form 4868"
+      ],
+      "ground_truth": "The 2025 tax deadline is April 15, 2026. You can file for a 6-month extension using Form 4868, but taxes owed are still due by April 15."
+    },
+    {
+      "id": "simple027",
+      "query": "What is head of household filing status?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "unmarried",
+        "dependent",
+        "qualifying"
+      ],
+      "ground_truth": "Head of Household is a filing status for unmarried taxpayers who paid more than half the cost of keeping up a home for a qualifying person during the year. It provides a higher standard deduction than single status."
+    },
+    {
+      "id": "simple028",
+      "query": "What is the standard mileage rate for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "mileage",
+        "business",
+        "cents"
+      ],
+      "ground_truth": "The 2025 standard mileage rate for business use is 70 cents per mile. Medical and military moving purposes is 21 cents per mile, and charitable purposes is 14 cents per mile."
+    },
+    {
+      "id": "simple029",
+      "query": "Do I need to pay quarterly estimated taxes?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "self-employed",
+        "quarterly",
+        "Form 1040-ES"
+      ],
+      "ground_truth": "You generally need to pay quarterly estimated taxes if you expect to owe at least $1,000 in tax and your withholding won't cover your liability. Use Form 1040-ES. Due dates are April 15, June 15, September 15, and January 15."
+    },
+    {
+      "id": "simple030",
+      "query": "Can I deduct charitable donations?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "itemize",
+        "Schedule A",
+        "501(c)(3)"
+      ],
+      "ground_truth": "Yes, you can deduct charitable donations if you itemize deductions. Donations must be to qualified 501(c)(3) organizations. Cash donations are deductible up to 60% of your AGI."
+    },
+    {
+      "id": "simple031",
+      "query": "What is adjusted gross income?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "AGI",
+        "gross income",
+        "deductions"
+      ],
+      "ground_truth": "Adjusted Gross Income (AGI) is your total gross income minus specific above-the-line deductions like student loan interest, IRA contributions, and alimony. It's calculated before the standard or itemized deduction."
+    },
+    {
+      "id": "simple032",
+      "query": "What is the penalty for filing taxes late?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "5%",
+        "failure to file",
+        "25%"
+      ],
+      "ground_truth": "The failure-to-file penalty is 5% of unpaid taxes per month, up to a maximum of 25%. The failure-to-pay penalty is 0.5% per month. If you're due a refund, there's no penalty for filing late."
+    },
+    {
+      "id": "simple033",
+      "query": "What is a dependent?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "qualifying child",
+        "qualifying relative",
+        "support"
+      ],
+      "ground_truth": "A dependent is either a qualifying child or qualifying relative who you support. Claiming a dependent can reduce your tax bill through the child tax credit, dependent care credit, and other benefits."
+    },
+    {
+      "id": "simple034",
+      "query": "How do I claim the home office deduction?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "self-employed",
+        "exclusive use",
+        "Form 8829"
+      ],
+      "ground_truth": "Self-employed taxpayers can claim the home office deduction if they use part of their home regularly and exclusively for business. Use Form 8829 or the simplified method ($5 per square foot, up to 300 sq ft)."
+    },
+    {
+      "id": "simple035",
+      "query": "What is the difference between traditional and Roth IRA?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "traditional",
+        "Roth",
+        "pre-tax",
+        "after-tax"
+      ],
+      "ground_truth": "Traditional IRA contributions may be tax-deductible and withdrawals are taxed as income. Roth IRA contributions are made with after-tax dollars and qualified withdrawals are tax-free."
+    },
+    {
+      "id": "simple036",
+      "query": "Can I contribute to both a 401k and an IRA?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "yes",
+        "both",
+        "limits"
+      ],
+      "ground_truth": "Yes, you can contribute to both a 401(k) and an IRA in the same year, subject to each account's contribution limits. However, the deductibility of traditional IRA contributions may be limited if you're covered by a workplace plan."
+    },
+    {
+      "id": "simple037",
+      "query": "What is the net investment income tax?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "3.8%",
+        "investment income",
+        "high income"
+      ],
+      "ground_truth": "The Net Investment Income Tax is an additional 3.8% tax on investment income for high earners \u2014 individuals with modified AGI over $200,000 (single) or $250,000 (married filing jointly)."
+    },
+    {
+      "id": "simple038",
+      "query": "What receipts should I keep for taxes?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "receipts",
+        "deductions",
+        "3 years"
+      ],
+      "ground_truth": "Keep receipts for all deductible expenses including charitable donations, medical expenses, business expenses, and home improvements. The IRS generally has 3 years to audit, so keep records at least that long."
+    },
+    {
+      "id": "simple039",
+      "query": "What is the Social Security wage base for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "176,100",
+        "Social Security",
+        "wage base"
+      ],
+      "ground_truth": "The Social Security wage base for 2025 is $176,100. Earnings above this amount are not subject to the 6.2% Social Security tax."
+    },
+    {
+      "id": "simple040",
+      "query": "How long does it take to get a tax refund?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "21 days",
+        "e-file",
+        "direct deposit"
+      ],
+      "ground_truth": "The IRS issues most refunds within 21 days for e-filed returns with direct deposit. Paper returns can take 6-8 weeks. You can check your refund status at IRS.gov using 'Where's My Refund?'"
+    },
+    {
+      "id": "simple041",
+      "query": "What is the education tax credit?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "American Opportunity",
+        "Lifetime Learning",
+        "tuition"
+      ],
+      "ground_truth": "There are two main education credits: the American Opportunity Credit (up to $2,500 for first 4 years of college) and the Lifetime Learning Credit (up to $2,000 for any post-secondary education)."
+    },
+    {
+      "id": "simple042",
+      "query": "Do I owe taxes if I sold my house?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "250,000",
+        "500,000",
+        "primary residence",
+        "exclusion"
+      ],
+      "ground_truth": "You can exclude up to $250,000 of gain ($500,000 married) from the sale of your primary residence if you've lived there for 2 of the last 5 years. Gain above the exclusion is taxable."
+    },
+    {
+      "id": "simple043",
+      "query": "What is depreciation recapture?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "depreciation",
+        "recapture",
+        "ordinary income"
+      ],
+      "ground_truth": "Depreciation recapture occurs when you sell a depreciated asset for more than its book value. The previously deducted depreciation is 'recaptured' and taxed as ordinary income at up to 25%."
+    },
+    {
+      "id": "simple044",
+      "query": "What is a 1099-DIV?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "dividend",
+        "investment",
+        "brokerage"
+      ],
+      "ground_truth": "Form 1099-DIV reports dividends and distributions from investments. You receive this from your brokerage if you earned $10 or more in dividends. Qualified dividends are taxed at lower capital gains rates."
+    },
+    {
+      "id": "simple045",
+      "query": "Can I deduct medical expenses?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "7.5%",
+        "AGI",
+        "itemize"
+      ],
+      "ground_truth": "You can deduct medical expenses that exceed 7.5% of your AGI if you itemize deductions on Schedule A. Eligible expenses include doctor visits, prescriptions, and health insurance premiums."
+    },
+    {
+      "id": "simple046",
+      "query": "What is the additional standard deduction for seniors?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "65",
+        "additional",
+        "1,600"
+      ],
+      "ground_truth": "Taxpayers age 65 or older can claim an additional standard deduction. For 2025, it's $1,600 per person for married filers and $2,000 for single/head of household filers."
+    },
+    {
+      "id": "simple047",
+      "query": "What is the HSA contribution limit for 2025?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "4,300",
+        "HSA",
+        "high-deductible"
+      ],
+      "ground_truth": "The HSA contribution limit for 2025 is $4,300 for self-only coverage and $8,550 for family coverage. An additional $1,000 catch-up contribution is allowed if you're 55 or older."
+    },
+    {
+      "id": "simple048",
+      "query": "What is the kiddie tax?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "unearned income",
+        "child",
+        "parent's rate"
+      ],
+      "ground_truth": "The kiddie tax taxes a child's unearned income (dividends, interest, capital gains) above a threshold at the parent's tax rate. For 2025, the first $1,350 is tax-free and the next $1,350 is taxed at the child's rate."
+    },
+    {
+      "id": "simple049",
+      "query": "How do I report stock sales on my taxes?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "Schedule D",
+        "Form 8949",
+        "capital gains"
+      ],
+      "ground_truth": "Report stock sales on Form 8949 and then summarize on Schedule D. You'll report the sale price, cost basis, and the resulting capital gain or loss for each transaction."
+    },
+    {
+      "id": "simple050",
+      "query": "What is the Foreign Earned Income Exclusion?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 2,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "126,500",
+        "Form 2555",
+        "bona fide residence"
+      ],
+      "ground_truth": "US citizens living abroad can exclude up to $126,500 of foreign earned income for 2024 using Form 2555. You must meet either the bona fide residence test or the physical presence test."
+    },
+    {
+      "id": "simple051",
+      "query": "What is the difference between gross income and net income?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "gross",
+        "net",
+        "deductions"
+      ],
+      "ground_truth": "Gross income is your total earnings before any deductions. Net income is what remains after subtracting taxes, deductions, and other withholdings."
+    },
+    {
+      "id": "simple052",
+      "query": "Can I file jointly if I got married this year?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "married filing jointly",
+        "December 31",
+        "filing status"
+      ],
+      "ground_truth": "Yes. If you were married on or before December 31 of the tax year, you may file as married filing jointly or married filing separately for that entire year."
+    },
+    {
+      "id": "simple053",
+      "query": "What is the 1040-SR form?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "seniors",
+        "65",
+        "larger print"
+      ],
+      "ground_truth": "Form 1040-SR is a simplified tax form designed for taxpayers age 65 and older. It has larger print and a built-in chart for the standard deduction including the additional amount for seniors."
+    },
+    {
+      "id": "simple054",
+      "query": "What is FICA tax?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 1,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "Social Security",
+        "Medicare",
+        "6.2",
+        "1.45"
+      ],
+      "ground_truth": "FICA stands for Federal Insurance Contributions Act. It includes Social Security tax (6.2%) and Medicare tax (1.45%), both paid by you and matched by your employer."
+    },
+    {
+      "id": "simple055",
+      "query": "Can I deduct my car for work?",
+      "expected_intent": "simple_tax",
+      "expected_route": "ai",
+      "expected_complexity": 3,
+      "has_answer_in_kb": true,
+      "expected_answer_contains": [
+        "self-employed",
+        "business use",
+        "mileage"
+      ],
+      "ground_truth": "Vehicle deductions depend on your employment situation. If you're self-employed, you can deduct business mileage or actual expenses. If you're a W-2 employee, you cannot deduct commuting or personal vehicle expenses (this changed in 2018)."
+    },
+    {
+      "id": "complex001",
+      "query": "I sold my cryptocurrency for a profit and also have staking rewards. How do I report this?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "crypto",
+      "reasoning": "Multiple tax implications: capital gains vs ordinary income treatment for staking requires professional judgment."
+    },
+    {
+      "id": "complex002",
+      "query": "I live in California but work remotely for a New York company. How do I handle state taxes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "state_tax",
+      "reasoning": "Multi-state taxation with complex sourcing rules requires expert analysis."
+    },
+    {
+      "id": "complex003",
+      "query": "I inherited a trust from my deceased parent with stocks and real estate. What are the tax implications?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "estate_planning",
+      "reasoning": "Trust taxation, step-up basis, estate planning - requires specialized expertise."
+    },
+    {
+      "id": "complex004",
+      "query": "My startup just gave me ISO stock options. When should I exercise them to minimize taxes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "startup",
+      "reasoning": "ISO exercise timing, AMT implications, 83b elections require startup tax expertise."
+    },
+    {
+      "id": "complex005",
+      "query": "As a US citizen living abroad, do I need to file FBAR?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "international",
+      "reasoning": "International compliance with significant penalties requires specialized knowledge."
+    },
+    {
+      "id": "complex006",
+      "query": "I'm a partner in an LLC and also receive W-2 income. How does this affect my taxes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "business_tax",
+      "reasoning": "Pass-through income, self-employment tax, and dual income sources require expert analysis."
+    },
+    {
+      "id": "complex007",
+      "query": "I have rental properties in three different states. How do I handle depreciation and state taxes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "real_estate",
+      "reasoning": "Multi-state rental income, depreciation schedules, and passive activity rules require expert guidance."
+    },
+    {
+      "id": "complex008",
+      "query": "My employer gave me RSUs that vested this year and I also exercised NQSOs. How do I report this?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "startup",
+      "reasoning": "RSU vesting income plus NQSO exercise creates complex reporting with withholding, W-2 inclusion, and capital gains components."
+    },
+    {
+      "id": "complex009",
+      "query": "I'm self-employed and want to set up a Solo 401k. How does this work?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "retirement",
+      "reasoning": "Solo 401k contribution rules, employer vs employee components, and plan setup require professional guidance."
+    },
+    {
+      "id": "complex010",
+      "query": "I'm a US expat and also have foreign bank accounts and investments. What do I need to file?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "international",
+      "reasoning": "FBAR, FATCA Form 8938, foreign tax credits, and FEIE all potentially applicable - requires international tax specialist."
+    },
+    {
+      "id": "complex011",
+      "query": "I want to do a 1031 exchange on my investment property. How does this work?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "real_estate",
+      "reasoning": "1031 exchanges have strict timelines, qualified intermediary requirements, and like-kind rules."
+    },
+    {
+      "id": "complex012",
+      "query": "My business had a net operating loss this year. Can I carry it back?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "business_tax",
+      "reasoning": "NOL carryback/carryforward rules changed with TCJA and CARES Act - requires expert analysis."
+    },
+    {
+      "id": "complex013",
+      "query": "I received a K-1 from a hedge fund with dozens of line items. How do I handle this?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "investment",
+      "reasoning": "Complex K-1 with UBTI, PTP income, and international items requires CPA assistance."
+    },
+    {
+      "id": "complex014",
+      "query": "I'm converting my traditional IRA to a Roth IRA. What are the tax implications?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "retirement",
+      "reasoning": "Roth conversion triggers taxable income, may affect Medicare premiums, ACA subsidies, and other phase-outs."
+    },
+    {
+      "id": "complex015",
+      "query": "I sold my business this year. How is the sale taxed?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "business_tax",
+      "reasoning": "Business sale involves asset vs stock sale analysis, installment sales, goodwill allocation, and recapture."
+    },
+    {
+      "id": "complex016",
+      "query": "Can I avoid estate tax by gifting assets to my children?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "estate_planning",
+      "reasoning": "Gift and estate tax planning involves unified credit, lifetime exemptions, and stepped-up basis considerations."
+    },
+    {
+      "id": "complex017",
+      "query": "My company is going public next year via IPO. What should I do with my stock options?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "startup",
+      "reasoning": "Pre-IPO planning involves lockup periods, AMT exposure, 83b elections, and post-IPO selling strategies."
+    },
+    {
+      "id": "complex018",
+      "query": "I have passive activity losses from my rental property. Can I deduct them?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "real_estate",
+      "reasoning": "Passive activity loss rules, real estate professional status, and $25,000 rental loss allowance require careful analysis."
+    },
+    {
+      "id": "complex019",
+      "query": "I'm a nonresident alien working in the US on an H-1B. How do I file taxes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "international",
+      "reasoning": "H-1B substantial presence test, dual-status returns, and treaty benefits require international tax expertise."
+    },
+    {
+      "id": "complex020",
+      "query": "I want to set up a charitable remainder trust. How does this affect my taxes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "estate_planning",
+      "reasoning": "CRT involves charitable deduction calculation, income stream taxation, and complex trust rules."
+    },
+    {
+      "id": "complex021",
+      "query": "I have both long and short-term capital losses and gains. How do I net them?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "investment",
+      "reasoning": "Capital gain/loss netting rules and carryforward strategies require professional guidance."
+    },
+    {
+      "id": "complex022",
+      "query": "My employer offers an ESPP. Should I hold or sell immediately and what are the tax implications?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "startup",
+      "reasoning": "ESPP qualifying vs disqualifying dispositions, lookback period, and ordinary vs capital income require specialist."
+    },
+    {
+      "id": "complex023",
+      "query": "I'm starting an S-corp. What are the tax advantages vs staying as a sole proprietor?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "business_tax",
+      "reasoning": "S-corp election, reasonable salary requirement, and payroll tax savings analysis requires professional guidance."
+    },
+    {
+      "id": "complex024",
+      "query": "I made backdoor Roth contributions. How do I report this correctly?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "retirement",
+      "reasoning": "Backdoor Roth involves non-deductible IRA contributions, Form 8606, pro-rata rule, and conversion reporting."
+    },
+    {
+      "id": "complex025",
+      "query": "I have overseas income, a US rental property, and W-2 income. How do I minimize taxes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "international",
+      "reasoning": "Multiple income streams spanning international and domestic with complex interaction effects."
+    },
+    {
+      "id": "complex026",
+      "query": "Can I deduct my private jet for business purposes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "business_tax",
+      "reasoning": "Aircraft depreciation, bonus depreciation, personal use disallowance, and SIFL rules require expert review."
+    },
+    {
+      "id": "complex027",
+      "query": "I'm a day trader. How does mark-to-market accounting affect my taxes?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "investment",
+      "reasoning": "Trader tax status election, Section 475 MTM accounting, wash sale exemptions require specialized knowledge."
+    },
+    {
+      "id": "complex028",
+      "query": "I received NFTs as compensation. How are they taxed?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "crypto",
+      "reasoning": "NFT tax treatment is unsettled and complex \u2014 potentially ordinary income, capital gains, or collectibles rates."
+    },
+    {
+      "id": "complex029",
+      "query": "I want to move to Puerto Rico for Act 60 tax benefits. What do I need to know?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "state_tax",
+      "reasoning": "Puerto Rico Act 60 bona fide residency requirements and exit tax implications require specialist."
+    },
+    {
+      "id": "complex030",
+      "query": "My parents want to gift me their house. What are the tax implications for both of us?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "estate_planning",
+      "reasoning": "Gift tax, carryover basis vs stepped-up basis, and future capital gains implications require expert analysis."
+    },
+    {
+      "id": "complex031",
+      "query": "I have a grantor trust. How does income get reported?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "estate_planning",
+      "reasoning": "Grantor trust rules, reporting requirements, and income attribution are complex legal/tax issues."
+    },
+    {
+      "id": "complex032",
+      "query": "How do I handle taxes for a deceased family member's estate?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "estate_planning",
+      "reasoning": "Estate tax returns, final individual return, income in respect of decedent all require estate specialist."
+    },
+    {
+      "id": "complex033",
+      "query": "I have significant wash sales from algorithmic trading. How do I handle this?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "investment",
+      "reasoning": "Large volume wash sale tracking and disallowance calculations require specialized software and expertise."
+    },
+    {
+      "id": "complex034",
+      "query": "I run an Airbnb. When does it become a rental business vs personal use property?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "real_estate",
+      "reasoning": "14-day / 10% rule, expense allocation between rental and personal, and Schedule E vs C reporting."
+    },
+    {
+      "id": "complex035",
+      "query": "I'm a physician with a professional corporation. How should I structure my compensation?",
+      "expected_intent": "complex_tax",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "has_answer_in_kb": false,
+      "expected_expert_specialty": "business_tax",
+      "reasoning": "Professional corporation salary vs distributions, retirement plan contributions, and QBI deduction optimization require specialist."
+    },
+    {
+      "id": "urgent001",
+      "query": "I received an IRS audit notice yesterday, what should I do?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent002",
+      "query": "The IRS sent me a penalty notice for $5,000, I need help immediately",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent003",
+      "query": "I just got a CP2000 notice saying I underreported income. What do I do?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent004",
+      "query": "The IRS is garnishing my wages starting next week. Can this be stopped?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent005",
+      "query": "I received a final notice of intent to levy. How much time do I have?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent006",
+      "query": "I think I may have committed tax fraud accidentally. What should I do?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent007",
+      "query": "I missed the tax deadline and owe a lot. Will I go to jail?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent008",
+      "query": "I received an IRS letter threatening to seize my bank account",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent009",
+      "query": "My business just got audited and the IRS agent is coming tomorrow",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent010",
+      "query": "I owe $80,000 in back taxes and the IRS wants payment immediately",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent011",
+      "query": "I just found out my tax preparer filed fraudulent returns in my name",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent012",
+      "query": "I received a tax lien on my property. What can I do?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent013",
+      "query": "The IRS is saying I owe taxes from 10 years ago. Is there a statute of limitations?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent014",
+      "query": "Someone filed a tax return using my Social Security number. What do I do?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent015",
+      "query": "I need to stop an IRS seizure of my business assets happening this week",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent016",
+      "query": "I never filed taxes for the past 5 years. Am I in trouble?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent017",
+      "query": "I got a letter from the IRS Criminal Investigation division",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent018",
+      "query": "My IRS installment agreement was rejected. I can't pay my tax debt. What now?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 4,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent019",
+      "query": "IRS says I owe $200k but I disagree with the amount. How do I fight this?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "urgent020",
+      "query": "I received a 90-day letter from the IRS. What happens if I miss this deadline?",
+      "expected_intent": "urgent",
+      "expected_route": "human",
+      "expected_complexity": 5,
+      "urgency": true,
+      "expected_expert_specialty": "audit"
+    },
+    {
+      "id": "bookkeeping001",
+      "query": "How do I categorize meals and entertainment in QuickBooks?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping",
+      "reasoning": "Software-specific bookkeeping question requires hands-on QuickBooks expertise."
+    },
+    {
+      "id": "bookkeeping002",
+      "query": "How do I reconcile my bank account in Xero?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping",
+      "reasoning": "Software-specific reconciliation in Xero requires hands-on bookkeeping expertise."
+    },
+    {
+      "id": "bookkeeping003",
+      "query": "I have years of unreconciled transactions in QuickBooks. Can someone help me clean this up?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 3,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping004",
+      "query": "How should I set up my chart of accounts for a retail business?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping005",
+      "query": "How do I record depreciation entries in my accounting software?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 3,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping006",
+      "query": "My books haven't been updated in 6 months. How much would it cost to catch up?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping007",
+      "query": "How do I handle owner draws vs salary in my bookkeeping?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 3,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping008",
+      "query": "I need someone to do my monthly bookkeeping. Do you offer that service?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping009",
+      "query": "How do I record credit card payments vs charges in QuickBooks Online?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping010",
+      "query": "What is the difference between cash and accrual accounting for my small business?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping011",
+      "query": "How do I categorize a loan repayment in my accounting?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping012",
+      "query": "My profit and loss statement doesn't match my bank balance. Why?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 3,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping013",
+      "query": "How do I set up payroll in QuickBooks for my 3 employees?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 3,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping014",
+      "query": "What is a journal entry and when do I need to make one?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 2,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "bookkeeping015",
+      "query": "I need to migrate my bookkeeping from spreadsheets to QuickBooks. Can you help?",
+      "expected_intent": "bookkeeping",
+      "expected_route": "human",
+      "expected_complexity": 3,
+      "expected_expert_specialty": "bookkeeping"
+    },
+    {
+      "id": "ambiguous001",
+      "query": "What about home office?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 2,
+      "should_ask_clarification": true,
+      "clarification_should_ask": [
+        "employee or self-employed",
+        "percentage",
+        "deduction"
+      ],
+      "reasoning": "Extremely vague \u2014 unclear what specific aspect or whether user qualifies."
+    },
+    {
+      "id": "ambiguous002",
+      "query": "help",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Single word with zero context \u2014 must ask what they need help with."
+    },
+    {
+      "id": "ambiguous003",
+      "query": "what about deductions?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No context about which deductions or for what situation."
+    },
+    {
+      "id": "ambiguous004",
+      "query": "taxes",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Single word \u2014 completely unclear what they want to know about taxes."
+    },
+    {
+      "id": "ambiguous005",
+      "query": "can you help me with my situation?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No information provided about the actual situation."
+    },
+    {
+      "id": "ambiguous006",
+      "query": "what do I do?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No context at all \u2014 impossible to answer without knowing the situation."
+    },
+    {
+      "id": "ambiguous007",
+      "query": "is this taxable?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No 'this' to reference \u2014 must ask what the income or item is."
+    },
+    {
+      "id": "ambiguous008",
+      "query": "how much can I deduct?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Unclear what expense type is being asked about."
+    },
+    {
+      "id": "ambiguous009",
+      "query": "what forms do I need?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Need to know income types, filing status, etc. to answer correctly."
+    },
+    {
+      "id": "ambiguous010",
+      "query": "I need tax advice",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Completely generic \u2014 no information about the tax situation."
+    },
+    {
+      "id": "ambiguous011",
+      "query": "hi",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Greeting with no question \u2014 must ask what they need."
+    },
+    {
+      "id": "ambiguous012",
+      "query": "what about my investments?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Unclear whether asking about dividends, capital gains, or reporting."
+    },
+    {
+      "id": "ambiguous013",
+      "query": "how do I save on taxes?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 2,
+      "should_ask_clarification": true,
+      "reasoning": "Requires knowing income level, filing status, and financial situation."
+    },
+    {
+      "id": "ambiguous014",
+      "query": "what's the limit?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No context about which limit \u2014 could be IRA, 401k, deduction, etc."
+    },
+    {
+      "id": "ambiguous015",
+      "query": "I made some money this year",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No question asked and no income type specified."
+    },
+    {
+      "id": "ambiguous016",
+      "query": "what should I do with my money?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Financial planning question with zero context \u2014 not answerable."
+    },
+    {
+      "id": "ambiguous017",
+      "query": "can I write that off?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No 'that' to reference \u2014 need to know what expense is being asked about."
+    },
+    {
+      "id": "ambiguous018",
+      "query": "how does that work?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No context whatsoever about the topic being asked about."
+    },
+    {
+      "id": "ambiguous019",
+      "query": "I'm confused about my taxes",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "General statement of confusion with no specific question."
+    },
+    {
+      "id": "ambiguous020",
+      "query": "what are my options?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Zero context about the situation or topic."
+    },
+    {
+      "id": "ambiguous021",
+      "query": "does it count?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No 'it' defined."
+    },
+    {
+      "id": "ambiguous022",
+      "query": "I sold something. Do I owe taxes?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "Need to know what was sold, purchase price, and holding period."
+    },
+    {
+      "id": "ambiguous023",
+      "query": "what about last year?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No topic referenced \u2014 completely unclear."
+    },
+    {
+      "id": "ambiguous024",
+      "query": "I got paid under the table. Now what?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 2,
+      "should_ask_clarification": true,
+      "reasoning": "Need to know if asking about reporting requirements, amount, or penalty exposure."
+    },
+    {
+      "id": "ambiguous025",
+      "query": "am I doing this right?",
+      "expected_intent": "disambiguation_needed",
+      "expected_route": "clarification",
+      "expected_complexity": 1,
+      "should_ask_clarification": true,
+      "reasoning": "No context about what 'this' is."
     }
+  ],
+  "evaluation_criteria": {
+    "routing_accuracy": "Percentage of queries routed correctly (ai vs human vs clarification)",
+    "intent_accuracy": "Percentage of intents classified correctly (simple_tax, complex_tax, urgent, bookkeeping, disambiguation_needed)",
+    "complexity_mae": "Mean Absolute Error of complexity scores (1-5 scale)",
+    "disambiguation_recall": "Percentage of vague queries that correctly triggered clarification route",
+    "expert_match_accuracy": "For human routes, percentage where matched expert has the required specialty",
+    "answer_quality": "For AI routes, percentage where generated answer contains expected keywords",
+    "ragas_metrics": {
+      "faithfulness": "Are answers grounded in retrieved context? Target: 0.90",
+      "context_precision": "Are top-ranked docs most relevant? Target: 0.80",
+      "context_recall": "Did we retrieve all necessary info? Target: 0.85",
+      "context_relevance": "How much retrieved content is relevant? Target: 0.70",
+      "answer_relevancy": "Does answer address the question? Target: 0.85"
+    }
+  }
 }
