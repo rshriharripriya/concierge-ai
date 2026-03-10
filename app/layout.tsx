@@ -4,6 +4,7 @@ import "./globals.css";
 import { AuroraBackground } from "@/components/ui/AuroraBackground";
 
 import { Analytics } from "@vercel/analytics/react";
+import { PostHogProvider } from "./providers";
 
 const inter = Inter({ subsets: ["latin"] });
 const playfair = Playfair_Display({
@@ -53,11 +54,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} ${playfair.variable} text-gray-900 antialiased`}>
-        <AuroraBackground>
-          <div className="relative z-10 min-h-screen flex flex-col w-full">
-            {children}
-          </div>
-        </AuroraBackground>
+        <PostHogProvider>
+          <AuroraBackground>
+            <div className="relative z-10 min-h-screen flex flex-col w-full">
+              {children}
+            </div>
+          </AuroraBackground>
+        </PostHogProvider>
         <Analytics />
       </body>
     </html>

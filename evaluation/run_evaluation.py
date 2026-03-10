@@ -165,6 +165,9 @@ class EvaluationRunner:
             # Step 4: RAG Answer Quality (if routed to AI OR clarification)
             # Ambiguous queries might be routed to 'clarification' but we still want to check the quality of prompt
             if result["actual"]["route_decision"] in ["ai", "clarification"]:
+                # Brief pause between the routing call and RAG generation to avoid hitting
+                # per-minute rate limits when multiple LLM calls stack up within one test.
+                await asyncio.sleep(60)
                 # Access the service instance directly from the module to avoid NoneType issues
                 from services import rag_service
                 rag = rag_service.service_instance
