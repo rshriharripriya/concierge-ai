@@ -216,7 +216,7 @@ def save_chapter_chunks(
         except Exception as e:
             print(f"   ❌ Failed to save chunk {i}: {e}")
 
-        time.sleep(RATE_LIMIT_DELAY)  # ✅ 0.3s not 60s
+        time.sleep(RATE_LIMIT_DELAY)  
 
     return saved_count
 
